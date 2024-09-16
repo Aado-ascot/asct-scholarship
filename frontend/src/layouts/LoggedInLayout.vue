@@ -18,18 +18,17 @@
           round
           unelevated
           :icon="miniState ? 'ti-menu' : 'ti-menu-alt'"
-          :class="checkView ? 'drawerBtn' : ''"
+          class="drawerBtn"
           @click="toggleLeftDrawer"
         />
         <q-item>
-          <q-item-section side>
+          <!-- <q-item-section side>
             <q-avatar round size="32px">
               <img src="https://cdn.quasar.dev/img/avatar.png">
             </q-avatar>
-          </q-item-section>
+          </q-item-section> -->
           <q-item-section>
             <q-item-label>{{`${userDetails.fullName}`}}</q-item-label>
-            <q-item-label caption class="capetalize">{{userDetails.userType}}</q-item-label>
           </q-item-section>
         </q-item>
         
@@ -55,19 +54,19 @@
     >
       <div class="row q-pa-md q-mt-lg">
         <div class="col-12 text-bold text-h5 text-orange">
-          <q-img v-if="miniState" src="/imgs/bagamalogo_mini.jpg" />
-          <q-img v-if="!miniState" src="/imgs/bagamalogo.jpg" />
+          <q-img v-if="miniState" src="/imgs/ASCT_logo.png" />
+          <q-img v-if="!miniState" src="/imgs/ASCT_logo2.png" />
           <!-- <q-icon name="ti-pie-chart" /> <span v-if="!miniState">Accounting IS</span> -->
         </div>
       </div>
       <!-- drawer content -->
       <!-- <Profile v-bind="userProfile" /> -->
       <q-separator dark />
-      <SideNav 
+      <!-- <SideNav 
         v-for="link in filteredMenus"
         :key="link.title"
         v-bind="link"
-      />
+      /> -->
 
       <div class="fixed-bottom q-pa-sm q-mb-md">
         <!-- <q-btn v-if="miniState" color="primary" icon="ti-layout-grid2" size="md" round>
@@ -127,6 +126,7 @@ import Profile from '../components/Templates/Profile.vue';
 // import Crumbs from '../components/Templates/Breadcrumbs.vue';
 import moment from 'moment';
 import MenuJson from './menus.json'
+import { jwtDecode } from 'jwt-decode';
 
 const dateNow = moment().format('YYYY-MM-DD');
 
@@ -157,20 +157,12 @@ export default {
     },
     userDetails(){
       const user = LocalStorage.getItem('userData')
-      return user;
-    },
-    checkView(){
-      return this.$q.platform.is.desktop
+      return jwtDecode(user);
     }
   },
   methods: {
     toggleLeftDrawer () {
-      if(this.checkView){
-        this.miniState = !this.miniState
-      } else {
-        this.leftDrawerOpen = !this.leftDrawerOpen
-      }
-      
+      this.miniState = !this.miniState
     },
     setCrumbsItem(val){
       this.menuCrumbs = val;

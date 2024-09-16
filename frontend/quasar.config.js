@@ -56,7 +56,7 @@ module.exports = configure(function (ctx) {
           env[key] = envConfig[key]
           return env
         },{}),
-        API_BASE: ctx.dev ? 'http://localhost:8080/index.php/ascot/api/v1' : 'http://localhost:8080/index.php/ascot/api/v1'
+        API_BASE: ctx.dev ? 'http://localhost:8080/index.php/ascots/api/v1' : 'http://localhost:8080/index.php/ascots/api/v1'
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'

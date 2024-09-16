@@ -42,7 +42,7 @@
 
                 <q-card-actions>
                   <q-btn flat color="primary">
-                    Reserve
+                    {{item.buttonAction}}
                   </q-btn>
                 </q-card-actions>
               </q-card>
@@ -75,57 +75,10 @@
 
           <q-tab-panels v-model="tab">
             <q-tab-panel name="login">
-              <div class="fit row wrap justify-center items-center content-center q-pa-xl">
-                <div class="col-12 text-grey-8">Embrace the new year with a fresh opportunity!</div>
-                
-                <div class="col-12 text-grey-8 q-mt-lg">
-                  <q-input
-                    v-model="form.username"
-                    @keypress.enter="submitLogin"
-                    label="Username/Email"
-                    v-bind="formRules.username"
-                    placeholder="Enter username / email"
-                    outlined  
-                    stack-label
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="ti-user" />
-                    </template>
-                  </q-input>
-                </div>
-                <div class="col-12 text-grey-8 q-mt-sm">
-                  <q-input 
-                    v-model="form.password"
-                    v-bind="formRules.password"
-                    @keypress.enter="submitLogin"
-                    type="password"
-                    label="Password"
-                    placeholder="***********"
-                    outlined  
-                    stack-label
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="ti-lock" />
-                    </template>
-                  </q-input>
-                </div>
-                <div class="col-12 q-mt-sm">
-                  <q-checkbox v-model="keepLogin" label="Remember me" />
-                  <q-btn class="float-right" flat color="orange" no-caps label="Forgot Password" />
-                </div>
-                <div class="col-12 q-mt-lg">
-                  <q-btn
-                    type="submit"
-                    class="full-width q-pa-md btn-custom-border" 
-                    unelevated
-                    :loading="loginLoad"
-                    no-caps 
-                    color="primary" 
-                    label="Login"
-                    @click="submitLogin"
-                  />
-                </div>
-              </div>
+              <LoginForm />
+            </q-tab-panel>
+            <q-tab-panel name="register">
+              <RegisterForm />
             </q-tab-panel>
           </q-tab-panels>
         </q-card-section>
@@ -135,14 +88,14 @@
 </template>
 
 <script>
-import { LocalStorage } from 'quasar'
-import { Device } from '@capacitor/device'
-import login from '../firebase/firebase-login'
+import LoginForm from '../components/Forms/Login.vue'
+import RegisterForm from '../components/Forms/Registration.vue'
 
 export default {
   name:"IndexPage",
-  props: {
-    for: String
+  components:{
+    LoginForm,
+    RegisterForm
   },
   data() {
     return {
@@ -191,53 +144,7 @@ export default {
       ]
     }
   },
-  methods: {
-    async submitLogin(){
-      this.loginLoad = true;
-      let vm = this;
-      let payload = {
-        email: vm.form.username,
-        password: vm.form.password
-      };
-
-      await login(payload).then(async (res) => {
-        let id = res.uid
-        const user = await getDetailsDocument(`userProfile`, id)
-        LocalStorage.set('userData', user);
-
-        this.loginLoad = false;
-        this.$router.push('user/dashboard')
-        
-        
-        
-      })
-    },
-    async submitLoginFB(){
-      this.$q.loading.show();
-      this.loginLoad = true;
-      let vm = this;
-      let payload = vm.form;
-
-      this.$api.post('auth/login', payload).then(async (response) => {
-        const data = {...response.data};
-        if(!data.error){
-          await LocalStorage.set('userData', data.jwt);
-          this.$router.push('user/dashboard')
-        } else {
-          this.$q.notify({
-            position: 'top-left',
-            type: 'negative',
-            message: data.title,
-            caption: data.message,
-            icon: 'report_problem'
-          })
-        }
-      })
-
-      this.loginLoad = false;
-      this.$q.loading.hide();
-    }
-  }
+  methods: {}
 }
 </script>
 

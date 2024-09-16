@@ -54,7 +54,6 @@ class Auth extends BaseController
 
                 if($user->status == 1){
                     $user->userType = $this->miscModel->getUserType($user->userType);
-                    $user->branch = $this->miscModel->getBranch($user->branchId);
 
                     // //Set JWT Authorization
                     $secretKey = $this->privateKey();
@@ -72,7 +71,6 @@ class Auth extends BaseController
                         "exp" => $expiryClaim,
                         "userId" => $user->id,
                         "userType" => $user->userType->id,
-                        "branchId" => $user->branchId,
                         "modules" =>  $user->userType->modules
                     ];
 

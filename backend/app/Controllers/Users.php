@@ -78,20 +78,6 @@ class Users extends BaseController
     }
 
     public function registerUser(){
-        // Check Auth header bearer
-        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
-        if(!$authorization){
-            $response = [
-                'message' => 'Unauthorized Access'
-            ];
-
-            return $this->response
-                    ->setStatusCode(401)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-            exit();
-        }
-
         //Get API Request Data from NuxtJs
         $data = $this->request->getJSON(); 
         $data->password = sha1($data->password);
