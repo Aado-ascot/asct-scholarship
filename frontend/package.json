@@ -2,7 +2,7 @@
   "name": "asct-scholarship",
   "version": "0.0.1",
   "description": "A quasar and firebase project that records the scholarship applications and process",
-  "productName": "ASCT Scholarship Information",
+  "productName": "ASCOT Scholarship Information",
   "author": "AcostaNonuevoDizonOrpia <acostanonuevodizonorpia@gmail.com>",
   "private": true,
   "scripts": {

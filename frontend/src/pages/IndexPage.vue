@@ -6,7 +6,7 @@
         class="my-card bg-white"
       >
         <q-card-section>
-          <span class="text-h6 text-bold">ASCT Scholarship Services</span><br/>
+          <span class="text-h6 text-bold">ASCOT Scholarship Services</span><br/>
           <div class="row">
             <div
               v-for="(item, idx) in services"
