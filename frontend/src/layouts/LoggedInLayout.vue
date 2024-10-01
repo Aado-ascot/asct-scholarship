@@ -62,11 +62,11 @@
       <!-- drawer content -->
       <!-- <Profile v-bind="userProfile" /> -->
       <q-separator dark />
-      <!-- <SideNav 
+      <SideNav 
         v-for="link in filteredMenus"
         :key="link.title"
         v-bind="link"
-      /> -->
+      />
 
       <div class="fixed-bottom q-pa-sm q-mb-md">
         <!-- <q-btn v-if="miniState" color="primary" icon="ti-layout-grid2" size="md" round>

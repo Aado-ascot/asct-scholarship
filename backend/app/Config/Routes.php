@@ -47,6 +47,12 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('getUserById', 'Users::getUserDetails');
 	});
 
+	// User Management
+	$routes->group('document', function($routes){
+		$routes->post('get/attachment', 'UploadDocument::getAttachment');
+		$routes->post('upload', 'UploadDocument::insertAttachment');
+	});
+
 	// Miscelenious
 	$routes->group('misc', function($routes){
 		$routes->get('userTypes', 'Misc::getUserTypes');

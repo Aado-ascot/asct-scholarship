@@ -3,55 +3,8 @@
         <div class="row">
             <!-- Users Count Overview -->
             <div class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
-                <q-card
-                    flat
-                    class="my-card bg-white"
-                >
-                    <q-card-section>
-                        <span class="text-h6 text-bold">ASCT Scholarship Services</span><br/>
-                        <div class="row">
-                            <div
-                            v-for="(item, idx) in services"
-                            :key="idx"
-                            class="col-12 col-md-4 q-pa-lg"
-                            >
-                            <q-card class="my-card" flat bordered>
-                                <q-img src="/imgs/ASCOT-WEBSITE.png" />
-
-                                <q-card-section>
-                                <q-btn
-                                    fab
-                                    color="primary"
-                                    :icon="item.icon"
-                                    class="absolute"
-                                    style="top: 0; right: 12px; transform: translateY(-50%);"
-                                />
-
-                                <div class="row no-wrap items-center">
-                                    <div class="col text-h6 ellipsis">
-                                    {{item.title}}
-                                    </div>
-                                </div>
-                                </q-card-section>
-
-                                <q-card-section class="q-pt-none">
-                                <div class="text-caption text-grey">
-                                    {{item.description}}
-                                </div>
-                                </q-card-section>
-
-                                <q-separator />
-
-                                <q-card-actions>
-                                <q-btn flat color="primary">
-                                    {{item.buttonAction}}
-                                </q-btn>
-                                </q-card-actions>
-                            </q-card>
-                            </div>
-                        </div>
-                    </q-card-section>
-                </q-card>
+                <span class="text-h6 text-bold">Hi Name,</span><br/>
+                <span class="text-caption">Welcome to ASCOT Scholarship Application</span><br/>
             </div>
         </div>
     </div>

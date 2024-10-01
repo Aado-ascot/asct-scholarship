@@ -95,7 +95,7 @@ export default defineComponent({
     computed: {
       user: function(){
         let profile = LocalStorage.getItem('userData');
-        return profile;
+        return jwtDecode(profile);
       }
     },
     methods:{

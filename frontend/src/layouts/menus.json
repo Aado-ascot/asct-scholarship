@@ -1,99 +1,20 @@
 [
     {
-      "title": "Dashboard",
+      "title": "Home",
       "icon": "ti-dashboard",
       "link": "userDashboard",
       "code": 101
     },
     {
-      "title": "Transactions",
-      "icon": "ti-loop",
-      "link": "userTransaction",
+      "title": "Apply Scholarship",
+      "icon": "ti-bookmark-alt",
+      "link": "applyScholarship",
       "code": 102
     },
     {
-      "title": "Check Voucher",
-      "icon": "ti-receipt",
-      "link": "userCheckVoucher",
-      "code": 103
-    },
-    {
-      "title": "Payroll",
-      "icon": "ti-wallet",
-      "link": "payrollPage",
-      "code": 104
-    },
-    {
-      "title": "Expenses",
-      "icon": "ti-money",
-      "link": "expensesPage",
-      "code": 105
-    },
-    {
-      "title": "Print Reports",
-      "icon": "ti-printer",
-      "link": "printReportPage",
-      "code": 106
-    },
-    {
-      "title": "User Management",
-      "icon": "ti-user",
-      "link": "userManagement",
-      "code": 107
-    },
-    {
-      "title": "Seller & Commission",
-      "icon": "ti-comments",
-      "link": "sellerListPage",
-      "code": 108
-    },
-    {
-      "title": "Inventory Management",
-      "icon": "ti-package",
-      "link": "inventoryManagement",
-      "code": 109
-    },
-    {
-      "title": "Stock Management",
-      "icon": "ti-notepad",
-      "link": "stockManagement",
-      "code": 110
-    },
-    {
-      "title": "Customer Management",
-      "icon": "ti-folder",
-      "link": "orderManagement",
-      "code": 111
-    },
-    {
-      "title": "Order List",
-      "icon": "ti-clipboard",
-      "link": "mobileUserDashboard",
-      "code": 112
-    },
-    {
-      "title": "Dashboard",
-      "icon": "ti-dashboard",
-      "link": "userDashboard",
-      "code": 113
-    },
-    {
-      "title": "Dashboard",
-      "icon": "ti-dashboard",
-      "link": "userDashboard",
-      "code": 114
-    },
-    {
-      "title": "Dashboard",
-      "icon": "ti-dashboard",
-      "link": "userDashboard",
-      "code": 115
-    },
-    {
-      "title": "Dashboard",
-      "icon": "ti-dashboard",
-      "link": "userDashboard",
-      "code": 116
+      "title": "Documents",
+      "icon": "ti-files",
+      "link": "attachedDocuments",
+      "code": 102
     }
-    
   ]

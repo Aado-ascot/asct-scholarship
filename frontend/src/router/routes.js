@@ -15,6 +15,16 @@ const routes = [
         name: 'userDashboard',
         component: () => import('pages/User/Dashboard.vue') 
       },
+      { 
+        path: 'scholarships',
+        name: 'applyScholarship',
+        component: () => import('pages/User/Scholarship.vue') 
+      },
+      { 
+        path: 'documents',
+        name: 'attachedDocuments',
+        component: () => import('pages/User/Documents.vue') 
+      },
     ]
   },
 
