@@ -80,22 +80,22 @@ export default {
             printModal: false,
             services: [
                 {
-                    title: "Available Scholarship",
-                    description: "List of scholarship available and check for the requirements.",
+                    title: "Scholarship 1",
+                    description: "Scholarship program",
                     icon: "ti-layout-list-thumb",
                     buttonAction: "Apply",
                     action: () => { this.openPrint() },
                 },
                 {
-                    title: "Apply Scholarship",
-                    description: "Check your eligibility for the scholarship program you want to apply",
+                    title: "Scholarship 2",
+                    description: "Scholarship program",
                     icon: "mdi-book-edit-outline",
                     buttonAction: "Apply",
                     action: () => { this.openPrint() },
                 },
                 {
-                    title: "Verification",
-                    description: "Verification of the application and current status of your scholarship program",
+                    title: "Scholarship 3",
+                    description: "Scholarship program",
                     icon: "mdi-check-decagram",
                     buttonAction: "Apply",
                     action: () => { this.openPrint() },
