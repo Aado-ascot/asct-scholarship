@@ -42,19 +42,19 @@
                         <span class="text-h6">Requirement Details</span>
                         <div class="row">
                             <div class="col-6 col-md-6 q-pa-sm">
-                                <span class="text-overline">File Name</span> <br/>
+                                <span class="text-caption">File Name</span> <br/>
                                 <span class="text-bold">{{fileName || '--'}}</span>
                             </div>
                             <div class="col-6 col-md-6 q-pa-sm">
-                                <span class="text-overline">Upload Date</span> <br/>
+                                <span class="text-caption">Upload Date</span> <br/>
                                 <span class="text-bold">{{currDate || '--'}}</span>
                             </div>
                             <div class="col-6 col-md-6 q-pa-sm">
-                                <span class="text-overline">Requirement Status</span> <br/>
+                                <span class="text-caption">Requirement Status</span> <br/>
                                 <span class="text-bold">{{reqStatus || '--'}}</span>
                             </div>
                             <div class="col-6 col-md-6 q-pa-sm">
-                                <span class="text-overline">Remarks / Reccomendation</span> <br/>
+                                <span class="text-caption">Remarks / Reccomendation</span> <br/>
                                 <span class="text-bold">{{remarks || '--'}}</span>
                             </div>
                             <div v-if="!hasData" class="col-12 col-md-12 q-pa-sm">

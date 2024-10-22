@@ -56,6 +56,7 @@ $routes->group('ascots/api/v1', function($routes){
 	// Miscelenious
 	$routes->group('misc', function($routes){
 		$routes->get('userTypes', 'Misc::getUserTypes');
+		$routes->get('courseList', 'Misc::getCourses');
 	});
 
 });

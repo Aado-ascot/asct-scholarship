@@ -35,6 +35,8 @@ class UsersModel extends Model
         'placeOfBirth',
         'dateOfBirth',
         'address',
+        'courseId',
+        'yrLvl',
         'schoolAttended',
         'schoolAddress',
         'userType',

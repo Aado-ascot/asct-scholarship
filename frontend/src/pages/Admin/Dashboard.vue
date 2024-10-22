@@ -15,7 +15,6 @@ import moment from 'moment'
 import { LocalStorage } from 'quasar'
 import { jwtDecode } from 'jwt-decode';
 
-
 const dateNow = moment().format('YYYY-MM-DD');
 
 export default {
@@ -49,12 +48,18 @@ export default {
     },
     computed: {
         user: function(){
-            let profile = LocalStorage.getItem('userData');
-            return jwtDecode(profile);
-        }
+            const user = LocalStorage.getItem('userData')
+            return jwtDecode(user);
+        },
     },
     mounted(){
-        
+        // this.getSchedules().then((res) => {
+        //     this.checkLoanStatuses()
+        //     this.$nextTick(() => {
+        //         this.getDashboard()
+        //         this.getDailyDashboard()
+        //     })
+        // })
     },
     methods: {
         moment,

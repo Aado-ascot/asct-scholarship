@@ -9,18 +9,12 @@ class MiscModel extends Model
     protected $usertypeTable = "tblusertypes";
     protected $branchTable = "tblbranches";
     protected $catTable = "tblcategory";
-    protected $unitTable = "tblunits";
+    protected $courseList = "tblcourses";
     protected $typesTable = "tbltypes";
 
 
     public function getTypeList(){
         $query = $this->db->table($this->usertypeTable)->get();
-        $results = $query->getResult();
-        return $results;
-    }
-
-    public function getBranchList(){
-        $query = $this->db->table($this->branchTable)->get();
         $results = $query->getResult();
         return $results;
     }
@@ -42,8 +36,8 @@ class MiscModel extends Model
         return $all;
         // return $results;
     }
-    public function getUnitList(){
-        $query = $this->db->table($this->unitTable)->get();
+    public function getCourseList(){
+        $query = $this->db->table($this->courseList)->get();
         $results = $query->getResult();
         return $results;
     }

@@ -5,9 +5,10 @@
         <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
             <q-input
                 v-model="form.username"
-                label="Username"
+                label="Student Number"
                 v-bind="formRules.username"
-                placeholder="Enter Username / Student Number"
+                placeholder="Student Number"
+                mask="##-##-####"
                 outlined 
                 stack-label
             >
@@ -146,6 +147,28 @@
           >
           </q-input>
         </div>
+        <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+          <q-select 
+            outlined 
+            v-model="form.course" 
+            :options="sexOpt" 
+            label="Course" 
+            stack-label 
+            options-dense
+          >
+          </q-select>
+        </div>
+        <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+           <q-select 
+            outlined 
+            v-model="form.yrLvl" 
+            :options="yrLvlOpt" 
+            label="Year Level" 
+            stack-label 
+            options-dense
+          >
+          </q-select>
+        </div>
         <div class="col-12 text-grey-8 q-pa-xs">
           <q-input
             v-model="form.schoolAttended"
@@ -175,6 +198,7 @@
                 class="full-width q-pa-md btn-custom-border" 
                 unelevated
                 :loading="loginLoad"
+                :disable="enableRegister"
                 no-caps 
                 color="primary" 
                 label="Register"
@@ -205,6 +229,13 @@ export default {
         "Widowed",
         "Separated",
       ],
+      yrLvlOpt: [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+      ],
+      courseOpt: [],
       form: {
         username: "",
         password: "",
@@ -221,7 +252,9 @@ export default {
         address: "",
         schoolAttended: "",
         schoolAddress: "",
-        userType: 2
+        userType: 2,
+        course: "",
+        yrLvl: "",
       },
       formRules: {
         username: {
@@ -235,6 +268,23 @@ export default {
           ]
         },
       },
+    }
+  },
+  computed: {
+    enableRegister(){
+      
+      let checkItemVal = 0;
+      let unvalidate = "middleName,suffix,email,userType"
+      for(const obj in this.form){
+        if(
+          this.form[obj] === "" &&
+          !unvalidate.includes(obj)
+        ){
+          checkItemVal += 1
+        }
+      }
+
+      return checkItemVal > 1
     }
   },
   methods: {

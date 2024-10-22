@@ -1,14 +1,56 @@
 <template>
-    <div class="fit row wrap justify-center items-center content-center q-pa-xl">
+  <div>
+    <div v-if="!askUserType" class="row">
+      <div class="col-12 text-grey-8 q-mb-md q-mt-lg">Please select what kind of user you to be to access the ASCOT Scholarship Information System?</div>
+      <div class="col-12 text-center">
+        <div class="q-gutter-sm">
+          <q-radio 
+            v-model="isStudent" 
+            checked-icon="task_alt" 
+            unchecked-icon="panorama_fish_eye" 
+            val="student" 
+            label="I am Student of ASCOT" 
+          />
+          <q-radio 
+            v-model="isStudent" 
+            checked-icon="task_alt" 
+            unchecked-icon="panorama_fish_eye" 
+            val="staff" 
+            label="I am Staff of ASCOT" 
+          />
+        </div>
+      </div>
+      <div class="col-12">
+        <q-checkbox 
+          v-model="rememberAnswwer" 
+          label="Remember my Answer"
+          size="sm"
+        />
+      </div>
+      <div class="col-12 q-mt-lg">
+        <q-btn
+            class="float-right btn-custom-border" 
+            unelevated
+            rounded
+            no-caps 
+            color="primary" 
+            label="Continue"
+            @click="askUserType = true"
+        />
+      </div>
+
+    </div>
+    <div v-if="askUserType" class="fit row wrap justify-center items-center content-center q-pa-xl">
         <div class="col-12 text-grey-8">Embrace the new year with a fresh opportunity!</div>
 
         <div class="col-12 text-grey-8 q-mt-lg">
             <q-input
                 v-model="form.username"
                 @keypress.enter="submitLogin"
-                label="Username/Student Number"
+                :label="isStudent === 'student' ? 'Student Number' : 'Username'"
                 v-bind="formRules.username"
-                placeholder="Enter username / student number"
+                :placeholder="isStudent === 'student' ? 'Enter Student Number' : 'Enter Username'"
+                :mask="isStudent === 'student' ? '##-##-####' : ''"
                 outlined  
                 stack-label
             >
@@ -35,7 +77,7 @@
         </div>
         <div class="col-12 q-mt-sm">
             <q-checkbox v-model="keepLogin" label="Remember me" />
-            <q-btn class="float-right" flat color="orange" no-caps label="Forgot Password" />
+            <q-btn class="float-right" flat color="orange" no-caps label="Switch User" @click="changeUserType"  />
         </div>
         <div class="col-12 q-mt-lg">
             <q-btn
@@ -50,6 +92,7 @@
             />
         </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -62,6 +105,9 @@ export default {
       tab: "login",
       keepLogin: false,
       loginLoad: false,
+      askUserType: false,
+      rememberAnswwer: false,
+      isStudent: "student",
       form: {
         username: "",
         password: "",
@@ -80,7 +126,48 @@ export default {
       },
     }
   },
+  watch:{
+    keepLogin(newVal){
+      if(newVal){
+        LocalStorage.set('rememberUserName', this.form.username);
+      } else {
+        LocalStorage.remove('rememberUserName');
+      }
+    },
+    rememberAnswwer(newVal){
+      if(newVal){
+        LocalStorage.set('rememberUserType', this.isStudent);
+      } else {
+        LocalStorage.remove('rememberUserType');
+      }
+    }
+  },
+  created(){
+    this.checkRememberUserType().then(() => {
+      this.checkRememberUser()
+    })
+  },
   methods: {
+    changeUserType(){
+      LocalStorage.remove('rememberUserType');
+      this.askUserType = false
+    },
+    async checkRememberUserType(){
+      let remUser = LocalStorage.getItem('rememberUserType')
+
+      if(remUser){
+        this.isStudent = remUser
+        this.askUserType = true
+      }
+    },
+    async checkRememberUser(){
+      let remUser = LocalStorage.getItem('rememberUserName')
+
+      if(remUser){
+        this.form.username = remUser
+        this.keepLogin = true
+      }
+    },
     async submitLogin(){
       this.$q.loading.show();
       this.loginLoad = true;
@@ -91,7 +178,13 @@ export default {
         const data = {...response.data};
         if(!data.error){
           await LocalStorage.set('userData', data.jwt);
-          this.$router.push('user/dashboard')
+          console.log(data)
+          if(data.userType === 2){
+            this.$router.push('user/dashboard')
+          } else {
+            this.$router.push('admin/dashboard')
+          }
+          
         } else {
           this.$q.notify({
             position: 'top-left',

@@ -27,6 +27,28 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/admin/',
+    component: () => import('layouts/LoggedInLayout.vue'),
+    children: [
+      { 
+        path: 'dashboard',
+        name: 'adminDashboard',
+        component: () => import('pages/Admin/Dashboard.vue') 
+      },
+      { 
+        path: 'userManagement',
+        name: 'adminUserManagement',
+        component: () => import('pages/Admin/UsersPage.vue') 
+      },
+      { 
+        path: 'scholarshipManagement',
+        name: 'adminScholarManagement',
+        component: () => import('pages/Admin/ScholarshipPage.vue') 
+      },
+    ]
+  },
+  
 
   // Always leave this as last one,
   // but you can also remove it

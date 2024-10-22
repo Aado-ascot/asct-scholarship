@@ -1,20 +1,42 @@
 [
-    {
-      "title": "Home",
-      "icon": "ti-dashboard",
-      "link": "userDashboard",
-      "code": 101
-    },
-    {
-      "title": "Apply Scholarship",
-      "icon": "ti-bookmark-alt",
-      "link": "applyScholarship",
-      "code": 102
-    },
-    {
-      "title": "Documents",
-      "icon": "ti-files",
-      "link": "attachedDocuments",
-      "code": 102
-    }
-  ]
+  {
+    "title": "Home",
+    "icon": "ti-dashboard",
+    "link": "userDashboard",
+    "code": 101
+  },
+  {
+    "title": "Apply Scholarship",
+    "icon": "ti-bookmark-alt",
+    "link": "applyScholarship",
+    "code": 102
+  },
+  {
+    "title": "Documents",
+    "icon": "ti-files",
+    "link": "attachedDocuments",
+    "code": 102
+  },
+
+
+  {
+    "title": "Home",
+    "icon": "ti-dashboard",
+    "link": "adminDashboard",
+    "code": 201
+  },
+  {
+    "title": "User Management",
+    "icon": "ti-user",
+    "link": "adminUserManagement",
+    "code": 202
+  },
+  {
+    "title": "Scholarhip Management",
+    "icon": "ti-bookmark-alt",
+    "link": "adminScholarManagement",
+    "code": 203
+  }
+
+  
+]

@@ -2,7 +2,7 @@
 <template>
   <q-layout view="lHh LpR lFf">
 
-    <q-header reveal class="bg-amber-7">
+    <q-header reveal class="bg-primary">
       <q-toolbar>
         
         <!-- <q-btn 
@@ -14,7 +14,7 @@
         /> -->
         
         <q-btn
-          color="amber-7"
+          color="primary"
           round
           unelevated
           :icon="miniState ? 'ti-menu' : 'ti-menu-alt'"
@@ -27,9 +27,9 @@
               <img src="https://cdn.quasar.dev/img/avatar.png">
             </q-avatar>
           </q-item-section> -->
-          <q-item-section>
+          <!-- <q-item-section>
             <q-item-label>{{`${userDetails.fullName}`}}</q-item-label>
-          </q-item-section>
+          </q-item-section> -->
         </q-item>
         
         
@@ -39,7 +39,7 @@
             0
           </q-badge>
         </q-btn>
-        <q-btn class="q-mr-sm" round dense flat icon="ti-help" />
+        <!-- <q-btn class="q-mr-sm" round dense flat icon="ti-help" /> -->
         
         
       </q-toolbar>
@@ -95,8 +95,8 @@
             <q-btn-group flat dense spread>
               <q-btn flat rounded color="primary" icon="ti-user"/>
               <q-btn flat rounded color="secondary" icon="ti-lock"/>
-              <q-btn flat rounded color="positive" icon="ti-headphone-alt"/>
-              <q-btn flat rounded color="warning" icon="ti-settings"/>
+              <!-- <q-btn flat rounded color="positive" icon="ti-headphone-alt"/> -->
+              <!-- <q-btn flat rounded color="warning" icon="ti-settings"/> -->
               <q-btn flat rounded color="red" icon="ti-power-off" @click="logout" />
             </q-btn-group>
           </q-card-section>
