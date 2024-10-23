@@ -179,7 +179,7 @@ export default {
         if(!data.error){
           await LocalStorage.set('userData', data.jwt);
           console.log(data)
-          if(data.userType === 2){
+          if(Number(data.userType) === 2){
             this.$router.push('user/dashboard')
           } else {
             this.$router.push('admin/dashboard')

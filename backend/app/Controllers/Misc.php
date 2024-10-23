@@ -74,6 +74,31 @@ class Misc extends BaseController
         }
         
     } 
+    public function getProviders(){
+        // Check Auth header bearer
+        //Select Query for finding User Information
+        $courses = [];
+        $courses['list'] = $this->miscModel->getProviderList();
+
+        //Set Api Response return to the FE
+        if($courses){
+            //Update
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($courses));
+        } else {
+            $response = [
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(404)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    } 
 
 
 }

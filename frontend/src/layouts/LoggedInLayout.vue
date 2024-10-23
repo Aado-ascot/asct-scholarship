@@ -94,7 +94,7 @@
           <q-card-section class="fit row wrap justify-center items-center content-start">
             <q-btn-group flat dense spread>
               <q-btn flat rounded color="primary" icon="ti-user"/>
-              <q-btn flat rounded color="secondary" icon="ti-lock"/>
+              <q-btn @click="modalStatus = true" flat rounded color="secondary" icon="ti-lock"/>
               <!-- <q-btn flat rounded color="positive" icon="ti-headphone-alt"/> -->
               <!-- <q-btn flat rounded color="warning" icon="ti-settings"/> -->
               <q-btn flat rounded color="red" icon="ti-power-off" @click="logout" />
@@ -115,6 +115,70 @@
     <!-- <q-footer reveal class="bg-text-weight-thin text-blue-white-9 text-center q-pt-lg q-pb-lg">
       <div>{{ `Centralize Distribution and Sales Inventory System ©2023 Created by FWDS` }}</div>
     </q-footer> -->
+    <q-dialog persistent v-model="modalStatus">
+      <q-card style="width: 500px; max-width: 80vw;">
+          <q-card-section>
+              <div class="text-h6">Change Password</div>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section style="max-height: 60vh" class="scroll">
+             <q-form ref="passForm" class="q-gutter-md">
+                  <q-input 
+                      class="q-pt-md" 
+                      bottom-slots
+                      outlined
+                      v-model="newPassword"
+                      v-bind="formRules.matchPass"
+                      :type="isPwd ? 'password' : 'text'"
+                      label="New Password" 
+                      :dense="true"
+                  >
+                      <template v-slot:prepend>
+                          <q-icon name="password" />
+                      </template>
+                      <template v-slot:append>
+                          <q-icon
+                              :name="isPwd ? 'visibility_off' : 'visibility'"
+                              class="cursor-pointer"
+                              @click="isPwd = !isPwd"
+                          />
+                      </template>
+                  </q-input>
+
+                  <q-input 
+                      class="q-pt-md" 
+                      bottom-slots 
+                      v-model="retypePass"
+                      outlined
+                      v-bind="formRules.matchPass"
+                      :type="isPwd ? 'password' : 'text'"
+                      label="Re-type Password" 
+                      :dense="true"
+                  >
+                      <template v-slot:prepend>
+                          <q-icon name="password" />
+                      </template>
+                      <!-- <template v-slot:append>
+                          <q-icon
+                              :name="isPwd ? 'visibility_off' : 'visibility'"
+                              class="cursor-pointer"
+                              @click="isPwd = !isPwd"
+                          />
+                      </template> -->
+                  </q-input>
+             </q-form>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-actions align="right">
+              <q-btn flat label="Cancel" :loading="btnLoading" color="negative" @click="cancelChange" />
+              <q-btn flat label="Submit" :loading="btnLoading" color="positive" @click="submitChangePass" />
+          </q-card-actions>
+      </q-card>
+    </q-dialog>
 
   </q-layout>
 </template>
@@ -143,7 +207,20 @@ export default {
       leftDrawerOpen: true,
       miniState: false,
       cutOffDate: "",
-      notifStartDay: false
+      notifStartDay: false,
+      // Change Password
+      modalStatus: false,
+      newPassword:'',
+      retypePass: '',
+      isPwd: true,
+      formRules: {
+          matchPass: {
+              rules: [
+                  val => !!val || this.$t('validations_error.empty'),
+                  val => val == this.newPassword || this.$t('validations_error.invalid_match'),
+              ]
+          },
+      },
     }
   },
   mounted(){},
@@ -161,6 +238,14 @@ export default {
     }
   },
   methods: {
+    changePassModal(){
+      this.modalStatus = true;
+    },
+    cancelChange(){
+      this.newPassword = '',
+      this.retypePass = '',
+      this.modalStatus = false;
+    },
     toggleLeftDrawer () {
       this.miniState = !this.miniState
     },
@@ -170,6 +255,66 @@ export default {
     logout(){
       localStorage.removeItem('userData');
       this.$router.push('/')
+    },
+    async submitChangePass(){
+      let vm = this;
+      let payload = {
+          id: this.user.userId,
+          newPassword: this.retypePass
+      };
+      let compoDetails = this.$refs.passForm;
+
+      compoDetails.validate().then(success => {
+
+          if(!success){
+              this.$q.notify({
+                  color: 'negative',
+                  position: 'top-right',
+                  title: 'Incomplete Form',
+                  message: 'Please fill the required fields',
+                  icon: 'report_problem'
+              })
+              return false;
+          } else {
+              // Confirm
+              this.$q.dialog({
+                  title: 'Change Password?',
+                  message: 'Are you sure you want to change your password?',
+                  ok: {
+                      label: 'Yes'
+                  },
+                  cancel: {
+                      label: 'No',
+                      color: 'negative'
+                  },
+                  persistent: true
+              }).onOk(() => {
+                  this.$q.loading.show({
+                      message: 'Changing your password. Please wait...'
+                  });
+
+                  api.post('auth/changePassword', payload).then((response) => {
+        
+                      const data = {...response.data};
+                      if(!data.error){
+                          LocalStorage.remove('userData');
+                          vm.$router.push('/')
+                      } else {
+                          vm.$q.notify({
+                              color: 'negative',
+                              position: 'top-right',
+                              title:data.title,
+                              message: vm.$t(`errors.${data.error}`),
+                              icon: 'report_problem'
+                          })
+                      }
+                  })
+
+                  this.$q.loading.hide();
+
+              })
+          }
+      })
     }
   }
 }

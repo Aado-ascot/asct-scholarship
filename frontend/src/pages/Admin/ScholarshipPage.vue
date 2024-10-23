@@ -11,7 +11,7 @@
                         <span class="text-h6 text-bold">
                             Scholarship Management
                             <br/>
-                            <span class="text-caption text-grey">Manage user details and access</span>
+                            <span class="text-caption text-grey">Manage scholarship program details and requirements</span>
                         </span>
                         
                         <q-space />
@@ -79,12 +79,12 @@
                                     </q-td>
                                     <q-td class="text-center">
                                         <q-btn
-                                            @click="showPayroll(props.row)"
-                                            flat 
-                                            round 
+                                            @click="showDetails(props.row)"
+                                            rounded
                                             color="primary" 
-                                            size="md" 
-                                            icon="mdi-calculator-variant" 
+                                            size="sm" 
+                                            label="View Details"
+                                            icon="mdi-file-find" 
                                         />
                                     </q-td>
 
@@ -188,6 +188,28 @@
                                             </template>
                                         </q-select>
                                     </div>
+                                    <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                        <q-select 
+                                            outlined 
+                                            v-model="form.provider" 
+                                            :options="providerOpt" 
+                                            label="Program Provider" 
+                                            stack-label 
+                                            options-dense
+                                        >
+                                        </q-select>
+                                    </div>
+                                    <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                        <q-input
+                                            type="date"
+                                            v-model="form.dueDate"
+                                            label="Valid Until"
+                                            outlined
+                                            stack-label
+                                        >
+                                        </q-input>
+                                    </div>
+                                    
                                     <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
                                         <div class="fit row wrap justify-start items-center content-center">
                                             <div class="text-bold text-h6 q-mb-sm">Qualifications</div>
@@ -240,7 +262,7 @@
                             >
                                 <div class="row">
                                     <div 
-                                        v-for="(req, index) in requirementLst"
+                                        v-for="(req, index) in form.requirements"
                                         :key="index"
                                         class="col-12 col-md-12 q-mt-sm q-pa-xs"
                                     >
@@ -258,31 +280,31 @@
                                             <q-space />
                                             <div class="text-right">
                                                 <q-btn-group>
-                                                    <q-btn color="secondary" rounded  icon="ti-plus" label="Add Qualification" no-caps size="sm" @click="addQualificationItem" />
+                                                    <q-btn color="secondary" rounded  icon="ti-plus" label="Add Requirements" no-caps size="sm" @click="addRequirementItem" />
                                                 </q-btn-group>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
-                                        <div v-for="(itm, idx) in form.otherRequirements" :key="idx" class="row">
+                                        <div v-for="(itm, idx) in otherRequirements" :key="idx" class="row">
                                             <div class="col-12 col-md-11 q-pa-sm">
                                                 <q-input
                                                     outlined
-                                                    v-model="itm.targetValue" 
-                                                    label="Target Qualification"
+                                                    v-model="itm.name" 
+                                                    label="Key Parameter"
                                                     stack-label 
                                                     dense
                                                 >
                                                 </q-input>
                                             </div>
                                             <div class="col-12 col-md-1 q-pa-sm text-right">
-                                                <q-btn @click="removeItem(idx)" size="sm" class=" q-mt-xs" color="red" icon="ti-trash" />
+                                                <q-btn @click="removeRequirementItem(idx)" size="sm" class=" q-mt-xs" color="red" icon="ti-trash" />
                                             </div>
                                             <div class="col-12 col-md-12 q-pa-sm">
                                                 <q-input
                                                     type="textarea"
                                                     outlined
-                                                    v-model="itm.description" 
+                                                    v-model="itm.label" 
                                                     label="Description" 
                                                     stack-label
                                                     dense
@@ -301,14 +323,77 @@
                                 title="Summary"
                                 icon="assignment"
                             >
-                                This step won't show up because it is disabled.
-                            </q-step>
+                                <div class="row">
+                                    <div class="col-12 q-mb-sm">
+                                        <span class="text-title text-bold">{{`${form.title || '--'}`}}</span><br/>
+                                        <span class="text-caption text-grey">Scholarship Program Title</span>
+                                    </div>
+                                    <div class="col-4 q-mb-sm">
+                                        <span class="text-title text-bold">{{`${form.provider.label || '0'}`}}</span><br/>
+                                        <span class="text-caption text-grey">Scholarship Provider</span>
+                                    </div>
+                                    <div class="col-4 q-mb-sm">
+                                        <span class="text-title text-bold">{{`${moment(form.dueDate).format("MMMM DD, YYYY") || '0'}`}}</span><br/>
+                                        <span class="text-caption text-grey">Valid Until</span>
+                                    </div>
+                                    <div class="col-4 q-mb-sm">
+                                        <span class="text-title text-bold">{{`${form.slot || '0'}`}}</span><br/>
+                                        <span class="text-caption text-grey">Available Slot</span>
+                                    </div>
+                                    <div class="col-12 q-mb-sm">
+                                        <span class="text-title text-bold">{{`${convertCourses(form.coveredCourses) || '--'}`}}</span><br/>
+                                        <span class="text-caption text-grey">Courses Covered on Program</span>
+                                    </div>
+                                </div>
+                                <q-separator />
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="text-bold text-h6 q-mb-sm">Qualification</div>
+                                    </div>
+                                    <q-list>
+                                        <q-item 
+                                            v-for="(itm, indx) in form.qualification"
+                                            :key="indx"
+                                        >
+                                            <q-item-section avatar>
+                                                <q-avatar>
+                                                    <q-icon name="mdi-asterisk-circle-outline" size="sm" />
+                                                </q-avatar>
+                                            </q-item-section>
 
-                            
-                            
-                            <template v-slot:navigation>
-                                
-                            </template>
+                                            <q-item-section>
+                                                <q-item-label>
+                                                    {{itm.description}}
+                                                </q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="text-bold text-h6 q-mb-sm">Requirements</div>
+                                    </div>
+                                    
+                                    <q-list>
+                                        <q-item 
+                                            v-for="(itm, indx) in convertRequirements(form.requirements)"
+                                            :key="indx"
+                                        >
+                                            <q-item-section avatar>
+                                                <q-avatar>
+                                                    <q-icon name="task_alt" size="sm" />
+                                                </q-avatar>
+                                            </q-item-section>
+
+                                            <q-item-section>
+                                                <q-item-label>
+                                                    {{itm.label}}
+                                                </q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </div>
+                            </q-step>
                         </q-stepper>
 
                         
@@ -316,7 +401,8 @@
                     <q-separator />
                     <q-card-actions>
                         <q-stepper-navigation >
-                            <q-btn @click="$refs.stepper.next()" color="primary" :label="step === 3 ? 'Finish' : 'Next'" />
+                            <q-btn v-if="step < 3" @click="$refs.stepper.next()" color="primary" label="Next" />
+                            <q-btn v-if="step === 3" @click="submitRegister" color="positive" label="Finish" />
                             <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
                         </q-stepper-navigation>
                     </q-card-actions>
@@ -329,15 +415,12 @@
 <script>
 import moment from 'moment'
 import { LocalStorage } from 'quasar'
-// import addEmployeeModal from "../../components/Modals/AddEmployeeModal.vue"
+import { jwtDecode } from 'jwt-decode';
 
 const dateNow = moment().format('YYYY-MM-DD');
 
 export default {
     name: 'PayrollPage',
-    components:{
-        // addEmployeeModal
-    },
     data(){
         return {
             itemsList: [],
@@ -347,92 +430,148 @@ export default {
             form: {
                 title: "",
                 slot: "",
+                provider: "",
                 otherDetailsLink: "",
                 qualification: [],
                 coveredCourses: [],
-                requirements: [],
                 createdBy: 0,
                 dueDate: "",
                 status: 1,
+                requirements: [
+                    {
+                        name: 'schoolCard',
+                        label: 'Form 138/High School Card',
+                        required: false,
+                    },
+                    {
+                        name: 'lastCard',
+                        label: 'Copy of grades last semester attended (for old student)',
+                        required: false,
+                    },
+                    {
+                        name: 'goodMoral',
+                        label: 'Good Moral Character',
+                        required: false,
+                    },
+                    {
+                        name: 'psa',
+                        label: 'Birth Certificate/PSA',
+                        required: false,
+                    },
+                    {
+                        name: 'regForm',
+                        label: 'Registration Form/Proof of enrollment',
+                        required: false,
+                    },
+                    {
+                        name: 'entranceTest',
+                        label: 'Entrance Test Result (for new student)',
+                        required: false,
+                    },
+                    {
+                        name: 'indigency',
+                        label: 'Certificate of Indigency/Income Tax Return of Parents',
+                        required: false,
+                    },
+                    {
+                        name: 'picture',
+                        label: '2X2 Picture With Clear Details',
+                        required: false,
+                    },
+                ]
             },
             otherRequirements: [],
-            requirementLst: [
-                {
-                    name: 'schoolCard',
-                    label: 'Form 138/High School Card',
-                    required: false,
-                },
-                {
-                    name: 'lastCard',
-                    label: 'Copy of grades last semester attended (for old student)',
-                    required: false,
-                },
-                {
-                    name: 'goodMoral',
-                    label: 'Good Moral Character',
-                    required: false,
-                },
-                {
-                    name: 'psa',
-                    label: 'Birth Certificate/PSA',
-                    required: false,
-                },
-                {
-                    name: 'regForm',
-                    label: 'Registration Form/Proof of enrollment',
-                    required: false,
-                },
-                {
-                    name: 'entranceTest',
-                    label: 'Entrance Test Result (for new student)',
-                    required: false,
-                },
-                {
-                    name: 'indigency',
-                    label: 'Certificate of Indigency/Income Tax Return of Parents',
-                    required: false,
-                },
-                {
-                    name: 'picture',
-                    label: '2X2 Picture With Clear Details',
-                    required: false,
-                },
-            ]
+            providerOpt: []
         }
     },
     computed: {
         columns(){
             return [
                 {
-                    name: 'name',
+                    name: 'title',
                     required: true,
-                    label: 'Name',
+                    label: 'Program',
                     align: 'left',
                     field: row => row,
-                    format: val => `${val.firstName} ${val.lastName}`,
+                    format: val => val.title,
                     sortable: true
                 },
-                { name: 'startDate', align: 'left', label: 'Hired Date', field: 'startDate' },
-                { name: 'status', align: 'left', label: 'End Date', field: 'status', sortable: true },
-                {
-                    name: 'contact',
-                    required: true,
-                    label: 'Contact Number',
-                    align: 'left',
-                    field: row => row.contact,
-                    format: val => `${val}`,
-                    sortable: true
-                },
+                { name: 'provider', align: 'left', label: 'Provider', field: 'provider' },
+                { name: 'slotAvailable', align: 'left', label: 'Slots', field: 'slotAvailable', sortable: true },
+                { name: 'dueDate', align: 'left', label: 'Validity', field: 'dueDate', sortable: true },
+                { name: 'creator', align: 'left', label: 'Created By', field: 'creator', sortable: true },
                 
             ]
         },
-        
+        user: function(){
+            let profile = LocalStorage.getItem('userData');
+            return jwtDecode(profile);
+        }
     },
     created(){
-        this.getCourses()
+        this.getCourses().then(() => {
+            this.getProviders()
+        })
+        this.getList();
     },
     methods: {
         moment,
+        async submitRegister(){
+            this.$q.loading.show();
+            this.loginLoad = true;
+            let vm = this;
+            let payload = {
+                ...vm.form,
+                provider: this.form.provider.label,
+                coveredCourses: this.form.coveredCourses.join(","),
+                requirements: this.convertRequirements(this.form.requirements),
+                createdBy: Number(this.user.userId),
+            };
+
+            this.$api.post('scholarship/create/new', payload).then(async (response) => {
+                const data = {...response.data};
+                if(!data.error){
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'positive',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'verified'
+                    })
+                    this.resetForm()
+                    this.drawerRight = false
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'report_problem'
+                    })
+                }
+            })
+        },
+        convertCourses(courseArray){
+            let result = ""
+            let list = []
+            list = courseArray.map((val, indx) => {
+                const res = this.courseOpt.filter(el => el.value === val)
+                return res[0].label
+            });
+            result = list.join(" , ")
+
+            return result
+        },
+        convertRequirements(reqArray){
+            let joinedRequirements = [
+                ...reqArray,
+                ...this.otherRequirements
+            ]
+            let result = []
+            result = joinedRequirements.filter(el => el.required === true);
+
+            return result
+        },
         addQualificationItem(){
             this.form.qualification.push({
                 description: "",
@@ -441,6 +580,33 @@ export default {
         },
         removeItem(index){
             this.form.qualification.splice(index, 1)
+        },
+        addRequirementItem(){
+            this.otherRequirements.push({
+                name: '',
+                label: '',
+                required: true,
+            })
+        },
+        removeRequirementItem(index){
+            this.otherRequirements.splice(index, 1)
+        },
+        async getList(){
+            this.itemsList = []
+            this.$api.get('scholarship/list').then((response) => {
+                const data = {...response.data};
+                if(!data.error){
+                    this.itemsList = data.list
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'report_problem'
+                    })
+                }
+            })
         },
         async getCourses(){
             this.courseOpt = [];
@@ -465,6 +631,86 @@ export default {
                     })
                 }
             })
+        },
+        async getProviders(){
+            this.providerOpt = [];
+            this.$api.get('misc/providerList').then((response) => {
+                const data = {...response.data};
+                if(!data.error){
+                    let opt = data.list.map((el) => {
+                        return {
+                            label: el.name,
+                            value: el.id
+                        }
+                    })
+                    
+                    this.providerOpt = opt
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'report_problem'
+                    })
+                }
+            })
+        },
+        resetForm(){
+            this.otherRequirements = []
+            this.form = {
+                title: "",
+                slot: "",
+                provider: "",
+                otherDetailsLink: "",
+                qualification: [],
+                coveredCourses: [],
+                createdBy: 0,
+                dueDate: "",
+                status: 1,
+                requirements: [
+                    {
+                        name: 'schoolCard',
+                        label: 'Form 138/High School Card',
+                        required: false,
+                    },
+                    {
+                        name: 'lastCard',
+                        label: 'Copy of grades last semester attended (for old student)',
+                        required: false,
+                    },
+                    {
+                        name: 'goodMoral',
+                        label: 'Good Moral Character',
+                        required: false,
+                    },
+                    {
+                        name: 'psa',
+                        label: 'Birth Certificate/PSA',
+                        required: false,
+                    },
+                    {
+                        name: 'regForm',
+                        label: 'Registration Form/Proof of enrollment',
+                        required: false,
+                    },
+                    {
+                        name: 'entranceTest',
+                        label: 'Entrance Test Result (for new student)',
+                        required: false,
+                    },
+                    {
+                        name: 'indigency',
+                        label: 'Certificate of Indigency/Income Tax Return of Parents',
+                        required: false,
+                    },
+                    {
+                        name: 'picture',
+                        label: '2X2 Picture With Clear Details',
+                        required: false,
+                    },
+                ]
+            }
         }
     }
 }

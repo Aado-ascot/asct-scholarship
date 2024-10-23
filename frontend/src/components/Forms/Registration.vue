@@ -108,8 +108,8 @@
         <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
           <q-input
             v-model="form.contact"
-            label="Conatct Number"
-            placeholder="Enter Mobile Number"
+            label="Conatct Number/Telephone"
+            placeholder="Enter Contact Number"
             outlined 
             stack-label
           >
@@ -151,7 +151,7 @@
           <q-select 
             outlined 
             v-model="form.course" 
-            :options="sexOpt" 
+            :options="courseOpt" 
             label="Course" 
             stack-label 
             options-dense
@@ -287,12 +287,42 @@ export default {
       return checkItemVal > 1
     }
   },
+  created(){
+    this.getCourses()
+  },
   methods: {
+    async getCourses(){
+        this.courseOpt = [];
+        this.$api.get('misc/courseList').then((response) => {
+            const data = {...response.data};
+            if(!data.error){
+                let opt = data.list.map((el) => {
+                    return {
+                        label: el.title,
+                        value: el.id
+                    }
+                })
+                
+                this.courseOpt = opt
+            } else {
+                this.$q.notify({
+                    position: 'top-left',
+                    type: 'negative',
+                    message: data.title,
+                    caption: data.message,
+                    icon: 'report_problem'
+                })
+            }
+        })
+    },
     async submitRegister(){
       this.$q.loading.show();
       this.loginLoad = true;
       let vm = this;
-      let payload = vm.form;
+      let payload = {
+        ...vm.form,
+        course: Number(this.form.course.value)
+      };
 
       this.$api.post('users/register', payload).then(async (response) => {
         const data = {...response.data};

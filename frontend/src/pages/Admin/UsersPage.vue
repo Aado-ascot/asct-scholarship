@@ -50,7 +50,7 @@
                             flat
                             :rows="itemsList"
                             wrap-cells
-                            :columns="columns"
+                            :columns="tableColumns"
                             row-key="name"
                             :filter="search"
                         >  
@@ -78,14 +78,10 @@
                                         {{ col.value }}
                                     </q-td>
                                     <q-td class="text-center">
-                                        <q-btn
-                                            @click="showPayroll(props.row)"
-                                            flat 
-                                            round 
-                                            color="primary" 
-                                            size="md" 
-                                            icon="mdi-calculator-variant" 
-                                        />
+                                        <q-btn-group  rounded>
+                                            <q-btn rounded size="sm" color="secondary" label="Edit" />
+                                            <q-btn rounded size="sm" color="negative" label="Deactivate" />
+                                        </q-btn-group>
                                     </q-td>
 
                                 </q-tr>
@@ -117,38 +113,59 @@ export default {
     data(){
         return {
             itemsList: [],
+            tableLoading: false,
         }
     },
     computed: {
-        columns(){
+        tableColumns: function(){
             return [
                 {
                     name: 'name',
                     required: true,
                     label: 'Name',
                     align: 'left',
-                    field: row => row,
-                    format: val => `${val.firstName} ${val.lastName}`,
-                    sortable: true
-                },
-                { name: 'startDate', align: 'left', label: 'Hired Date', field: 'startDate' },
-                { name: 'status', align: 'left', label: 'End Date', field: 'status', sortable: true },
-                {
-                    name: 'contact',
-                    required: true,
-                    label: 'Contact Number',
-                    align: 'left',
-                    field: row => row.contact,
+                    field: row => row.name,
                     format: val => `${val}`,
                     sortable: true
                 },
-                
+                { name: 'username', label: 'Username', field: 'username'},
+                { name: 'desc', label: 'Type', field: 'desc' },
+                { name: 'email', label: 'Email Address', field: 'email' },
+                { name: 'contact', label: 'Contact #', field: 'contact' },
+                { name: 'status', label: 'Status', field: 'status' },
+                { name: 'createdAt', label: 'Created Date', field: 'createdAt' }
             ]
-        },
+        }
         
+    },
+    created(){
+        this.getList()
     },
     methods: {
         moment,
+        async getList(){
+            this.itemsList = [];
+            this.tableLoading = true;
+            
+            this.$api.get('users/getAllUserList').then((response) => {
+                const data = {...response.data};
+
+                if(!data.error){
+                    this.itemsList = response.status < 300 ? data.list : [];
+                } else {
+                    this.$q.notify({
+                        color: 'negative',
+                        position: 'top-right',
+                        title:data.title,
+                        message: this.$t(`errors.${data.error}`),
+                        icon: 'report_problem'
+                    })
+                }
+
+            })
+
+            this.tableLoading = false;
+        },
     }
 }
 </script>

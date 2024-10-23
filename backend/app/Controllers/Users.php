@@ -40,10 +40,7 @@ class Users extends BaseController
         if($user){
 
             if($user->status == 1){
-                $user->userType = $this->miscModel->getUserType($user->userType);
-                $user->branch = $this->miscModel->getBranch($user->branchId);
-             
-          
+                unset($user->password);
                 return $this->response
                         ->setStatusCode(200)
                         ->setContentType('application/json')
@@ -177,8 +174,7 @@ class Users extends BaseController
         // $header = $this->request->getHeader("");
         
         $where = [
-            'status'=> 1,
-            'isDeleted'=> 0
+            'status'=> 1
         ];
         $list = [];
         // $list['list'] = $this->userModel->getAllUserInfo($where);

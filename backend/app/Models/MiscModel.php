@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class MiscModel extends Model
 {
     protected $usertypeTable = "tblusertypes";
-    protected $branchTable = "tblbranches";
+    protected $providerTable = "tblproviders";
     protected $catTable = "tblcategory";
     protected $courseList = "tblcourses";
     protected $typesTable = "tbltypes";
@@ -50,13 +50,16 @@ class MiscModel extends Model
         return $results;
 
     }
-    public function getBranch($branchId){
-
-        $query = $this->db->table($this->branchTable)->where('id', $branchId)->get();
-        $results = $query->getRow();
+    public function getProviderList(){
+        $sql = "SELECT a.id, a.name FROM ".$this->providerTable." a";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+        // $query = $this->db->table($this->providerTable)->get();
+        // $results = $query->getRow();
 
         return $results;
 
     }
+    
 
 }

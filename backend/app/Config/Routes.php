@@ -47,16 +47,23 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('getUserById', 'Users::getUserDetails');
 	});
 
-	// User Management
+	// User Document
 	$routes->group('document', function($routes){
 		$routes->post('get/attachment', 'UploadDocument::getAttachment');
 		$routes->post('upload', 'UploadDocument::insertAttachment');
+	});
+
+	// User Scholarship
+	$routes->group('scholarship', function($routes){
+		$routes->post('create/new', 'ScholarShip::createNewScholarship');
+		$routes->get('list', 'ScholarShip::getList');
 	});
 
 	// Miscelenious
 	$routes->group('misc', function($routes){
 		$routes->get('userTypes', 'Misc::getUserTypes');
 		$routes->get('courseList', 'Misc::getCourses');
+		$routes->get('providerList', 'Misc::getProviders');
 	});
 
 });
