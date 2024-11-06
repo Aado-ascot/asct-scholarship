@@ -7,6 +7,7 @@ use CodeIgniter\Model;
 class ScholarshipModel extends Model
 {
     protected $table      = 'tblscholarships';
+    protected $tableApplication      = 'tblscholar_application';
     protected $tableUser      = 'tblusers';
     protected $primaryKey = 'id';
 
@@ -44,5 +45,20 @@ class ScholarshipModel extends Model
 
         return $all;
     }
+
+    public function submitApplication($data) {
+        $query = $this->db->table($this->tableApplication)->insert($data);
+        return $query ? true : false;
+    }
+    public function updateScholarship($where, $setData){
+        $query = $this->db->table($this->table)->set($setData)->where($where)->update();
+        return $query ? true : false;
+    }
+    public function updateScholarshipSlot($where){
+        $query = $this->db->table($this->table)->set('applied', 'applied+1', false)->where($where)->update();
+        return $query ? true : false;
+    }
+
+
 }
 

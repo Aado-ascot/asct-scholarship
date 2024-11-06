@@ -209,7 +209,7 @@ export default {
                     this.uploadFile = data.uploadFile
                     this.remarks = data.remarks
                     this.currDate = data.createdDate
-                    this.reqStatus = data.status
+                    this.reqStatus = Number(data.status) === 0 ? "Subject for approval" : "Approved"
                     this.hasData = true
                 } else {
                     this.fileName = ''
@@ -239,7 +239,19 @@ export default {
             });
         },
         async submitData() {
+            
+            if(this.uploadFile === ""){
+                this.$q.notify({
+                    position: 'top-left',
+                    type: 'negative',
+                    message: "Upload Failed",
+                    caption: "Please attached file before uploading document",
+                    icon: 'mdi-alert-circle-outline'
+                })
+                return false
+            }
             this.$q.loading.show();
+
             let payload = {
                 userId: this.user.userId,
                 reqType: this.requirementTab,

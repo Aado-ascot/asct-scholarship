@@ -76,6 +76,37 @@ class UploadDocument extends BaseController
         }
     }
 
+    public function getAttachments(){
+        //Get API Request Data from NuxtJs
+        $data = $this->request->getJSON();
+        
+        //Select Query for finding User Information
+        $query = $this->attachModel->where(['userId' => $data->uid])->get()->getResult();
+        $list = [];
+        foreach ($query as $key => $value) {
+            $list['list'][$key] = $value;
+        }
+        if($query){
+            
+            return $this->response
+                ->setStatusCode(200)
+                ->setContentType('application/json')
+                ->setBody(json_encode($list));
+            
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Get Attachment failed!',
+                'message' => 'No Result Found'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
     
 
 }

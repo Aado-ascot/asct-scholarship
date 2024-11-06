@@ -14,6 +14,7 @@ class AttachmentModel extends Model
     protected $allowedFields = ['userId', 'reqType', 'fileName', 'fileSize', 'status', 'uploadFile', 'remarks', 'createdDate'];
 
     protected $useTimestamps = false;
+    protected $returnType     = 'array';
     protected $createdField  = 'createdDate';
     // protected $updatedField  = 'updatedDate';
     // protected $deletedField  = 'deleted_at';

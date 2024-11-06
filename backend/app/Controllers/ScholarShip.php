@@ -61,6 +61,58 @@ class ScholarShip extends BaseController
 
     }
 
+    public function submitApplication(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        //Get API Request Data
+        $payload = $this->request->getJSON();
+        $payload = json_decode(json_encode($payload), true);
+        $payload['familyBackground'] = json_encode($payload['familyBackground']);
+        
+        //INSERT QUERY TO APPLICATION
+        $query = $this->scholarModel->submitApplication($payload);
+
+        if($query){
+            $where = [
+                'id' => $payload['scholarId']
+            ];
+            $update = $this->scholarModel->updateScholarshipSlot($where);
+            $response = [
+                'title' => 'Apply Scholarship',
+                'message' => 'Your application has been submitted.'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'error' => 400,
+                'title' => 'Data Submit Failed',
+                'message' => 'Please contact the admin for concern'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+
+    }
+
     public function getList(){
         // Check Auth header bearer
         // $authorization = $this->request->getServer('HTTP_AUTHORIZATION');

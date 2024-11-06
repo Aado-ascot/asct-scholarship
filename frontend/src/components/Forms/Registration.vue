@@ -108,7 +108,7 @@
         <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
           <q-input
             v-model="form.contact"
-            label="Conatct Number/Telephone"
+            label="Contact Number/Telephone"
             placeholder="Enter Contact Number"
             outlined 
             stack-label

@@ -78,13 +78,348 @@ export default {
             const pdfDoc = await PDFDocument.load(existingPdfBytes)
             // Add a blank page to the document
             const pages = pdfDoc.getPages()
+            const form = pdfDoc.getForm()
             const fpage = pages[0];
             // Get the width and height of the page
             const { width, height } = fpage.getSize()
             const fontSize = 9
             let curdateYear = moment().format("YY");
+            // console.log(data)
 
             // Draw a string of text toward the top of the page
+            fpage.drawText(`${data.scholar.title}`, {
+              x: 150,
+              y: height - 140,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.lastName}, ${data.student.firstName} ${data.student.suffix} ${data.student.middleName}`, {
+              x: 90,
+              y: height - 190,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.dateOfBirth}`, {
+              x: 130,
+              y: height - 225,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.placeOfBirth}`, {
+              x: 130,
+              y: height - 240,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.sex}`, {
+              x: 130,
+              y: height - 255,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.contact}`, {
+              x: 130,
+              y: height - 270,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.email}`, {
+              x: 130,
+              y: height - 283,
+              size: 10,
+              color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.student.address}`, {
+                x: 315,
+                y: height - 235,
+                size: 10,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 290,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.student.schoolAttended}`, {
+                x: 420,
+                y: height - 270,
+                size: 10,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 290,
+                color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.student.schoolAddress}`, {
+                x: 420,
+                y: height - 283,
+                size: 10,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            let fatherLiving = form.createCheckBox('father.live')
+            let fatherDeceased = form.createCheckBox('father.deceased')
+            fatherLiving.addToPage(fpage, { 
+                x: 270, 
+                y: height - 338,
+                width: 10,
+                height: 10,
+            })
+            fatherDeceased.addToPage(fpage, { 
+                x: 327, 
+                y: height - 338,
+                width: 10,
+                height: 10,
+            })
+
+            fatherLiving = form.getCheckBox('father.live')
+            fatherDeceased = form.getCheckBox('father.deceased')
+            fatherLiving.enableReadOnly()
+            fatherDeceased.enableReadOnly()
+            if(data.others.father.livingStatus === "living"){
+                fatherLiving.check()
+            } else if (data.others.father.livingStatus === "deceased") {
+                fatherDeceased.check()
+            }
+            fpage.drawText(`${data.others.father.name}`, {
+                x: 220,
+                y: height - 360,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+            
+            fpage.drawText(`${data.others.father.address}`, {
+                x: 220,
+                y: height - 372,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.father.occupation}`, {
+                x: 220,
+                y: height - 383,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.father.educAttainment}`, {
+                x: 220,
+                y: height - 393,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.father.contact}`, {
+                x: 220,
+                y: height - 406,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+
+
+            
+
+            let motherLiving = form.createCheckBox('mother.live')
+            let motherDeceased = form.createCheckBox('mother.deceased')
+            
+            motherLiving.addToPage(fpage, { 
+                x: 453, 
+                y: height - 338,
+                width: 10,
+                height: 10,
+            })
+            motherDeceased.addToPage(fpage, { 
+                x: 506, 
+                y: height - 338,
+                width: 10,
+                height: 10,
+            })
+
+            motherLiving = form.getCheckBox('mother.live')
+            motherDeceased = form.getCheckBox('mother.deceased')
+            motherLiving.enableReadOnly()
+            motherDeceased.enableReadOnly()
+            if(data.others.mother.livingStatus === "living"){
+                motherLiving.check()
+            } else if (data.others.mother.livingStatus === "deceased") {
+                motherDeceased.check()
+            }
+
+            fpage.drawText(`${data.others.mother.name}`, {
+                x: 402,
+                y: height - 360,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+            
+            fpage.drawText(`${data.others.mother.address}`, {
+                x: 402,
+                y: height - 372,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.mother.occupation}`, {
+                x: 402,
+                y: height - 383,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.mother.educAttainment}`, {
+                x: 402,
+                y: height - 396,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            fpage.drawText(`${data.others.mother.contact}`, {
+                x: 402,
+                y: height - 406,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+            
+
+            fpage.drawText(`${data.others.totalIncome}`, {
+                x: 220,
+                y: height - 419,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+            fpage.drawText(`${data.others.noOfSiblings}`, {
+                x: 520,
+                y: height - 419,
+                size: 9,
+                spacing: 1,
+                lineHeight: 11,
+                maxWidth: 200,
+                color: rgb(0, 0, 0),
+            })
+
+            if(!data.others.notWithParents){
+                fpage.drawText(`${data.others.guardian.name}`, {
+                    x: 85,
+                    y: height - 449,
+                    size: 9,
+                    spacing: 1,
+                    lineHeight: 11,
+                    maxWidth: 200,
+                    color: rgb(0, 0, 0),
+                })
+                fpage.drawText(`${data.others.guardian.occupation}`, {
+                    x: 260,
+                    y: height - 449,
+                    size: 9,
+                    spacing: 1,
+                    lineHeight: 11,
+                    maxWidth: 200,
+                    color: rgb(0, 0, 0),
+                }) 
+                fpage.drawText(`${data.others.guardian.relation}`, {
+                    x: 420,
+                    y: height - 449,
+                    size: 9,
+                    spacing: 1,
+                    lineHeight: 11,
+                    maxWidth: 200,
+                    color: rgb(0, 0, 0),
+                })
+            
+            }
+
+
+            let stdTextHeight = height - 610;
+            data.scholar.requirements.forEach((el, indx) => {
+                let elemCheck = form.createCheckBox(`element.${el.name}`)
+                elemCheck.addToPage(fpage, { 
+                    x: 55, 
+                    y: stdTextHeight,
+                    width: 8,
+                    height: 8,
+                })
+                elemCheck = form.getCheckBox(`element.${el.name}`)
+                elemCheck.enableReadOnly()
+                if(el.fileUploaded){
+                    elemCheck.check()
+                }
+
+                fpage.drawText(`${indx+1}.      ${el.label}`, {
+                    x: 45,
+                    y: stdTextHeight,
+                    size: 9,
+                    spacing: 1,
+                    lineHeight: 11,
+                    maxWidth: 250,
+                    color: rgb(0, 0, 0),
+                })
+                
+                stdTextHeight -= 20
+            });
+
+            // let stdTextHeightReq = height - 610;
+            // data.scholar.qualification.forEach((el, indx) => {
+            //     fpage.drawText(`${indx+1}. ${el.description}`, {
+            //         x: 315,
+            //         y: stdTextHeightReq,
+            //         size: 9,
+            //         spacing: 1,
+            //         lineHeight: 11,
+            //         maxWidth: 250,
+            //         color: rgb(0, 0, 0),
+            //     })
+                
+            //     stdTextHeightReq -= 25
+            // });
+
+            let quali = data.scholar.qualification.map((el, idx) => `${idx+1}. ${el.description}`)
+            
+            fpage.drawText(quali.join("\r\n"), {
+                x: 315,
+                y: height - 600,
+                size: 9,
+                spacing: 1,
+                lineHeight: 17,
+                maxWidth: 270,
+                color: rgb(0, 0, 0),
+            })
+
 
             const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
             document.getElementById('pdf').src = pdfDataUri;

@@ -50,12 +50,14 @@ $routes->group('ascots/api/v1', function($routes){
 	// User Document
 	$routes->group('document', function($routes){
 		$routes->post('get/attachment', 'UploadDocument::getAttachment');
+		$routes->post('get/attachments', 'UploadDocument::getAttachments');
 		$routes->post('upload', 'UploadDocument::insertAttachment');
 	});
 
 	// User Scholarship
 	$routes->group('scholarship', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
+		$routes->post('submit/application', 'ScholarShip::submitApplication');
 		$routes->get('list', 'ScholarShip::getList');
 	});
 
