@@ -48,6 +48,32 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/scholar-unit/',
+    component: () => import('layouts/LoggedInLayout.vue'),
+    children: [
+      { 
+        path: 'dashboard',
+        name: 'unitDashboard',
+        component: () => import('pages/Unit/Dashboard.vue') 
+      },
+      { 
+        path: 'scholarshipManagement',
+        name: 'unitScholarManagement',
+        component: () => import('pages/Admin/ScholarshipPage.vue') 
+      },
+      {
+        path: 'announcementManagement',
+        name: 'unitAnnouncementManagement',
+        component: () => import('pages/Admin/ScholarshipPage.vue') 
+      },
+      {
+        path: 'approvedScholars',
+        name: 'unitApprovedScholars',
+        component: () => import('pages/Unit/ApprovedList.vue') 
+      },
+    ]
+  },
   
 
   // Always leave this as last one,

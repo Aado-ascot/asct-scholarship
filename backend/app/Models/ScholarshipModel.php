@@ -46,9 +46,55 @@ class ScholarshipModel extends Model
         return $all;
     }
 
-    public function submitApplication($data) {
-        $query = $this->db->table($this->tableApplication)->insert($data);
-        return $query ? true : false;
+    public function getScholarshipByUser($where) {
+
+        $query = $this->db->table($this->tableApplication)->where($where)->get();
+        $results = $query->getResult('array');
+
+        $all = array_map(function($el){
+            foreach($el as $key => $val){
+                $userParams = [
+                    "id" => $el["scholarId"]
+                ];
+                $lq = "SELECT * FROM ". $this->table ." as a WHERE id = :id:";
+                $sInfo = $this->db->query($lq, $userParams);
+                $el["scholarship"] = $sInfo->getRow();
+            }
+            return $el;
+        }, $results);
+
+        return $all;
+    }
+
+    public function getAppliedScholarships($where) {
+
+        $query = $this->db->table($this->tableApplication)->where($where)->get();
+        $results = $query->getResult('array');
+
+        $all = array_map(function($el){
+            foreach($el as $key => $val){
+                // Scholarship Info
+                $infoParams = [
+                    "id" => $el["scholarId"]
+                ];
+                $lq = "SELECT * FROM ". $this->table ." as a WHERE id = :id:";
+                $sInfo = $this->db->query($lq, $infoParams);
+                $el["scholarship"] = $sInfo->getRow();
+
+                // User Info
+                $userParams = [
+                    "id" => $el["studentId"]
+                ];
+                $lq = "SELECT * FROM ". $this->tableUser ." as a WHERE id = :id:";
+                $sInfo = $this->db->query($lq, $userParams);
+                $el["student"] = $sInfo->getRow();
+
+                unset($el["student"]->password);
+            }
+            return $el;
+        }, $results);
+
+        return $all;
     }
     public function updateScholarship($where, $setData){
         $query = $this->db->table($this->table)->set($setData)->where($where)->update();
@@ -59,6 +105,17 @@ class ScholarshipModel extends Model
         return $query ? true : false;
     }
 
+
+
+
+    public function submitApplication($data) {
+        $query = $this->db->table($this->tableApplication)->insert($data);
+        return $query ? true : false;
+    }
+    public function updateApplication($where, $setData) {
+        $query = $this->db->table($this->tableApplication)->set($setData)->where($where)->update();
+        return $query ? true : false;
+    }
 
 }
 

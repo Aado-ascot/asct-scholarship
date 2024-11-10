@@ -20,7 +20,7 @@
 
 
   {
-    "title": "Home",
+    "title": "Dashboard",
     "icon": "ti-dashboard",
     "link": "adminDashboard",
     "code": 201
@@ -36,7 +36,39 @@
     "icon": "ti-bookmark-alt",
     "link": "adminScholarManagement",
     "code": 203
+  },
+  {
+    "title": "Announcements",
+    "icon": "ti-announcement",
+    "link": "adminAnnouncementManagement",
+    "code": 204
+  },
+
+  {
+    "title": "Dashboard",
+    "icon": "ti-dashboard",
+    "link": "unitDashboard",
+    "code": 301
+  },
+  {
+    "title": "Scholarhip Management",
+    "icon": "ti-bookmark-alt",
+    "link": "unitScholarManagement",
+    "code": 302
+  },
+  {
+    "title": "Scholars",
+    "icon": "ti-announcement",
+    "link": "unitApprovedScholars",
+    "code": 303
+  },
+  {
+    "title": "Announcements",
+    "icon": "ti-announcement",
+    "link": "unitAnnouncementManagement",
+    "code": 304
   }
+
 
   
 ]

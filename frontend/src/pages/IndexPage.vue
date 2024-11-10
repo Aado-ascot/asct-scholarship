@@ -35,6 +35,7 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
+          <q-img :src="`/imgs/ASCOT-WEBSITE.png`" />
           <span class="text-h6 text-bold">Mandate</span><br/>
           <span class="text-title">
             The State College shall primarily provide technical and professional training in the sciences, arts, teacher education, agriculture, engineering and technology as well as short-term vocational courses.  It shall likewise promote research, advanced studies and academic leadership in the stated areas of specialization. (Section 2 of RA7664)

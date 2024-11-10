@@ -126,10 +126,10 @@ class Users extends BaseController
 
         //Get API Request Data from NuxtJs
         $payload = $this->request->getJSON();
-        $payload->confirmPassword = sha1($payload->confirmPassword);
+        $payload->newPassword = sha1($payload->newPassword);
 
         $where = ['id' => $payload->id];
-        $updateData = ['password' => $payload->confirmPassword];
+        $updateData = ['password' => $payload->newPassword];
 
         $updatePassword =  $this->userModel->updatePassword($where, $updateData);
 
@@ -212,58 +212,6 @@ class Users extends BaseController
         }
     }
 
-    public function getAgentUsers(){
-        // Check Auth header bearer
-        // $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
-        // if(!$authorization){
-        //     $response = [
-        //         'message' => 'Unauthorized Access'
-        //     ];
-
-        //     return $this->response
-        //             ->setStatusCode(401)
-        //             ->setContentType('application/json')
-        //             ->setBody(json_encode($response));
-        //     exit();
-        // }
-
-        // $header = $this->request->getHeader("");
-        
-        $list = [];
-        $where = [
-            "status" => 1,
-        ];
-        // $list['list'] = $this->userModel->getAllUserInfo($where);
-        $query = $this->userModel->getAllUserAgentInfo($where, [3, 1]);
-        foreach ($query as $key => $value) {
-            $list['list'][$key] = [
-                "key" => $value['id'],
-                "username" => $value['username'],
-                "name" => $value['firstName'] .' '. $value['middleName'] .' '. $value['lastName'] .' '. $value['suffix'],
-                "userType" =>  $value['userType'],
-                "desc" =>  $value['userTypeDescription'],
-            ];
-        }
-        
-
-        if($list){
-            return $this->response
-                    ->setStatusCode(200)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($list));
-        } else {
-            $response = [
-                'title' => 'Error',
-                'message' => 'No Data Found'
-            ];
-
-            return $this->response
-                    ->setStatusCode(400)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-        }
-    }
-
 
     public function getAllInactiveUserList(){
         // Check Auth header bearer
@@ -300,152 +248,5 @@ class Users extends BaseController
                     ->setBody(json_encode($response));
         }
     } 
-
-    public function updateTenantStatus(){
-        // Check Auth header bearer
-        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
-        if(!$authorization){
-            $response = [
-                'message' => 'Unauthorized Access'
-            ];
-
-            return $this->response
-                    ->setStatusCode(401)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-            exit();
-        }
-
-        //Get API Request Data from NuxtJs
-        $data = $this->request->getJSON();
-
-        $where = ['id' => $data->userId];
-        
-        if($data->action == 'ACTIVE'){
-            $setData = [
-                'status' => 1,
-                'reasonVacancy' => $data->reason,
-            ];
-        } else if ($data->action == 'DEACTIVE') {
-            $setData = [
-                'status' => 0,
-                'reasonVacancy' => $data->reason,
-            ];
-        } else if ($data->action == 'VACATE') {
-            $setData = [
-                'status' => 2,
-                'isFirstLogin' => 0,
-                'premise' => '',
-                'password' => '',
-                'reasonVacancy' => $data->reason
-            ];
-        } else if($data->action == 'RENEW'){
-            $setData = [
-                'status' => 1,
-                'startDate' =>  date('j-M-y', strtotime($data->startDate)),
-                'endDate' => date('j-M-y', strtotime($data->endDate)),
-                'reasonVacancy' => $data->reason
-            ];
-        } else if($data->action == 'RESET'){
-            $setData = [
-                'status' => 1,
-                'isFirstLogin' => 0,
-                'password' => 'password',
-                'reasonVacancy' => $data->reason
-            ];
-        } else {
-            $setData = [
-                'reasonVacancy' => 'Something went wrong',
-            ];
-        }
-
-        $update = $this->userModel->updateTenantInfo($where, $setData);
-
-        if($update){
-            if($data->action == 'VACATE'){
-                $whereU = ['id' => $data->buildingId];
-                $updateData = ['userId' => 0];
-                $this->buildingModel->updateBuildingInfo($whereU, $updateData);
-            }
-            $response = [
-                'title' => 'Tenant Information',
-                'message' => 'Tenant details successfully updated'
-            ];
- 
-            return $this->response
-                    ->setStatusCode(200)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-        } else {
-            $response = [
-                'title' => 'Update Failed!',
-                'message' => 'Please check your data.'
-            ];
- 
-            return $this->response
-                    ->setStatusCode(400)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-        }
-    }
-
-    public function assignExistingTenant(){
-        // Check Auth header bearer
-        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
-        if(!$authorization){
-            $response = [
-                'message' => 'Unauthorized Access'
-            ];
-
-            return $this->response
-                    ->setStatusCode(401)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-            exit();
-        }
-
-        //Get API Request Data from NuxtJs
-        $data = $this->request->getJSON();
-
-        $where = ['id' => $data->userId];
-        
-        $setData = [
-            'status' => 1,
-            'isFirstLogin' => 0,
-            'premise' => $data->premise,
-            'password' => 'password',
-            'startDate' => $data->startDate,
-            'endDate' => $data->endDate,
-        ];
-
-        $update = $this->userModel->updateTenantInfo($where, $setData);
-
-        if($update){
-            if($data->action == 'VACANT'){
-                $whereU = ['id' => $data->buildingId];
-                $updateData = ['userId' => $data->userId];
-                $this->buildingModel->updateBuildingInfo($whereU, $updateData);
-            }
-            $response = [
-                'title' => 'Tenant Information',
-                'message' => 'Tenant details successfully updated'
-            ];
- 
-            return $this->response
-                    ->setStatusCode(200)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-        } else {
-            $response = [
-                'title' => 'Update Failed!',
-                'message' => 'Please check your data.'
-            ];
- 
-            return $this->response
-                    ->setStatusCode(400)
-                    ->setContentType('application/json')
-                    ->setBody(json_encode($response));
-        }
-    }
 
 }

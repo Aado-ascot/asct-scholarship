@@ -34,7 +34,11 @@
                     class="my-card bg-white"
                 >
                     <q-card-section class="fit row wrap justify-start items-center content-center">
-                        <q-icon :name="reqStatus >= 1 ? 'mdi-check-decagram' : 'mdi-cog-transfer'" size="md" :color="reqStatus >= 1 ? 'green' : 'orange'" />
+                        <q-icon 
+                            :name="reqStatus === 'Approved' ? 'mdi-check-decagram' : 'mdi-cog-transfer'" 
+                            size="md" 
+                            :color="reqStatus === 'Approved' ? 'green' : 'orange'" 
+                        />
                         <span class="text-h5 text-bold q-ml-sm">{{selectedMenu.label}}</span>
                     </q-card-section>
                     <q-separator />
@@ -135,7 +139,7 @@ export default {
                 {
                     name: 'lastCard',
                     icon: 'mdi-content-copy',
-                    label: 'Copy of grades last semester attended (for old student)',
+                    label: 'Copy of grades Last Semester Attended (for old student)',
                     color: '',
                 },
                 {
@@ -153,7 +157,7 @@ export default {
                 {
                     name: 'regForm',
                     icon: 'mdi-form-select',
-                    label: 'Registration Form/Proof of enrollment',
+                    label: 'Registration Form/Proof of Enrollment',
                     color: '',
                 },
                 {
@@ -258,7 +262,7 @@ export default {
                 fileName: this.fileName,
                 fileSize: this.fileSize,
                 uploadFile: this.uploadFile,
-                remarks: 'Waiting for validation of the Registrar',
+                remarks: 'Waiting for validation of Scholarship Evaluator',
                 status: 0
             }
 

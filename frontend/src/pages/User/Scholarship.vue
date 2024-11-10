@@ -511,7 +511,7 @@ export default {
             this.loginLoad = true;
             let vm = this;
             let payload = {
-                status: "Submitted application for approval",
+                status: "Submitted application for evaluation",
                 familyBackground: this.form,
                 studentId: Number(this.user.userId),
                 scholarId: Number(this.selectedProgram.id),

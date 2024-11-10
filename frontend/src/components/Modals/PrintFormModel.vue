@@ -255,8 +255,8 @@ export default {
 
             motherLiving = form.getCheckBox('mother.live')
             motherDeceased = form.getCheckBox('mother.deceased')
-            motherLiving.enableReadOnly()
-            motherDeceased.enableReadOnly()
+            // motherLiving.enableReadOnly()
+            // motherDeceased.enableReadOnly()
             if(data.others.mother.livingStatus === "living"){
                 motherLiving.check()
             } else if (data.others.mother.livingStatus === "deceased") {

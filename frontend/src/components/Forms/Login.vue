@@ -178,9 +178,10 @@ export default {
         const data = {...response.data};
         if(!data.error){
           await LocalStorage.set('userData', data.jwt);
-          console.log(data)
           if(Number(data.userType) === 2){
             this.$router.push('user/dashboard')
+          } else if (Number(data.userType) === 3 || Number(data.userType) === 4) {
+            this.$router.push('scholar-unit/dashboard')
           } else {
             this.$router.push('admin/dashboard')
           }

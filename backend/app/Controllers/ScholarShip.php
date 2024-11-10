@@ -113,6 +113,238 @@ class ScholarShip extends BaseController
 
     }
 
+    public function updateScholarshipStatus(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        //Get API Request Data
+        $data = $this->request->getJSON();
+        $payload = json_decode(json_encode($data->updateDetails), true);
+        
+        //INSERT QUERY TO APPLICATION
+        $query = $this->scholarModel->updateApplication(["id"=>$data->appId], $payload);
+
+        if($query){
+            if($data->actionType === "approve"){
+                // execute the Rejection of other submitted application
+            }
+
+            $response = [
+                'title' => 'Evaluation Complete',
+                'message' => 'This application has been moved to the next step'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'error' => 400,
+                'title' => 'Data Submit Failed',
+                'message' => 'Please contact the admin for concern'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+
+    }
+
+    public function getListUserApplied(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+        
+        $payload = $this->request->getJSON();
+        
+        $where = [
+            'studentId'=> $payload->sId,
+        ];
+        $list = [];
+
+        $query = $this->scholarModel->getScholarshipByUser($where);
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $sinfo = $value['scholarship'];
+
+            $list['list'][$key] = [
+                "key" => $value['id'],
+                "title" => $sinfo->title,
+                "provider" => $sinfo->provider,
+                "status" => $value['status'],
+                "remarks" => $value['remarks'],
+                "data" => $value,
+            ];
+        }
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
+    public function getListUserApplications(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+        
+        $payload = $this->request->getJSON();
+
+
+        $where = [
+            'appStatus'=> $payload->uType === 3 ? 0 : 1,
+        ];
+        $list = [];
+
+        $query = $this->scholarModel->getAppliedScholarships($where);
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $sinfo = $value['scholarship'];
+            $sinfo->requirements = json_decode($sinfo->requirements);
+            $sinfo->qualification = json_decode($sinfo->qualification);
+            $value['familyBackground'] = json_decode($value['familyBackground']);
+
+            $stdinfo = $value['student'];
+
+            $list['list'][$key] = [
+                "key" => $value['id'],
+                "studentNumber" => $stdinfo->username,
+                "studentName" => $stdinfo->firstName ." ". $stdinfo->middleName ." ". $stdinfo->lastName ." ". $stdinfo->suffix,
+                "title" => $sinfo->title,
+                "provider" => $sinfo->provider,
+                "status" => $value['status'],
+                "remarks" => $value['remarks'],
+                "data" => $value,
+            ];
+        }
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
+    public function getListApproveApplications(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        $where = [
+            'appStatus'=> 2,
+        ];
+        $list = [];
+
+        $query = $this->scholarModel->getAppliedScholarships($where);
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $sinfo = $value['scholarship'];
+            $sinfo->requirements = json_decode($sinfo->requirements);
+            $sinfo->qualification = json_decode($sinfo->qualification);
+            $value['familyBackground'] = json_decode($value['familyBackground']);
+
+            $stdinfo = $value['student'];
+
+            $list['list'][$key] = [
+                "key" => $value['id'],
+                "studentNumber" => $stdinfo->username,
+                "studentName" => $stdinfo->firstName ." ". $stdinfo->middleName ." ". $stdinfo->lastName ." ". $stdinfo->suffix,
+                "title" => $sinfo->title,
+                "provider" => $sinfo->provider,
+                "status" => $value['status'],
+                "remarks" => $value['remarks'],
+                "data" => $value,
+            ];
+        }
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
     public function getList(){
         // Check Auth header bearer
         // $authorization = $this->request->getServer('HTTP_AUTHORIZATION');

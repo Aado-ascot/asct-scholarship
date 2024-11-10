@@ -49,6 +49,44 @@ class UploadDocument extends BaseController
         
     }
 
+    public function updateAttachmentStatus(){
+        //Get API Request Data from NuxtJs
+        $data = $this->request->getJSON();
+        $payload = json_decode(json_encode($data->updateDetails), true);
+
+        $where = [
+            'id' => $data->fileId
+        ];
+        
+        //Select Query for finding User Information
+        $query = $this->attachModel->updateFileInfo($where, $payload);
+
+        if($query){
+
+            $response = [
+                'title' => 'Update successful',
+                'message' => 'Your attachment is updated'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            
+        } else {
+            $response = [
+                'title' => 'Update Failed!',
+                'message' => 'Please check your data and connect to your Admin'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    }
+
     public function getAttachment(){
         //Get API Request Data from NuxtJs
         $data = $this->request->getJSON();

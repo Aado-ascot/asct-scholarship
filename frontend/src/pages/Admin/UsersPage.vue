@@ -18,7 +18,7 @@
                         <div class="text-right">
                             <q-btn-group>
                                 <!-- <q-btn color="amber" rounded glossy icon="visibility" /> -->
-                                <q-btn color="primary" rounded  icon="ti-plus" label="Add New Employee" no-caps @click="addEmployee.modalStatus = !addEmployee.modalStatus" />
+                                <q-btn color="primary" rounded  icon="ti-plus" label="Add New User" no-caps @click="modalComponents.modalStatus = !modalComponents.modalStatus" />
                             </q-btn-group>
                         </div>
                     </q-card-section>
@@ -94,24 +94,34 @@
         </div>
 
         <!-- Modals -->
-        
+        <addUserModal 
+            v-bind="modalComponents" 
+            @updateStatus="updateModalStatus" 
+            @updateTable="getList"
+        />
     </div>
 </template>
 
 <script>
 import moment from 'moment'
 import { LocalStorage } from 'quasar'
-// import addEmployeeModal from "../../components/Modals/AddEmployeeModal.vue"
+import addUserModal from "../../components/Modals/AddUserModal.vue"
 
 const dateNow = moment().format('YYYY-MM-DD');
 
 export default {
     name: 'PayrollPage',
     components:{
-        // addEmployeeModal
+        addUserModal
     },
     data(){
         return {
+            modalComponents: {
+                modalStatus: false,
+                appId: 0,
+                userDetails: {},
+                modalTitle: 'Add New User'
+            },
             itemsList: [],
             tableLoading: false,
         }
@@ -143,6 +153,9 @@ export default {
     },
     methods: {
         moment,
+        updateModalStatus(){
+            this.modalComponents.modalStatus = false;
+        },
         async getList(){
             this.itemsList = [];
             this.tableLoading = true;

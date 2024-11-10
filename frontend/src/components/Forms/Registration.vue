@@ -321,7 +321,7 @@ export default {
       let vm = this;
       let payload = {
         ...vm.form,
-        course: Number(this.form.course.value)
+        courseId: Number(this.form.course.value)
       };
 
       this.$api.post('users/register', payload).then(async (response) => {

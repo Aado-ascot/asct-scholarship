@@ -52,6 +52,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('get/attachment', 'UploadDocument::getAttachment');
 		$routes->post('get/attachments', 'UploadDocument::getAttachments');
 		$routes->post('upload', 'UploadDocument::insertAttachment');
+		$routes->post('update/attachment', 'UploadDocument::updateAttachmentStatus');
 	});
 
 	// User Scholarship
@@ -59,6 +60,10 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
 		$routes->post('submit/application', 'ScholarShip::submitApplication');
 		$routes->get('list', 'ScholarShip::getList');
+		$routes->post('applied/status', 'ScholarShip::getListUserApplied');
+		$routes->post('applied/list', 'ScholarShip::getListUserApplications');
+		$routes->post('approved/list', 'ScholarShip::getListApproveApplications');
+		$routes->post('update/application', 'ScholarShip::updateScholarshipStatus');
 	});
 
 	// Miscelenious

@@ -259,7 +259,7 @@ export default {
     async submitChangePass(){
       let vm = this;
       let payload = {
-          id: this.user.userId,
+          id: this.userDetails.userId,
           newPassword: this.retypePass
       };
       let compoDetails = this.$refs.passForm;
@@ -293,7 +293,7 @@ export default {
                       message: 'Changing your password. Please wait...'
                   });
 
-                  api.post('auth/changePassword', payload).then((response) => {
+                  this.$api.post('users/changePassword', payload).then((response) => {
         
                       const data = {...response.data};
                       if(!data.error){
