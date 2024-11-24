@@ -71,6 +71,9 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->get('userTypes', 'Misc::getUserTypes');
 		$routes->get('courseList', 'Misc::getCourses');
 		$routes->get('providerList', 'Misc::getProviders');
+		$routes->post('get/notifications', 'Misc::getUserNotification');
+		$routes->post('get/notifications/unseen', 'Misc::getUserNotificationUnseen');
+		$routes->post('update/notification', 'Misc::updateNotificationStatus');
 	});
 
 });

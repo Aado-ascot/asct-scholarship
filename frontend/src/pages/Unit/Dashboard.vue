@@ -358,16 +358,27 @@
                             v-if="Number(user.userType) === 3 && Number(selectedProgram.data.evaluatedBy) === 0"
                             @click="updateApplicationData('evaluate')"
                             outline 
-                            rounded 
+                            rounded
+                            no-caps
                             size="md"
                             color="primary" 
                             label="Send for Approval" 
+                        />
+                        <q-btn 
+                            @click="updateApplicationData('reject')"
+                            outline 
+                            rounded 
+                            size="md"
+                            no-caps
+                            color="red" 
+                            label="Reject Application" 
                         />
                         <q-btn 
                             v-if="Number(user.userType) === 4 && Number(selectedProgram.data.approvedBy) === 0"
                             @click="updateApplicationData('approve')"
                             outline 
                             rounded 
+                            no-caps
                             size="md"
                             color="primary" 
                             label="Approve Application" 
@@ -465,8 +476,6 @@ export default {
     methods: {
         moment,
         async updateApplicationData(type){
-            
-
             // Confirm
             this.$q.dialog({
                 title: 'Update Application Status',
@@ -492,6 +501,35 @@ export default {
                             evaluatedBy: this.user.userId,
                             status: "Application has been moved for Approval",
                             dateEvaluated: moment().format("l LT"),
+                        },
+                        notification: {
+                            toUser: this.selectedProgram.data.studentId,
+                            fromUser: this.user.userId,
+                            message: 'Your application has been evaluated and move to the next step.',
+                            notifType: 'green',
+                            seen: 0,
+                        }
+                    }
+                } else if(type === "reject"){
+                    payload = {
+                        appId: Number(this.selectedProgram.data.id),
+                        actionType: type,
+                        scholarId: Number(this.selectedProgram.data.scholarId),
+                        updateDetails: {
+                            appStatus: 3,
+                            evaluatedBy: 0,
+                            approvedBy: 0,
+                            rejectedBy: this.user.userId,
+                            status: "Rejected",
+                            remarks: "Application has been Rejected",
+                            dateRejected: moment().format("l LT"),
+                        },
+                        notification: {
+                            toUser: this.selectedProgram.data.studentId,
+                            fromUser: this.user.userId,
+                            message: 'Your application has been rejected.',
+                            notifType: 'red',
+                            seen: 0,
                         }
                     }
                 } else {
@@ -503,6 +541,13 @@ export default {
                             approvedBy: this.user.userId,
                             status: "Application has been Approved",
                             dateApproved: moment().format("l LT"),
+                        },
+                        notification: {
+                            toUser: this.selectedProgram.data.studentId,
+                            fromUser: this.user.userId,
+                            message: 'Your application has been approved, you can now use the scholarship benefit',
+                            notifType: 'green',
+                            seen: 0,
                         }
                     }
                 }

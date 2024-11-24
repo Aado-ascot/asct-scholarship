@@ -86,6 +86,22 @@ export default {
             let curdateYear = moment().format("YY");
             // console.log(data)
 
+            // get the 2x2 picture
+            let picture = data.scholar.requirements.filter(el => el.name === 'picture')
+
+            if(picture.length > 0){
+                // print the picture
+                const profilePictureBytes = await fetch(picture[0].uploadFile).then(res => res.arrayBuffer())
+                const profileImage = await pdfDoc.embedPng(profilePictureBytes)
+
+                fpage.drawImage(profileImage, {
+                    x: 473,
+                    y: height - 105,
+                    width: 100,
+                    height: 100,
+                })
+            }
+
             // Draw a string of text toward the top of the page
             fpage.drawText(`${data.scholar.title}`, {
               x: 150,
@@ -141,18 +157,18 @@ export default {
             })
 
             fpage.drawText(`${data.student.schoolAttended}`, {
-                x: 420,
+                x: 315,
                 y: height - 270,
-                size: 10,
+                size: 9,
                 spacing: 1,
                 lineHeight: 11,
                 maxWidth: 290,
                 color: rgb(0, 0, 0),
             })
             fpage.drawText(`${data.student.schoolAddress}`, {
-                x: 420,
-                y: height - 283,
-                size: 10,
+                x: 315,
+                y: height - 293,
+                size: 9,
                 spacing: 1,
                 lineHeight: 11,
                 maxWidth: 200,
@@ -255,8 +271,8 @@ export default {
 
             motherLiving = form.getCheckBox('mother.live')
             motherDeceased = form.getCheckBox('mother.deceased')
-            // motherLiving.enableReadOnly()
-            // motherDeceased.enableReadOnly()
+            motherLiving.enableReadOnly()
+            motherDeceased.enableReadOnly()
             if(data.others.mother.livingStatus === "living"){
                 motherLiving.check()
             } else if (data.others.mother.livingStatus === "deceased") {

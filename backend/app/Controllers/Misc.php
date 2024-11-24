@@ -100,5 +100,114 @@ class Misc extends BaseController
         
     } 
 
+    public function getUserNotification(){
+        // Check Auth header bearer
+        //Select Query for finding User Information
+        $data = $this->request->getJSON();
+        $notifs = [];
+        $notifs['list'] = $this->miscModel->getNotification(['toUser' => $data->uId]);
+
+        //Set Api Response return to the FE
+        if($notifs){
+            //Update
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($notifs));
+        } else {
+            $response = [
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(404)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    } 
+
+    public function getUserNotificationUnseen(){
+        // Check Auth header bearer
+        //Select Query for finding User Information
+        $data = $this->request->getJSON();
+        $notifs = [];
+        $notifs['list'] = $this->miscModel->getNotification([
+            'toUser' => $data->uId,
+            'seen' => 0
+        ]);
+
+        //Set Api Response return to the FE
+        if($notifs){
+            //Update
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($notifs));
+        } else {
+            $response = [
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(404)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    } 
+
+    public function updateNotificationStatus(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        //Get API Request Data
+        $data = $this->request->getJSON();
+        
+        
+        if($data->type === "read"){
+            $query = $this->miscModel->readNotification(["toUser" => $data->uId]);
+        } else {
+            $query = $this->miscModel->seenNotification(["toUser" => $data->uId]);
+        }
+        
+
+        if($query){
+
+            $response = [
+                'title' => 'Notification Update',
+                'message' => 'Update Complete'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'error' => 400,
+                'title' => 'Data Submit Failed',
+                'message' => 'Please contact the admin for concern'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+
+    }
+
 
 }

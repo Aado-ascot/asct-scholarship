@@ -3,6 +3,7 @@
 use CodeIgniter\HTTP\IncomingRequest;
 use App\Models\AuthModel;
 use App\Models\ScholarshipModel;
+use App\Models\MiscModel;
 use \Firebase\JWT\JWT;
 
 class ScholarShip extends BaseController
@@ -11,6 +12,7 @@ class ScholarShip extends BaseController
         //Models
         $this->authModel = new AuthModel();
         $this->scholarModel = new ScholarshipModel();
+        $this->miscModel = new MiscModel();
     }
 
     public function createNewScholarship(){
@@ -132,12 +134,23 @@ class ScholarShip extends BaseController
         $data = $this->request->getJSON();
         $payload = json_decode(json_encode($data->updateDetails), true);
         
+        
         //INSERT QUERY TO APPLICATION
         $query = $this->scholarModel->updateApplication(["id"=>$data->appId], $payload);
 
         if($query){
             if($data->actionType === "approve"){
                 // execute the Rejection of other submitted application
+            } else if($data->actionType === "reject"){
+                // Update scholarship
+                $where = [
+                    'id' => $data->scholarId
+                ];
+                $update = $this->scholarModel->updateMinusScholarshipSlot($where);
+
+                // Send Notification
+                $notif = json_decode(json_encode($data->notification), true);
+                $this->miscModel->sendNotification($notif);
             }
 
             $response = [

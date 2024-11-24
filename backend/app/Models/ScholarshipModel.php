@@ -104,6 +104,10 @@ class ScholarshipModel extends Model
         $query = $this->db->table($this->table)->set('applied', 'applied+1', false)->where($where)->update();
         return $query ? true : false;
     }
+    public function updateMinusScholarshipSlot($where){
+        $query = $this->db->table($this->table)->set('applied', 'applied-1', false)->where($where)->update();
+        return $query ? true : false;
+    }
 
 
 

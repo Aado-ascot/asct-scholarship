@@ -349,6 +349,10 @@
                             </div>
                         </div>
                     </q-card-section>
+                    <q-separator />
+                    <q-card-actions>
+                        <q-btn class="q-mr-sm" color="positive" label="Preview Form" @click="openPrint" />
+                    </q-card-actions>
                 </q-card>
             </q-scroll-area>
         </q-drawer>
@@ -359,7 +363,13 @@
             :modalStatus="previewModalStatus"
             :appData="selectedFile"
             @updatePrintStatus="closeFormModal"
+        /> 
+        <printFormModal 
+            :modalStatus="printModal"
+            :appData="appData"
+            @updatePrintStatus="closePrintFormModal"
         />
+        
     </div>
 </template>
 
@@ -368,19 +378,23 @@ import moment from 'moment'
 import { LocalStorage } from 'quasar'
 import { jwtDecode } from 'jwt-decode';
 import previewModal from '../../components/Modals/PreviewDocument.vue';
+import printFormModal from '../../components/Modals/PrintFormModel.vue';
 
 const dateNow = moment().format('YYYY-MM-DD');
 
 export default {
     name: 'UserDashboard',
     components:{
-        previewModal
+        previewModal,
+        printFormModal
     },
     data(){
         return {
+            printModal: false,
             drawerRight: false,
             selectedProgram: {},
             tableLoading: false,
+            appData: {},
             itemsList: [],
             courseOpt: [],
             previewModalStatus: false,
@@ -563,6 +577,19 @@ export default {
         },
         closeFormModal(){
             this.previewModalStatus = false
+        },
+        closePrintFormModal(){
+            this.printModal = false
+        },
+        openPrint(){
+            let data = {
+                student: {...this.selectedProgram.data.student},
+                scholar: {...this.selectedProgram.data.scholarship},
+                others: {...this.selectedProgram.data.familyBackground}
+            }
+            console.log(data)
+            this.appData = data
+            this.printModal = true
         },
         viewApplication(val){
             this.drawerRight = true

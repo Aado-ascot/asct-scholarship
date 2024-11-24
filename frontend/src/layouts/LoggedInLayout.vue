@@ -34,9 +34,9 @@
         
         
         <q-space />
-        <q-btn class="q-mr-sm" round dense flat icon="ti-bell">
+        <q-btn class="q-mr-sm" round dense flat icon="ti-bell" @click="drawerRight = !drawerRight">
           <q-badge floating color="red" rounded transparent>
-            0
+            {{ notifCount }}
           </q-badge>
         </q-btn>
         <!-- <q-btn class="q-mr-sm" round dense flat icon="ti-help" /> -->
@@ -93,7 +93,7 @@
         <q-card v-if="!miniState" class="myMenuBar">
           <q-card-section class="fit row wrap justify-center items-center content-start">
             <q-btn-group flat dense spread>
-              <q-btn flat rounded color="primary" icon="ti-user"/>
+              <q-btn @click="goToProfile" flat rounded color="primary" icon="ti-user"/>
               <q-btn @click="modalStatus = true" flat rounded color="secondary" icon="ti-lock"/>
               <!-- <q-btn flat rounded color="positive" icon="ti-headphone-alt"/> -->
               <!-- <q-btn flat rounded color="warning" icon="ti-settings"/> -->
@@ -180,6 +180,52 @@
       </q-card>
     </q-dialog>
 
+
+    <q-drawer
+      side="right"
+      v-model="drawerRight"
+      bordered
+      overlay
+      :width="400"
+    >
+      <q-scroll-area class="fit">
+        <q-card
+          flat
+          class=" bg-white"
+        >
+            <q-card-section class="row items-center no-wrap">
+                <div>
+                  <div class="text-h5 text-weight-bold">Notifications</div>
+                </div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section >
+              <q-list>
+                <q-item 
+                  v-for="(notif, index) in notifList"
+                  :key="index"
+                >
+                <q-item-section avatar>
+                  <q-icon v-if="notif.notifType === 'red'" name="mdi-bell-alert" :color="notif.notifType" />
+                  <q-icon v-if="notif.notifType === 'green'" name="mdi-check-decagram" :color="notif.notifType" />
+                </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ `${notif.sender.firstName} ${notif.sender.lastName} `}}</q-item-label>
+                    <q-item-label caption lines="2">{{ notif.message }}</q-item-label>
+                  </q-item-section>
+
+                  <q-item-section side top>
+                    <q-item-label caption>{{ moment(notif.createdDate).fromNow() }}</q-item-label>
+                  </q-item-section>
+                  <!-- <q-separator inset /> -->
+                </q-item>
+
+                
+              </q-list>
+            </q-card-section>
+        </q-card>
+      </q-scroll-area>
+    </q-drawer>
   </q-layout>
 </template>
 
@@ -200,6 +246,9 @@ export default {
     return {
       // linksList,
       userProfile: null,
+      notifList:[],
+      notifCount:0,
+      drawerRight: false,
       menuCrumbs: [
         {label: '', icon: 'home', link: '/'},
         {label: 'Dashboard', icon: 'dashboard', link: 'dashboard'}
@@ -223,7 +272,12 @@ export default {
       },
     }
   },
-  mounted(){},
+  watch:{
+    drawerRight(newVal){
+      this.seenNotif()
+      this.getNotification()
+    }
+  },
   components:{
     SideNav,
     Profile,
@@ -237,7 +291,37 @@ export default {
       return jwtDecode(user);
     }
   },
+  created(){
+    this.getNotificationCount()
+  },
   methods: {
+    moment,
+    goToProfile(){
+      this.$router.push('/user/profile')
+    },
+    async getNotification(){
+      this.notifList = []
+      this.$api.post('misc/get/notifications', {uId: this.userDetails.userId}).then((response) => {
+        const data = {...response.data};
+        if(!data.error){
+          this.notifList = data.list
+        }
+      })
+    },
+    async getNotificationCount(){
+      this.$api.post('misc/get/notifications/unseen', {uId: this.userDetails.userId}).then((response) => {
+        const data = {...response.data};
+        if(!data.error){
+          this.notifCount = data.list.length
+        }
+      })
+    },
+    async seenNotif(){
+      this.$api.post('misc/update/notification', {uId: this.userDetails.userId, type: 'seen'}).then((response) => {
+        const data = {...response.data};
+        this.notifCount = 0
+      })
+    },
     changePassModal(){
       this.modalStatus = true;
     },

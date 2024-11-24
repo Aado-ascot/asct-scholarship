@@ -25,6 +25,11 @@ const routes = [
         name: 'attachedDocuments',
         component: () => import('pages/User/Documents.vue') 
       },
+      { 
+        path: 'profile',
+        name: 'userProfile',
+        component: () => import('pages/User/Profile.vue') 
+      },
     ]
   },
   {

@@ -166,6 +166,10 @@ export default {
             maximizedToggle: true,
             isPwd: true,
             typeList: [],
+            sexOption: [
+                'Male',
+                'Female'
+            ],
             form: {
                 username: "",
                 password: "",

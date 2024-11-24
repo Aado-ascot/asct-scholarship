@@ -116,7 +116,7 @@
                                 <div class="row">
                                     <div class="col-6 q-mb-sm">
                                         <span class="text-caption text-grey">Available Slot: </span>
-                                        <span class="text-title text-bold">{{`${selectedProgram.applied || '0'}/${selectedProgram.slot || '0'}`}}</span>
+                                        <span class="text-title text-bold">{{`${Number(selectedProgram.slot) - Number(selectedProgram.applied) || '0'}/${selectedProgram.slot || '0'}`}}</span>
                                     </div>
                                     <div class="col-6 q-mb-sm">
                                         <span class="text-caption text-grey">Read more details for this program: </span>
@@ -124,7 +124,12 @@
                                     </div>
                                     <div class="col-12 q-mb-sm">
                                         <span class="text-caption text-grey">Courses Covered on Program: </span><br/>
-                                        <span class="text-title text-bold">{{`${convertCourses(selectedProgram.coveredCourses) || '--'}`}}</span>
+                                        <q-chip 
+                                        v-for="(itm, indx) in convertCourses(selectedProgram.coveredCourses)"
+                                        :key="indx"
+                                        outline color="primary" text-color="white">
+                                            {{ itm }}
+                                        </q-chip>
                                     </div>
                                 </div> 
                                 <q-separator />
@@ -708,9 +713,9 @@ export default {
                 return res[0].label
             });
             // console.log(list)
-            result = list.join(" , ")
+            // result = list.join(" , ")
 
-            return result 
+            return list 
         },
         async getCourses(){
             this.courseOpt = [];
