@@ -90,16 +90,32 @@ export default {
             let picture = data.scholar.requirements.filter(el => el.name === 'picture')
 
             if(picture.length > 0){
-                // print the picture
-                const profilePictureBytes = await fetch(picture[0].uploadFile).then(res => res.arrayBuffer())
-                const profileImage = await pdfDoc.embedPng(profilePictureBytes)
+                // validate if png or jpg
+                let validate = picture[0].uploadFile.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+                if(validate === 'image/png'){
+                    // print the picture
+                    const profilePictureBytes = await fetch(picture[0].uploadFile).then(res => res.arrayBuffer())
+                    const profileImage = await pdfDoc.embedPng(profilePictureBytes)
 
-                fpage.drawImage(profileImage, {
-                    x: 473,
-                    y: height - 105,
-                    width: 100,
-                    height: 100,
-                })
+                    fpage.drawImage(profileImage, {
+                        x: 473,
+                        y: height - 105,
+                        width: 100,
+                        height: 100,
+                    })
+                } else {
+                    // print the picture
+                    const profilePictureBytes = await fetch(picture[0].uploadFile).then(res => res.arrayBuffer())
+                    const profileImage = await pdfDoc.embedJpg(profilePictureBytes)
+
+                    fpage.drawImage(profileImage, {
+                        x: 473,
+                        y: height - 105,
+                        width: 100,
+                        height: 100,
+                    })
+                }
+                
             }
 
             // Draw a string of text toward the top of the page
