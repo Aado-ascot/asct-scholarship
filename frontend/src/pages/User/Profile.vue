@@ -11,6 +11,33 @@
                         <div class="row">
                             <div v-if="profilePicture !== null" class="col-12 q-mb-sm">
                                 <q-img :src="profilePicture.uploadFile" />
+                                <q-file 
+                                    label="Upload your file here"
+                                    bottom-slots 
+                                    v-model="fileRacker"
+                                    counter
+                                    outlined
+                                >
+                                    <template v-slot:prepend>
+                                        <q-icon name="cloud_upload" @click.stop.prevent />
+                                    </template>
+                                    <template v-slot:append>
+                                        <q-icon 
+                                            v-if="fileRacker !== null" 
+                                            name="mdi-trash-can"
+                                            color="red"
+                                            @click.stop.prevent="removeFile" 
+                                            class="cursor-pointer" 
+                                        />
+                                        <q-icon 
+                                            v-if="fileRacker !== null" 
+                                            name="mdi-upload-circle"
+                                            color="blue"
+                                            @click.stop.prevent="updateAttachment" 
+                                            class="cursor-pointer" 
+                                        />
+                                    </template>
+                                </q-file>
                             </div>
                             <div class="col-12 col-md-12 q-pa-xs">
                                 <span class="text-title text-bold">Personal Information</span>
@@ -170,7 +197,16 @@ export default {
     data(){
         return {
             profile: null,
-            profilePicture: null
+            profilePicture: null,
+
+            fileRacker: null,
+            fileName: '',
+            fileSize: '',
+            uploadFile: '',
+            remarks: '',
+            currDate: dateNow,
+            reqStatus: '',
+            fileDetails: null
         }
     },
     computed: {
@@ -179,12 +215,33 @@ export default {
             return jwtDecode(profile);
         },
     },
+    watch: {
+        fileRacker: async function(newVal){
+            let convertedFile = await this.getBase64(newVal)
+            this.fileName = newVal.name
+            this.fileSize = newVal.size
+            this.uploadFile = convertedFile
+        }
+    },
     created(){
         this.getUserDetails();
         this.getFileStatus();
     },
     methods: {
         moment,
+        removeFile(){
+            this.fileRacker = null;
+            this.fileName = ''
+            this.fileSize = ''
+        },
+        async getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        },
         getUserDetails(){
             let payload = {
                 id: this.user.userId,
@@ -210,6 +267,56 @@ export default {
             })
 
             this.loginLoad = false;
+            this.$q.loading.hide();
+        },
+        updateAttachment(){
+            if(this.fileRacker === null){
+                this.$q.notify({
+                    position: 'top-left',
+                    type: 'negative',
+                    message: "Upload Update Failed",
+                    caption: "Please attached file before uploading document",
+                    icon: 'mdi-alert-circle-outline'
+                })
+                return false
+            }
+
+            this.$q.loading.show();
+            let payload = {
+                fileId: this.profilePicture.id,
+                updateDetails: {
+                    status: 0,
+                    fileName: this.fileName,
+                    fileSize: this.fileSize,
+                    uploadFile: this.uploadFile,
+                    remarks: "",
+                }
+            }
+            
+            this.$api.post('document/update/attachment', payload).then(async (response) => {
+                const data = {...response.data};
+
+                if(!data.error){
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'success',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'mdi-check-all'
+                    })
+                    this.getFileStatus()
+                    this.removeFile()
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'mdi-alert-circle-outline'
+                    })
+                }
+            })
+
             this.$q.loading.hide();
         },
     }

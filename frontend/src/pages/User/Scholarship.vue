@@ -638,6 +638,7 @@ export default {
                         let index = this.selectedProgram.requirements.indexOf(val)
 
                         this.selectedProgram.requirements[index].file = el.fileName
+                        this.selectedProgram.requirements[index].uploadFile = el.uploadFile
                         this.selectedProgram.requirements[index].fileUploaded = true
                         this.selectedProgram.requirements[index].color = 'green'
                     });

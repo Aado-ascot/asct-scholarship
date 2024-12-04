@@ -91,6 +91,7 @@ export default {
 
             if(picture.length > 0){
                 // validate if png or jpg
+                console.log(picture)
                 let validate = picture[0].uploadFile.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
                 if(validate === 'image/png'){
                     // print the picture
@@ -111,7 +112,7 @@ export default {
                     fpage.drawImage(profileImage, {
                         x: 473,
                         y: height - 105,
-                        width: 100,
+                        width: 110,
                         height: 100,
                     })
                 }
