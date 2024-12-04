@@ -40,6 +40,7 @@ class Users extends BaseController
         if($user){
 
             if($user->status == 1){
+                $user->courseDetails = $this->miscModel->getCourse(['id' => $user->courseId]);
                 unset($user->password);
                 return $this->response
                         ->setStatusCode(200)

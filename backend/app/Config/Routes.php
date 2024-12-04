@@ -53,9 +53,16 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('get/attachments', 'UploadDocument::getAttachments');
 		$routes->post('upload', 'UploadDocument::insertAttachment');
 		$routes->post('update/attachment', 'UploadDocument::updateAttachmentStatus');
+		$routes->post('delete/attachment', 'UploadDocument::deleteAttachmentStatus');
 	});
 
 	// User Scholarship
+	$routes->group('announcement', function($routes){
+		$routes->post('create/new', 'Announcement::createAnnouncement');
+		$routes->get('list', 'Announcement::getList');
+	});
+
+	// Announcements
 	$routes->group('scholarship', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
 		$routes->post('submit/application', 'ScholarShip::submitApplication');

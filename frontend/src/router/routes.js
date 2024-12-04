@@ -51,6 +51,11 @@ const routes = [
         name: 'adminScholarManagement',
         component: () => import('pages/Admin/ScholarshipPage.vue') 
       },
+      { 
+        path: 'announcements',
+        name: 'adminAnnouncementManagement',
+        component: () => import('pages/Admin/Announcements.vue') 
+      },
     ]
   },
   {

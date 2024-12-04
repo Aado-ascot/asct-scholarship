@@ -2,34 +2,61 @@
     <div class="q-pa-md" style="width: 100%;">
         <div class="row">
             <!-- Users Count Overview -->
-            <div class="col-12 col-xs-12 col-sm-12 col-md-12">
+            <div v-if="profile !== null" class="col-12 col-xs-12 col-sm-12 col-md-4 q-pa-xs">
                 <q-card
                     flat
                     class="my-card bg-white"
                 >
-                <!-- <q-card-section >
-                        <div v-if="selectedProgram.data !== undefined" class="row">
+                    <q-card-section >
+                        <div class="row">
+                            <div v-if="profilePicture !== null" class="col-12 q-mb-sm">
+                                <q-img :src="profilePicture.uploadFile" />
+                            </div>
                             <div class="col-12 col-md-12 q-pa-xs">
                                 <span class="text-title text-bold">Personal Information</span>
                             </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-caption text-grey q-mr-xl">Full Name</span>
+                            </div>
+                            <div class="col-9 q-mb-sm">
+                                <span class="text-title text-bold">{{`${profile.lastName || '--'}, ${profile.firstName || '--'} ${profile.suffix || '--'}, ${profile.middleName || '--'}`}}</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-caption text-grey q-mr-xl">Contact</span>
+                            </div>
+                            <div class="col-9 q-mb-sm">
+                                <span class="text-title text-bold">{{`${profile.contact || '--'}`}}</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-caption text-grey q-mr-xl">Email</span>
+                            </div>
+                            <div class="col-9 q-mb-sm">
+                                <span class="text-title text-bold">{{`${profile.email || '--'}`}}</span>
+                            </div>
+                        </div>
+                    </q-card-section>
+                </q-card>
+            </div>
+            <div v-if="profile !== null" class="col-12 col-xs-12 col-sm-12 col-md-8 q-pa-xs">
+                <q-card
+                    flat
+                    class="my-card bg-white"
+                >
+                    <q-card-section >
+                        <div class="row">
+                            <div class="col-12 col-md-12 q-pa-xs">
+                                <span class="text-title text-bold">Other Information</span>
+                            </div>
                             <div class="col-4 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.civilStatus || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.civilStatus || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Civil Status</span>
                             </div>
                             <div class="col-4 q-mb-sm">
-                                <span class="text-title text-bold">{{`${moment(selectedProgram.data.student.dateOfBirth).format("MMMM DD, YYYY") || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${moment(profile.dateOfBirth).format("MMMM DD, YYYY") || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Date of Birth</span>
                             </div>
-                            <div class="col-4 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.contact || '--'}`}}</span><br/>
-                                <span class="text-caption text-grey">Contact</span>
-                            </div>
-                            <div class="col-4 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.email || '--'}`}}</span><br/>
-                                <span class="text-caption text-grey">Email</span>
-                            </div>
                             <div class="col-12 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.address || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.address || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Address</span>
                             </div>
                             <div class="col-12">
@@ -39,30 +66,30 @@
                                 <span class="text-title text-bold">Student Information</span>
                             </div>
                             <div class="col-3 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.yrLvl || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.yrLvl || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Year Level</span>
                             </div>
                             <div class="col-3 q-mb-sm">
-                                <span class="text-title text-bold">{{`${convertCourses(selectedProgram.data.student.courseId) || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.courseDetails.title || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Course</span>
                             </div>
                             <div class="col-3 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.username || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.username || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Student Number</span>
                             </div>
                             <div class="col-3 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.schoolAttended || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.schoolAttended || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">School Attended</span>
                             </div>
                             <div class="col-12 q-mb-sm">
-                                <span class="text-title text-bold">{{`${selectedProgram.data.student.schoolAddress || '--'}`}}</span><br/>
+                                <span class="text-title text-bold">{{`${profile.schoolAddress || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">School Address</span>
                             </div>
-                            <div class="col-12">
+                            <!-- <div class="col-12">
                                 <q-separator />
-                            </div>
+                            </div> -->
                         
-                            <div class="col-12 col-md-12 q-pa-xs">
+                            <!-- <div class="col-12 col-md-12 q-pa-xs">
                                 <span class="text-title text-bold">Family Background</span>
                             </div>
                             <div class="col-6 q-mb-sm">
@@ -122,9 +149,9 @@
                             <div class="col-4 q-mb-sm">
                                 <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.guardian.occupation || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Occupation</span>
-                            </div>
+                            </div> -->
                         </div>
-                    </q-card-section> -->
+                    </q-card-section>
                 </q-card>
             </div>
         </div>
@@ -142,12 +169,8 @@ export default {
     name: 'UserDashboard',
     data(){
         return {
-            fileName: '',
-            fileSize: '',
-            uploadFile: '',
-            remarks: '',
-            currDate: dateNow,
-            reqStatus: '',
+            profile: null,
+            profilePicture: null
         }
     },
     computed: {
@@ -158,6 +181,7 @@ export default {
     },
     created(){
         this.getUserDetails();
+        this.getFileStatus();
     },
     methods: {
         moment,
@@ -167,35 +191,21 @@ export default {
             }
 
             this.$api.post('users/getUserById', payload).then(async (response) => {
-                console.log(response)
+                const data = {...response.data};
+                this.profile = data
             })
         },
         getFileStatus(){
             this.$q.loading.show();
             let payload = {
                 uid: this.user.userId,
-                type: this.requirementTab
+                type: 'picture'
             }
 
             this.$api.post('document/get/attachment', payload).then(async (response) => {
                 const data = {...response.data};
-
                 if(!data.error){
-                    this.fileName = data.fileName
-                    this.fileSize = data.fileSize
-                    this.uploadFile = data.uploadFile
-                    this.remarks = data.remarks
-                    this.currDate = data.createdDate
-                    this.reqStatus = Number(data.status) === 0 ? "Subject for approval" : "Approved"
-                    this.hasData = true
-                } else {
-                    this.fileName = ''
-                    this.fileSize = ''
-                    this.uploadFile = ''
-                    this.remarks = ''
-                    this.currDate = dateNow
-                    this.reqStatus = ''
-                    this.hasData = false
+                    this.profilePicture = data
                 }
             })
 
@@ -214,7 +224,7 @@ export default {
     text-align: left !important;
 }
 .my-card{
-    border-radius: 1px;
+    border-radius: 15px;
     box-shadow: 0px 0px 3px -2px !important;
 }
 .my-card-item{

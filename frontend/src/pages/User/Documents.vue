@@ -83,17 +83,56 @@
                                     </template>
                                 </q-file>
                             </div>
+                            <div v-if="hasData && updateDocumentOpen" class="col-12 col-md-12 q-pa-sm">
+                                <q-file 
+                                    label="Upload your file here"
+                                    bottom-slots 
+                                    v-model="fileRacker"
+                                    counter
+                                    outlined
+                                >
+                                    <template v-slot:prepend>
+                                        <q-icon name="cloud_upload" @click.stop.prevent />
+                                    </template>
+                                    <template v-slot:append>
+                                        <q-icon 
+                                            v-if="fileRacker !== null" 
+                                            name="mdi-trash-can"
+                                            color="red"
+                                            @click.stop.prevent="removeFile" 
+                                            class="cursor-pointer" 
+                                        />
+                                    </template>
+                                </q-file>
+                            </div>
                         </div>
                     </q-card-section>
                     <q-separator />
                      <q-card-actions class="fit row wrap justify-end items-right content-center">
-                        <!-- <q-icon name="mdi-check-decagram" size="md" color="green" /> -->
-                        <!-- <q-icon name="mdi-cog-transfer" size="md" color="primary" /> -->
                         <q-btn
-                            v-if="hasData"
+                            v-if="hasData && updateDocumentOpen"
+                            @click="closeUpdateDocument"
+                            label="Cancel" 
+                            color="primary"
+                        />
+                        <q-btn
+                            v-if="hasData && updateDocumentOpen"
+                            @click="updateAttachment"
+                            label="Update File" 
+                            color="primary"
+                        />
+                        
+                        <q-btn
+                            v-if="hasData && !updateDocumentOpen"
+                            @click="openUpdateDocument"
                             label="Update Document" 
                             color="primary"
-                            @click="submitData" 
+                        />
+                        <q-btn
+                            v-if="hasData && !updateDocumentOpen"
+                            @click="deleteAttachment"
+                            label="Delete File" 
+                            color="red"
                         />
                         <q-btn
                             v-if="!hasData"
@@ -127,7 +166,9 @@ export default {
             reqStatus: '',
 
             hasData: false,
+            updateDocumentOpen: false,
             fileRacker: null,
+            fileDetails: null,
             requirementTab: 'schoolCard',
             requirementTabs: [
                 {
@@ -197,6 +238,12 @@ export default {
     },
     methods: {
         moment,
+        openUpdateDocument(){
+            this.updateDocumentOpen = true
+        },
+        closeUpdateDocument(){
+            this.updateDocumentOpen = false
+        },
         getFileStatus(){
             this.$q.loading.show();
             let payload = {
@@ -215,6 +262,7 @@ export default {
                     this.currDate = data.createdDate
                     this.reqStatus = Number(data.status) === 0 ? "Subject for approval" : "Approved"
                     this.hasData = true
+                    this.fileDetails = data
                 } else {
                     this.fileName = ''
                     this.fileSize = ''
@@ -223,6 +271,7 @@ export default {
                     this.currDate = dateNow
                     this.reqStatus = ''
                     this.hasData = false
+                    this.fileDetails = null
                 }
             })
 
@@ -291,6 +340,114 @@ export default {
             this.loginLoad = false;
             this.$q.loading.hide();
         },
+
+        updateAttachment(){
+            if(this.fileRacker === null){
+                this.$q.notify({
+                    position: 'top-left',
+                    type: 'negative',
+                    message: "Upload Update Failed",
+                    caption: "Please attached file before uploading document",
+                    icon: 'mdi-alert-circle-outline'
+                })
+                return false
+            }
+
+            this.$q.loading.show();
+            let payload = {
+                fileId: this.fileDetails.id,
+                updateDetails: {
+                    status: 0,
+                    fileName: this.fileName,
+                    fileSize: this.fileSize,
+                    uploadFile: this.uploadFile,
+                    remarks: "",
+                }
+            }
+            
+            this.$api.post('document/update/attachment', payload).then(async (response) => {
+                const data = {...response.data};
+
+                if(!data.error){
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'success',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'mdi-check-all'
+                    })
+                    this.updateDocumentOpen = false
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'mdi-alert-circle-outline'
+                    })
+                }
+            })
+
+            this.$q.loading.hide();
+        },
+        deleteAttachment(){
+            
+
+            // Confirm
+            this.$q.dialog({
+                title: 'Delete Attachment',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+
+                let payload = {
+                    fileId: this.fileDetails.id
+                }
+                
+                this.$api.post('document/delete/attachment', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+
+                        this.fileName = ''
+                        this.fileSize = ''
+                        this.uploadFile = ''
+                        this.remarks = ''
+                        this.currDate = dateNow
+                        this.reqStatus = ''
+                        this.hasData = false
+                        this.fileDetails = null
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+            })
+
+            
+        }
     }
 }
 </script>

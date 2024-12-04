@@ -455,8 +455,6 @@ export default {
     methods: {
         moment,
         async updateApplicationData(type){
-            
-
             // Confirm
             this.$q.dialog({
                 title: 'Update Application Status',

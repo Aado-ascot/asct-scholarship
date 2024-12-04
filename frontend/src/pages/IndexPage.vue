@@ -7,31 +7,37 @@
       >
         <q-card-section>
           <span class="text-h6 text-bold">ASCOT Announcements</span><br/>
-          <q-list class="rounded-borders">
+          <div v-if="!tableLoading && announcements.length > 0">
+            <q-list class="rounded-borders">
+              <q-item 
+                v-for="(itm, indx) in announcements"
+                :key="indx"
+              >
+                <q-item-section avatar>
+                  <q-avatar>
+                    <q-icon name="newspaper" size="md" />
+                  </q-avatar>
+                </q-item-section>
 
-            <q-item 
-              v-for="(itm, indx) in announcements"
-              :key="indx"
-            >
-              <q-item-section avatar>
-                <q-avatar>
-                  <q-icon name="newspaper" size="md" />
-                </q-avatar>
-              </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-bold text-h6" lines="1">{{itm.title}}</q-item-label>
+                  <q-item-label caption>
+                    <div v-html="itm.announcement"></div>
+                  </q-item-label>
+                </q-item-section>
 
-              <q-item-section>
-                <q-item-label lines="1">{{itm.title}}</q-item-label>
-                <q-item-label caption lines="2">
-                  <span class="text-weight-bold">Context: </span>
-                  {{itm.description}}
-                </q-item-label>
-              </q-item-section>
-
-              <q-item-section side top>
-                1 min ago
-              </q-item-section>
-            </q-item>
-          </q-list>
+                <q-item-section side top>
+                  {{ moment(itm.postedDate).fromNow() }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+          <div v-if="!tableLoading && announcements.length === 0" class="text-center">
+            <q-icon color="grey-4" name="mdi-bullhorn-variant" size="6em" /> <br/>
+            <span class="text-caption text-grey-8">
+                No Announcement to be shown.
+            </span>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -130,6 +136,7 @@ export default {
       tab: "login",
       keepLogin: false,
       loginLoad: false,
+      tableLoading: false,
       announcements: [
         {
           title: "Sample Test Announcement",
@@ -149,8 +156,34 @@ export default {
       ],
     }
   },
+  created(){
+    this.getList()
+  },
   methods: {
-    moment
+    moment,
+    async getList(){
+      this.announcements = [];
+      this.tableLoading = true;
+      
+      this.$api.get('announcement/list').then((response) => {
+          const data = {...response.data};
+
+          if(!data.error){
+              this.announcements = response.status < 300 ? data.list : [];
+          } else {
+              this.$q.notify({
+                  color: 'negative',
+                  position: 'top-right',
+                  title:data.title,
+                  message: this.$t(`errors.${data.error}`),
+                  icon: 'report_problem'
+              })
+          }
+
+      })
+
+      this.tableLoading = false;
+    },
   }
 }
 </script>

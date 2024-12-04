@@ -298,10 +298,13 @@ export default {
                 let sList = [];
 
                 data.list.forEach((el, key) => {
-                    sList.push({
-                        label: el.description,
-                        value: el.id
-                    })
+                    if(Number(el.id) !== 2){
+                        sList.push({
+                            label: el.description,
+                            value: el.id
+                        })
+                    }
+                    
                 });
 
                 this.typeList = response.status < 300 ? sList : [];

@@ -15,16 +15,20 @@
                         <div class="row">
                             <div class="col-6">
                                 <span class="text-h6">Active Scholarship</span><br/>
-                                <span class="text-caption">Approved Scholarship: --</span><br/>
-                                <span class="text-caption">Approved Date: --</span><br/>
-                                <span class="text-caption">Link Details: --</span><br/>
+                                <span class="text-caption text-bold">{{ approvedApplication !== null ? approvedApplication.title : 'No Approved Program' }}</span><br/>
+                                <span class="text-caption">{{ approvedApplication !== null ? moment(approvedApplication.data.dateApproved).format("LL") : '--' }}</span><br/>
+                                <span v-if="approvedApplication !== null" class="text-caption">
+                                    <a :href="approvedApplication.data.scholarship.otherDetailsLink" target="_blank" >
+                                        {{ approvedApplication !== null ? approvedApplication.data.scholarship.otherDetailsLink : '--' }}
+                                    </a>
+                                </span><br/>
                             </div>
                             <div class="col-6 text-right">
                                 <q-img :src="`/imgs/ASCT_logo2.png`" />
                             </div>
                             <div class="col-12">
                                 <div class="text-right">
-                                    <q-btn flat color="white" size="sm" label="View Scholarship Details" />
+                                    <!-- <q-btn flat color="white" size="sm" label="View Scholarship Details" /> -->
                                 </div>
                             </div>
                         </div>
@@ -76,6 +80,9 @@
                                         :props="props"
                                     >
                                         {{ col.label }}
+                                    </q-th>
+                                    <q-th class="text-center">
+                                        Actions
                                     </q-th>
                                 </q-tr>
                             </template>
@@ -130,6 +137,16 @@
                                             {{ col.value }}
                                         </div>
                                     </q-td>
+                                    <q-td class="text-center">
+                                        <q-btn 
+                                            @click="viewApplication(props.row)"
+                                            outline 
+                                            rounded 
+                                            size="sm"
+                                            color="secondary" 
+                                            label="View Details" 
+                                        />
+                                    </q-td>
                                 </q-tr>
                             </template>
                         </q-table>
@@ -154,6 +171,7 @@ export default {
     data(){
         return {
             tableLoading: false,
+            approvedApplication: null,
             itemsList: [],
         }
     },
@@ -175,7 +193,7 @@ export default {
                 },
                 { name: 'provider', label: 'Type', field: 'provider', align: 'left' },
                 { name: 'processFlow', label: 'Application Status', field: 'data', align: 'center',},
-                { name: 'remarks', label: 'Remarks', field: 'remarks', align: 'left' },
+                // { name: 'remarks', label: 'Remarks', field: 'remarks', align: 'left' },
             ]
         }
     },
@@ -202,6 +220,9 @@ export default {
                 const data = {...response.data};
                 if(!data.error){
                     this.itemsList = data.list
+
+                    let checkApproved = data.list.filter(el => {return Number(el.data.appStatus) === 2})
+                    this.approvedApplication = checkApproved.length > 0 ? checkApproved[0] : null
                 } else {
                     this.$q.notify({
                         position: 'top-left',

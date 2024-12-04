@@ -4,18 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class AttachmentModel extends Model
+class AnnouncementModel extends Model
 {
-    protected $table      = 'tblattachments';
+    protected $table      = 'tblannouncements';
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $allowedFields = ['userId', 'reqType', 'fileName', 'fileSize', 'status', 'uploadFile', 'remarks', 'createdDate'];
+    protected $allowedFields = ['title','announcement', 'postedBy'];
 
     protected $useTimestamps = false;
     protected $returnType     = 'array';
-    protected $createdField  = 'createdDate';
+    protected $createdField  = 'postedDate';
     // protected $updatedField  = 'updatedDate';
     // protected $deletedField  = 'deleted_at';
 

@@ -87,6 +87,43 @@ class UploadDocument extends BaseController
         
     }
 
+    public function deleteAttachmentStatus(){
+        //Get API Request Data from NuxtJs
+        $data = $this->request->getJSON();
+
+        $where = [
+            'id' => $data->fileId
+        ];
+        
+        //Select Query for finding User Information
+        $query = $this->attachModel->deleteFileInfo($where);
+
+        if($query){
+
+            $response = [
+                'title' => 'Delete successful',
+                'message' => 'Your attachment is deleted'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            
+        } else {
+            $response = [
+                'title' => 'Update Failed!',
+                'message' => 'Please check your data and connect to your Admin'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    }
+
     public function getAttachment(){
         //Get API Request Data from NuxtJs
         $data = $this->request->getJSON();

@@ -43,6 +43,11 @@ class MiscModel extends Model
         $results = $query->getResult();
         return $results;
     }
+    public function getCourse($where){
+        $query = $this->db->table($this->courseList)->where($where)->get();
+        $results = $query->getRow();
+        return $results;
+    }
 
     public function getUserType($userType){
 
