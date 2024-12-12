@@ -82,6 +82,11 @@ const routes = [
         name: 'unitApprovedScholars',
         component: () => import('pages/Unit/ApprovedList.vue') 
       },
+      {
+        path: 'declinedScholars',
+        name: 'unitUnapprovedScholars',
+        component: () => import('pages/Unit/DeclinedList.vue') 
+      },
     ]
   },
   

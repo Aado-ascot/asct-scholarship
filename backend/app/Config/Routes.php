@@ -44,6 +44,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('register', 'Users::registerUser');
 		$routes->get('getAllUserList', 'Users::getAllUserList');
 		$routes->post('changePassword', 'Users::ChangePassword');
+		$routes->post('update/status', 'Users::updateUserStatus');
 		$routes->post('getUserById', 'Users::getUserDetails');
 	});
 
@@ -66,12 +67,14 @@ $routes->group('ascots/api/v1', function($routes){
 	// Announcements
 	$routes->group('scholarship', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
+		$routes->post('update/details', 'ScholarShip::updateScholarshipDetails');
 		$routes->post('submit/application', 'ScholarShip::submitApplication');
 		$routes->get('list', 'ScholarShip::getList');
 		$routes->get('list/admin', 'ScholarShip::getListAdmin');
 		$routes->post('applied/status', 'ScholarShip::getListUserApplied');
 		$routes->post('applied/list', 'ScholarShip::getListUserApplications');
 		$routes->post('approved/list', 'ScholarShip::getListApproveApplications');
+		$routes->post('declined/list', 'ScholarShip::getListDeclinedApplications');
 		$routes->post('update/application', 'ScholarShip::updateScholarshipStatus');
 		$routes->post('update/scholarship', 'ScholarShip::updateScholarship');
 	});

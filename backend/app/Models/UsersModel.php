@@ -60,9 +60,9 @@ class UsersModel extends Model
         return $results;
     }
 
-    public function getAllUserInfo($where){
+    public function getAllUserInfo(){
 
-        $query = $this->db->table($this->table)->where($where)->get();
+        $query = $this->db->table($this->table)->get();
         $results = $query->getResult('array');
 
         $all = array_map(function($el){

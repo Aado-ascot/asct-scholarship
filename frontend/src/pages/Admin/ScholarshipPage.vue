@@ -209,7 +209,15 @@
                                         </q-select>
                                     </div>
                                     <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
-                                        <q-select 
+                                        <q-input
+                                            v-model="form.provider"
+                                            label="Program Provider"
+                                            placeholder="Enter Provider"
+                                            outlined
+                                            stack-label
+                                        >
+                                        </q-input>
+                                        <!-- <q-select 
                                             outlined 
                                             v-model="form.provider" 
                                             :options="providerOpt" 
@@ -217,7 +225,7 @@
                                             stack-label 
                                             options-dense
                                         >
-                                        </q-select>
+                                        </q-select> -->
                                     </div>
                                     <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
                                         <q-input
@@ -429,6 +437,223 @@
                 </q-card>
             </q-scroll-area>
         </q-drawer>
+
+        <!-- Preview Existing Details -->
+        <q-drawer
+            side="right"
+            v-model="drawerRightDetails"
+            bordered
+            overlay
+            :width="700"
+        >
+            <q-scroll-area class="fit">
+                <q-card
+                    flat
+                    class=" bg-white"
+                >
+                    <q-card-section class="row items-center no-wrap">
+                        <div>
+                            <div class="text-weight-bold">Scholarship Program Details</div>
+                        </div>
+                        <q-space />
+                        <q-btn size="sm" rounded color="red" icon="ti-close" label="Cancel" @click="closeDetails" />
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-section >
+                        <div class="row">
+                            <div class="col-12 col-md-12 text-grey-8 q-pa-xs">
+                                <q-input
+                                    v-model="form.title"
+                                    label="Title"
+                                    placeholder="Enter Scholarship Program"
+                                    outlined
+                                    stack-label
+                                >
+                                </q-input>
+                            </div>
+                            <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                <q-input
+                                    v-model="form.otherDetailsLink"
+                                    label="Link for more Details"
+                                    placeholder="Enter URL Link for the other information"
+                                    outlined
+                                    stack-label
+                                >
+                                </q-input>
+                            </div>
+                            <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                <q-input
+                                    v-model="form.slot"
+                                    label="Available Slot"
+                                    placeholder="Enter Slots"
+                                    outlined
+                                    stack-label
+                                >
+                                </q-input>
+                            </div>
+                            <div class="col-12 col-md-12 text-grey-8 q-pa-xs">
+                                <q-select
+                                    outlined
+                                    stack-label 
+                                    v-model="form.coveredCourses"
+                                    :options="courseOpt"
+                                    label="Course Covered"
+                                    placeholder="Select course covered on this Program"
+                                    multiple
+                                    emit-value
+                                    map-options
+                                >
+                                    <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                        <q-item v-bind="itemProps">
+                                            <q-item-section>
+                                                <q-item-label v-html="opt.label" />
+                                            </q-item-section>
+                                            <q-item-section side>
+                                                <q-checkbox :model-value="selected" checked-icon="task_alt" unchecked-icon="radio_button_unchecked" @update:model-value="toggleOption(opt)" />
+                                            </q-item-section>
+                                        </q-item>
+                                    </template>
+                                </q-select>
+                            </div>
+                            <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                <q-input
+                                    v-model="form.provider"
+                                    label="Program Provider"
+                                    placeholder="Enter Provider"
+                                    outlined
+                                    stack-label
+                                >
+                                </q-input>
+                                <!-- <q-select 
+                                    outlined 
+                                    v-model="form.provider" 
+                                    :options="providerOpt" 
+                                    label="Program Provider" 
+                                    stack-label 
+                                    options-dense
+                                >
+                                </q-select> -->
+                            </div>
+                            <div class="col-12 col-md-6 text-grey-8 q-pa-xs">
+                                <q-input
+                                    type="date"
+                                    v-model="form.dueDate"
+                                    label="Valid Until"
+                                    outlined
+                                    stack-label
+                                >
+                                </q-input>
+                            </div>
+                            
+                            <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
+                                <div class="fit row wrap justify-start items-center content-center">
+                                    <div class="text-bold text-h6 q-mb-sm">Qualifications</div>
+                                    <q-space />
+                                    <div class="text-right">
+                                        <q-btn-group>
+                                            <q-btn color="secondary" rounded  icon="ti-plus" label="Add Qualification" no-caps size="sm" @click="addQualificationItem" />
+                                        </q-btn-group>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
+                                <div v-for="(itm, idx) in form.qualification" :key="idx" class="row">
+                                    <div class="col-12 col-md-11 q-pa-sm">
+                                        <q-input
+                                            outlined
+                                            v-model="itm.targetValue" 
+                                            label="Target Qualification"
+                                            stack-label 
+                                            dense
+                                        >
+                                        </q-input>
+                                    </div>
+                                    <div class="col-12 col-md-1 q-pa-sm text-right">
+                                        <q-btn @click="removeItem(idx)" size="sm" class=" q-mt-xs" color="red" icon="ti-trash" />
+                                    </div>
+                                    <div class="col-12 col-md-12 q-pa-sm">
+                                        <q-input
+                                            type="textarea"
+                                            outlined
+                                            v-model="itm.description" 
+                                            label="Description" 
+                                            stack-label
+                                            dense
+                                        >
+                                        </q-input>
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                        <div class="text-bold text-h6 q-mb-sm">Requirements</div>
+                                    </div>
+                                    <div 
+                                        v-for="(req, index) in form.requirements"
+                                        :key="index"
+                                        class="col-12 col-md-12 q-mt-sm q-pa-xs"
+                                    >
+                                        <q-checkbox
+                                            v-model="req.required"
+                                            checked-icon="task_alt" 
+                                            unchecked-icon="radio_button_unchecked" 
+                                        >
+                                            {{req.label}}
+                                        </q-checkbox>
+                                    </div>
+                                    <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
+                                        <div class="fit row wrap justify-start items-center content-center">
+                                            <div class="text-bold text-h6 q-mb-sm">Other Requirements</div>
+                                            <q-space />
+                                            <div class="text-right">
+                                                <q-btn-group>
+                                                    <q-btn color="secondary" rounded  icon="ti-plus" label="Add Requirements" no-caps size="sm" @click="addRequirementItem" />
+                                                </q-btn-group>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 text-grey-8 q-mt-sm q-pa-xs">
+                                        <div v-for="(itm, idx) in otherRequirements" :key="idx" class="row">
+                                            <div class="col-12 col-md-11 q-pa-sm">
+                                                <q-input
+                                                    outlined
+                                                    v-model="itm.name" 
+                                                    label="Key Parameter"
+                                                    stack-label 
+                                                    dense
+                                                >
+                                                </q-input>
+                                            </div>
+                                            <div class="col-12 col-md-1 q-pa-sm text-right">
+                                                <q-btn @click="removeRequirementItem(idx)" size="sm" class=" q-mt-xs" color="red" icon="ti-trash" />
+                                            </div>
+                                            <div class="col-12 col-md-12 q-pa-sm">
+                                                <q-input
+                                                    type="textarea"
+                                                    outlined
+                                                    v-model="itm.label" 
+                                                    label="Description" 
+                                                    stack-label
+                                                    dense
+                                                >
+                                                </q-input>
+                                            </div>
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-actions>
+                        <q-btn @click="updateScholarShip" color="positive" label="Update Details" />
+                    </q-card-actions>
+                </q-card>
+            </q-scroll-area>
+        </q-drawer>
     </div>
 </template>
 
@@ -445,8 +670,10 @@ export default {
         return {
             itemsList: [],
             drawerRight: false,
+            drawerRightDetails: false,
             step: 1,
             courseOpt: [],
+            sId: null,
             form: {
                 title: "",
                 slot: "",
@@ -537,6 +764,30 @@ export default {
     },
     methods: {
         moment,
+        closeDetails(){
+            this.drawerRightDetails = !this.drawerRightDetails
+            this.resetForm();
+        },
+        showDetails(data){
+            let selected = data.original
+            this.drawerRightDetails = true
+            this.sId = selected.id
+            for(const i in this.form){
+                if(selected[i] !== undefined){
+                    if(i === 'requirements'){
+                        for (const r in selected[i]) {
+                            this.form[i][r].required = selected[i][r].required
+                        }
+                    } else if(i === 'coveredCourses') {
+                        this.form[i] = selected[i].split(",")
+                    } else {
+                        this.form[i] = selected[i] 
+                    }
+                    
+                }
+            }
+
+        },
         async updateScholarStatus(data){
             this.$q.dialog({
                 title: 'Update Application Status',
@@ -588,7 +839,7 @@ export default {
             let vm = this;
             let payload = {
                 ...vm.form,
-                provider: this.form.provider.label,
+                // provider: this.form.provider.label,
                 coveredCourses: this.form.coveredCourses.join(","),
                 requirements: this.convertRequirements(this.form.requirements),
                 createdBy: Number(this.user.userId),
@@ -615,6 +866,57 @@ export default {
                         icon: 'report_problem'
                     })
                 }
+            })
+        },
+        async updateScholarShip(){
+            this.$q.dialog({
+                title: 'Update Scholarship Details',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                this.loginLoad = true;
+                let vm = this;
+                let payload = {
+                    sId: this.sId,
+                    details: {
+                        ...vm.form,
+                        // provider: this.form.provider.label,
+                        coveredCourses: this.form.coveredCourses.join(","),
+                        requirements: this.convertRequirements(this.form.requirements),
+                        createdBy: Number(this.user.userId),
+                    }
+                };
+
+                this.$api.post('scholarship/update/details', payload).then(async (response) => {
+                    const data = {...response.data};
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'positive',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'verified'
+                        })
+                        this.resetForm()
+                        this.drawerRight = false
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'report_problem'
+                        })
+                    }
+                })
             })
         },
         convertCourses(courseArray){

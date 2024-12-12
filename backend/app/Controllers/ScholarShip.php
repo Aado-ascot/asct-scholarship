@@ -221,6 +221,9 @@ class ScholarShip extends BaseController
         // exit();
         foreach ($query as $key => $value) {
             $sinfo = $value['scholarship'];
+            $sinfo->qualification = json_decode($sinfo->qualification);
+            $sinfo->requirements = json_decode($sinfo->requirements);
+            $value['familyBackground'] = json_decode($value['familyBackground']);
 
             $list['list'][$key] = [
                 "key" => $value['id'],
@@ -331,6 +334,67 @@ class ScholarShip extends BaseController
 
         $where = [
             'appStatus'=> 2,
+        ];
+        $list = [];
+
+        $query = $this->scholarModel->getAppliedScholarships($where);
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $sinfo = $value['scholarship'];
+            $sinfo->requirements = json_decode($sinfo->requirements);
+            $sinfo->qualification = json_decode($sinfo->qualification);
+            $value['familyBackground'] = json_decode($value['familyBackground']);
+
+            $stdinfo = $value['student'];
+
+            $list['list'][$key] = [
+                "key" => $value['id'],
+                "studentNumber" => $stdinfo->username,
+                "studentName" => $stdinfo->firstName ." ". $stdinfo->middleName ." ". $stdinfo->lastName ." ". $stdinfo->suffix,
+                "title" => $sinfo->title,
+                "provider" => $sinfo->provider,
+                "status" => $value['status'],
+                "remarks" => $value['remarks'],
+                "data" => $value,
+            ];
+        }
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
+    public function getListDeclinedApplications(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        $where = [
+            'appStatus'=> 3,
         ];
         $list = [];
 
@@ -492,6 +556,41 @@ class ScholarShip extends BaseController
             'id' => $payload->scholarId
         ];
         $update = $this->scholarModel->updateScholarshipStatus($where, $payload->status);
+        
+        if($update){
+            $response = [
+                'title' => 'Update Status',
+                'message' => 'Scholarship status updated'
+            ];
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+
+    public function updateScholarshipDetails(){
+        $payload = $this->request->getJSON();
+        // $payload['qualification'] = json_encode($payload['qualification']);
+        // $payload['requirements'] = json_encode($payload['requirements']);
+        $payload->details->qualification = json_encode($payload->details->qualification);
+        $payload->details->requirements = json_encode($payload->details->requirements);
+        $payload->details = json_decode(json_encode($payload->details), true);
+        $where = [
+            'id' => $payload->sId
+        ];
+        $update = $this->scholarModel->updateScholarship($where, $payload->details);
         
         if($update){
             $response = [

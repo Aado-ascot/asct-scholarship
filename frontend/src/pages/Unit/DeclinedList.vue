@@ -70,12 +70,13 @@
                                         ref="stepper"
                                         contracted
                                         color="orange"
-                                        :id="`evaluatorProcess-${col.value.id}`"
                                         flat
-                                        active-icon="ti-reload"
+                                        :id="`evaluatorProcess-${col.value.id}`"
+                                        active-icon="mdi-cog-clockwise"
                                         active-color="orange"
                                         done-icon="mdi-check-all"
                                         done-color="green"
+                                        error-icon="mdi-close-circle"
                                         class="customStepper"
                                     >
                                         <q-step
@@ -83,21 +84,24 @@
                                             :name="0"
                                             :done="true"
                                         >
-                                        </q-step>
-                                        <q-step
-                                            class="no-content"
-                                            header-nav
-                                            :name="1"
-                                            :done="Number(col.value.evaluatedBy) > 0"
-                                        >
+                                            
                                         </q-step>
 
                                         <q-step
                                             class="no-content"
-                                            id="approverProcess"
+                                            :name="1"
+                                            :error="Number(col.value.appStatus) === 3"
+                                            :done="Number(col.value.evaluatedBy) > 0 && Number(col.value.appstatus) !== 3"
+                                        >  
+                                        </q-step>
+
+                                        <q-step
+                                            class="no-content"
                                             :name="2"
+                                            title="Create an ad group"
                                             icon="mdi-check-decagram"
-                                            :done="Number(col.value.approvedBy) > 0"
+                                            :error="Number(col.value.appStatus) === 3"
+                                            :done="Number(col.value.approvedBy) > 0 && Number(col.value.appstatus) !== 3"
                                         >
                                         </q-step>
                                     </q-stepper>
@@ -606,6 +610,8 @@ export default {
                 res = 2
             } else if(Number(data.evaluatedBy) > 0 && Number(data.approvedBy) > 0){
                 res = 3
+            } else if(Number(data.rejectedBy) > 0){
+                res = 4
             }
             return res
         },
@@ -613,7 +619,7 @@ export default {
             this.tableLoading = true
             this.itemsList = []
 
-            this.$api.post('scholarship/approved/list', {uType: Number(this.user.userType)}).then((response) => {
+            this.$api.post('scholarship/declined/list', {uType: Number(this.user.userType)}).then((response) => {
                 const data = {...response.data};
                 if(!data.error){
                     this.itemsList = data.list

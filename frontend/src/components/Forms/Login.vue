@@ -50,7 +50,7 @@
                 :label="isStudent === 'student' ? 'Student Number' : 'Username'"
                 v-bind="formRules.username"
                 :placeholder="isStudent === 'student' ? 'Enter Student Number' : 'Enter Username'"
-                :mask="isStudent === 'student' ? '##-##-####' : ''"
+                :mask="isStudent === 'student' ? '##-##-####NNNN' : ''"
                 outlined  
                 stack-label
             >
@@ -64,14 +64,21 @@
                 v-model="form.password"
                 v-bind="formRules.password"
                 @keypress.enter="submitLogin"
-                type="password"
+                :type="isPwd ? 'password' : 'text'"
                 label="Password"
                 placeholder="***********"
                 outlined  
                 stack-label
             >
                 <template v-slot:prepend>
-                <q-icon name="ti-lock" />
+                  <q-icon name="ti-lock" />
+                </template>
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
                 </template>
             </q-input>
         </div>
@@ -103,6 +110,7 @@ export default {
   data() {
     return {
       tab: "login",
+      isPwd: true,
       keepLogin: false,
       loginLoad: false,
       askUserType: false,

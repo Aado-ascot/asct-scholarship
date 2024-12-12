@@ -133,12 +133,245 @@
 
 
         <!-- Application Submit -->
-        
+        <!-- Application Submit -->
+        <q-drawer
+            side="right"
+            v-model="drawerRight"
+            bordered
+            overlay
+            :width="900"
+        >
+            <q-scroll-area class="fit">
+                <q-card
+                    v-if="selectedProgram.data !== undefined" 
+                    flat
+                    class=" bg-white"
+                >
+                    <q-card-section class="row items-center no-wrap">
+                        <div>
+                            <div class="text-h5 text-weight-bold">{{selectedProgram.title}}</div>
+                        </div>
+                        <q-space />
+                        <q-btn size="sm" rounded color="red" icon="ti-close" label="Close" @click="drawerRight = !drawerRight" />
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-section >
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <span class="text-title text-bold">Personal Information</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.firstName || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">First Name</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.middleName || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Middle Name</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.lastName || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Last Name</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.suffix || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">suffix</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.civilStatus || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Civil Status</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${moment(myInfo.dateOfBirth).format("MMMM DD, YYYY") || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Date of Birth</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.contact || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Contact</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.email || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Email</span>
+                            </div>
+                            <div class="col-12 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.address || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Address</span>
+                            </div>
+                            <div class="col-12">
+                                <q-separator />
+                            </div>
+                            <div class="col-12 col-md-12 q-pa-xs">
+                                <span class="text-title text-bold">Student Information</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.yrLvl || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Year Level</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${convertCourses(myInfo.courseId) || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Course</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.username || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Student Number</span>
+                            </div>
+                            <div class="col-3 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.schoolAttended || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">School Attended</span>
+                            </div>
+                            <div class="col-12 q-mb-sm">
+                                <span class="text-title text-bold">{{`${myInfo.schoolAddress || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">School Address</span>
+                            </div>
+                            <div class="col-12">
+                                <q-separator />
+                            </div>
+                        
+                            <div class="col-12 col-md-12 q-pa-xs">
+                                <span class="text-title text-bold">Family Background</span>
+                            </div>
+                            <div class="col-6 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.father.name || '--'} (${selectedProgram.data.familyBackground.father.livingStatus})`}}</span><br/>
+                                <span class="text-caption text-grey">Fathers Name</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.father.address || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Address</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.father.occupation || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Occupation</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.father.contact || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Contact</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.father.educAttainment || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Educational Attainement</span>
+                            </div>
+                            <div class="col-6 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.name || '--'} (${selectedProgram.data.familyBackground.mother.livingStatus})`}}</span><br/>
+                                <span class="text-caption text-grey">Mothers Name</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.address || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Address</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.occupation || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Occupation</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.contact || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Contact</span>
+                                <br/>
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.educAttainment || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Educational Attainement</span>
+                            </div>
+                            <div class="col-6 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.totalIncome || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Parents Total Annual Income</span>
+                            </div>
+                            <div class="col-6 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.noOfSiblings || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">No. of Siblings</span>
+                            </div>
+                            <div class="col-12">
+                                <q-separator />
+                            </div>
+                            <div class="col-12 q-mb-sm">
+                                <span class="text-title text-bold">If not living with parents: </span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.guardian.name || '--'} (${selectedProgram.data.familyBackground.mother.livingStatus})`}}</span><br/>
+                                <span class="text-caption text-grey">Guardian Name</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.guardian.relation || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Relationship</span>
+                            </div>
+                            <div class="col-4 q-mb-sm">
+                                <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.guardian.occupation || '--'}`}}</span><br/>
+                                <span class="text-caption text-grey">Occupation</span>
+                            </div>
+                            <div class="col-12">
+                                <q-separator />
+                            </div>
+                            
+                            <div class="col-12 col-md-12 q-pa-xs q-mt-md">
+                                <span class="text-title text-bold">Requirement Checklist</span>
+                            </div>
+                            <div class="col-12 col-md-12">
+                                <q-list>
+                                    <q-item 
+                                        v-for="(item, index) in selectedProgram.data.scholarship.requirements" 
+                                        :key="item.name" 
+                                        tag="label" 
+                                        v-ripple
+                                    >
+                                        <q-item-section side>
+                                            <q-icon :color="item.color" name="task_alt" />
+                                        </q-item-section>
+
+                                        <q-item-section>
+                                            <q-item-label>{{ item.label }}</q-item-label>
+                                        </q-item-section>
+
+                                        <q-item-section side>
+                                            <div v-if="item.fileUploaded === undefined">
+                                                <q-btn outline size="sm" rounded color="red" label="Request For Upload" />
+                                            </div>
+                                            <div v-if="item.fileUploaded !== undefined">
+                                                <q-btn
+                                                    @click="previewDocs(item.uploadFile, item.name)"
+                                                    outline 
+                                                    size="sm" 
+                                                    class="q-mr-xs" 
+                                                    rounded 
+                                                    color="primary" 
+                                                    label="View"
+                                                />
+                                            </div>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </div>
+
+                            <div class="col-12 col-md-12 q-pa-xs q-mt-md">
+                                <span class="text-title text-bold">Qualifications</span>
+                            </div>
+                            <div class="col-12 col-md-12">
+                                <q-list>
+                                    <q-item 
+                                        v-for="(itm, indx) in selectedProgram.data.scholarship.qualification"
+                                        :key="indx"
+                                    >
+                                        <q-item-section avatar>
+                                            <q-avatar>
+                                                <q-icon name="mdi-asterisk-circle-outline" size="sm" />
+                                            </q-avatar>
+                                        </q-item-section>
+
+                                        <q-item-section>
+                                            <q-item-label>
+                                                {{itm.description}}
+                                            </q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </div>
+                        </div>
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-actions>
+                        <q-btn  @click="openPrint" class="q-mr-sm" color="positive" label="Preview Form" />
+                    </q-card-actions>
+                </q-card>
+            </q-scroll-area>
+        </q-drawer>
         <!-- End of Application Submit Drawer -->
         <printFormModal 
             :modalStatus="printModal"
             :appData="appData"
             @updatePrintStatus="closeFormModal"
+        />
+        <previewModal 
+            :modalStatus="previewModalStatus"
+            :appData="selectedFile"
+            @updatePrintStatus="closePreviewModal"
         />
     </div>
 </template>
@@ -148,6 +381,7 @@ import moment from 'moment'
 import { LocalStorage } from 'quasar'
 import { jwtDecode } from 'jwt-decode';
 import printFormModal from '../../components/Modals/PrintFormModel.vue';
+import previewModal from '../../components/Modals/PreviewDocument.vue';
 
 
 const dateNow = moment().format('YYYY-MM-DD');
@@ -155,7 +389,8 @@ const dateNow = moment().format('YYYY-MM-DD');
 export default {
     name: 'UserDashboard',
     components: {
-        printFormModal
+        printFormModal,
+        previewModal
     },
     data(){
         return {
@@ -169,7 +404,8 @@ export default {
             myInfo: {},
             courseOpt: [],
             requirementTab: "",
-
+            selectedFile: "",
+            previewModalStatus: false,
             form: {
                 father:{
                     name: "",
@@ -234,6 +470,17 @@ export default {
     },
     methods: {
         moment,
+        viewApplication(val){
+            this.drawerRight = true
+            this.selectedProgram = val
+        },
+        previewDocs(file, reqType){
+            this.previewModalStatus = true
+            this.selectedFile = {
+                url: file,
+                type: reqType
+            }
+        },
         async getApplied(){
             this.tableLoading = true
             this.itemsList = []
@@ -395,7 +642,7 @@ export default {
         },
         getFileStatus(){
             let payload = {
-                uid: this.user.userId,
+                uid: this.selectedProgram.data.studentId,
             }
 
             this.$api.post('document/get/attachments', payload).then(async (response) => {
@@ -404,14 +651,26 @@ export default {
                 if(!data.error){
                     // fill the already uploaded document
                     data.list.forEach(el => {
-                        let filterMatch = this.selectedProgram.requirements.filter((elr) => {return elr.name === el.reqType})
+                        let filterMatch = this.selectedProgram.data.scholarship.requirements.filter((elr) => {return elr.name === el.reqType})
                         let val = filterMatch[0]
-                        let index = this.selectedProgram.requirements.indexOf(val)
+                        let index = this.selectedProgram.data.scholarship.requirements.indexOf(val)
+                        let requirements = this.selectedProgram.data.scholarship.requirements[index];
 
-                        this.selectedProgram.requirements[index].file = el.fileName
-                        this.selectedProgram.requirements[index].uploadFile = el.uploadFile
-                        this.selectedProgram.requirements[index].fileUploaded = true
-                        this.selectedProgram.requirements[index].color = 'green'
+                        if(Number(el.status) !== 1){
+                            requirements.fileId = Number(el.id)
+                            requirements.file = el.fileName
+                            requirements.fileUploaded = true
+                            requirements.uploadFile = el.uploadFile
+                            requirements.color = 'green'
+                        } else {
+                            requirements.fileId = Number(el.id)
+                            requirements.file = el.fileName
+                            requirements.fileUploaded = true
+                            requirements.uploadFile = el.uploadFile
+                            requirements.verified = true
+                            requirements.color = 'blue-9'
+                        }
+                        
                     });
                 } else {
                     // error
@@ -428,7 +687,7 @@ export default {
         openPrint(){
             let data = {
                 student: {...this.myInfo},
-                scholar: {...this.selectedProgram},
+                scholar: {...this.selectedProgram.data.scholarship},
                 others: {...this.form}
             }
             this.appData = data
@@ -436,6 +695,9 @@ export default {
         },
         closeFormModal(){
             this.printModal = false
+        },
+        closePreviewModal(){
+            this.previewModalStatus = false
         },
         async getList(){
             this.itemsList = []

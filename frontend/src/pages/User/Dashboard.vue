@@ -615,7 +615,7 @@
                                     </div>
                                     <div class="col-6 q-mb-sm">
                                         <span class="text-title text-bold">{{`${form.mother.name || '--'} (${form.mother.livingStatus})`}}</span><br/>
-                                        <span class="text-caption text-grey">Fathers Name</span>
+                                        <span class="text-caption text-grey">Mothers Name</span>
                                         <br/>
                                         <span class="text-title text-bold">{{`${form.mother.address || '--'}`}}</span><br/>
                                         <span class="text-caption text-grey">Address</span>
@@ -745,12 +745,18 @@
             :appData="appData"
             @updatePrintStatus="closeFormModal"
         />
+        <previewModal 
+            :modalStatus="previewModalStatus"
+            :appData="selectedFile"
+            @updatePrintStatus="closePreviewModal"
+        />
     </div>
 </template>
 
 <script>
 import moment from 'moment'
 import printFormModal from '../../components/Modals/PrintFormModel.vue';
+import previewModal from '../../components/Modals/PreviewDocument.vue';
 import { LocalStorage } from 'quasar'
 import { jwtDecode } from 'jwt-decode';
 
@@ -760,7 +766,8 @@ const dateNow = moment().format('YYYY-MM-DD');
 export default {
     name: 'UserDashboard',
     components: {
-        printFormModal
+        printFormModal,
+        previewModal
     },
     data(){
         return {
@@ -807,6 +814,9 @@ export default {
                     relation:"",
                 },
             },
+
+            selectedFile: "",
+            previewModalStatus: false,
         }
     },
     watch:{
@@ -831,6 +841,16 @@ export default {
     },
     methods: {
         moment,
+        previewDocs(file, reqType){
+            this.previewModalStatus = true
+            this.selectedFile = {
+                url: file,
+                type: reqType
+            }
+        },
+        closePreviewModal(){
+            this.previewModalStatus = false
+        },
         checkStepProcess(data){
             let res = 1;
 

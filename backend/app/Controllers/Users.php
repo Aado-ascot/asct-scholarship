@@ -156,6 +156,52 @@ class Users extends BaseController
                     ->setBody(json_encode($response));
         }
     }
+
+    public function updateUserStatus(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        //Get API Request Data from NuxtJs
+        $payload = $this->request->getJSON();
+
+        $where = ['id' => $payload->id];
+        $updateData = ['status' => $payload->status];
+
+        $updatePassword =  $this->userModel->updatePassword($where, $updateData);
+
+        if($updatePassword){
+            $response = [
+                'title' => 'User Status Update',
+                'message' => 'Your successfully update status.'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'title' => 'Change Password Failed!',
+                'message' => 'Please check your data.'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
     
     public function getAllUserList(){
         // Check Auth header bearer
@@ -174,13 +220,11 @@ class Users extends BaseController
 
         // $header = $this->request->getHeader("");
         
-        $where = [
-            'status'=> 1
-        ];
+        $where = [];
         $list = [];
         // $list['list'] = $this->userModel->getAllUserInfo($where);
 
-        $query = $this->userModel->getAllUserInfo($where);
+        $query = $this->userModel->getAllUserInfo();
         foreach ($query as $key => $value) {
             $list['list'][$key] = [
                 "key" => $value['id'],

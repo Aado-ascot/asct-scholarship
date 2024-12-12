@@ -6,8 +6,50 @@
                 <span class="text-h6 text-bold">Hi {{`${user.fullName}`}},</span><br/>
                 <span class="text-caption">Welcome to ASCOT Scholarship Management System</span><br/>
             </div>
-            <div class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
-                <span class="text-h6 text-bold">Applications Subject for {{Number(user.userType) === 3 ? `Evaluation` : `Approval`}}</span><br/>
+            <div  v-if="selectedProvider === ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
+                <span class="text-h6 text-bold">Program List</span><br/><br/>
+                <div 
+                    v-if="!tableLoading && itemsList.length === 0" 
+                    class="text-center q-pa-md"
+                >
+                    <q-icon color="grey-4" name="ti-dropbox-alt" size="6em" /> <br/>
+                    <span class="text-caption text-grey-8">
+                        No Data Can Be Shown.
+                    </span>
+                </div>
+                <q-list
+                    v-for="(item, idx) in providerList"
+                    :key="idx"
+                    bordered 
+                    class="rounded-borders itemBorder "
+                >
+
+                    <q-item>
+
+                        <q-item-section >
+                            <q-item-label lines="1">
+                                <span class="text-bold text-primary">{{`${item.provider}`}}</span><br/>
+                                <span class="text-grey-8">
+                                    {{item.description}}
+                                </span>
+                            </q-item-label>
+                        </q-item-section>
+
+                        <q-item-section side>
+                        <div class="text-grey-8 q-gutter-xs">
+                            <!-- <q-btn class="gt-xs" size="12px" flat dense round icon="delete" /> -->
+                            <q-btn @click="viewApplicationList(item)" class="gt-xs" flat color="primary" no-caps  dense label="View Applications" />
+                            <!-- <q-btn size="12px" flat dense round icon="more_vert" /> -->
+                        </div>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+            </div>
+
+            <div v-if="selectedProvider !== ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
+                <q-btn @click="backToProviderList" class="gt-xs q-mr-sm" flat color="red" rounded no-caps  dense icon="mdi-arrow-left" />
+                <span class="text-h6 text-bold">Applications Subject for {{Number(user.userType) === 3 ? `Evaluation` : `Approval`}}</span><br/><br/>
+                
                 <div v-if="tableLoading && itemsList.length === 0" class="text-center">
                     <q-spinner-bars
                         color="primary"
@@ -28,7 +70,7 @@
                     v-if="itemsList.length > 0"
                     flat
                     bordered
-                    :rows="itemsList"
+                    :rows="filteredList"
                     wrap-cells
                     :columns="tableColumns"
                     row-key="name"
@@ -236,7 +278,7 @@
                             </div>
                             <div class="col-6 q-mb-sm">
                                 <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.name || '--'} (${selectedProgram.data.familyBackground.mother.livingStatus})`}}</span><br/>
-                                <span class="text-caption text-grey">Fathers Name</span>
+                                <span class="text-caption text-grey">Mothers Name</span>
                                 <br/>
                                 <span class="text-title text-bold">{{`${selectedProgram.data.familyBackground.mother.address || '--'}`}}</span><br/>
                                 <span class="text-caption text-grey">Address</span>
@@ -413,6 +455,8 @@ export default {
     },
     data(){
         return {
+            providerList: [],
+            selectedProvider: "",
             drawerRight: false,
             selectedProgram: {},
             tableLoading: false,
@@ -430,6 +474,14 @@ export default {
         }
     },
     computed: {
+        filteredList(){
+			// return this.users.filter(el => 
+			// 	this.selectedCourseFilter.includes(el.course) && 
+			// 	this.selectedSchoolYearFilter.includes(el.yearFrom) && 
+			// 	this.selectedReportTypeFilter.includes(el.reportType)
+			// )
+			return this.itemsList.filter(el => this.selectedProvider === el.title)
+		},
         user: function(){
             const user = LocalStorage.getItem('userData')
             return jwtDecode(user);
@@ -475,6 +527,12 @@ export default {
     },
     methods: {
         moment,
+        viewApplicationList(item){
+            this.selectedProvider = item.description
+        },
+        backToProviderList(){
+            this.selectedProvider = ""
+        },
         async updateApplicationData(type){
             // Confirm
             this.$q.dialog({
@@ -669,6 +727,16 @@ export default {
                 const data = {...response.data};
                 if(!data.error){
                     this.itemsList = data.list
+                    let providers = data.list.filter((e, i, self) => i === self.findIndex((t) => t.title === e.title))
+                    this.providerList = providers.map(el => {
+                        let obj = {
+                            provider: el.provider,
+                            description: el.title,
+                            scholarId: el.data.scholarId
+                        }
+
+                        return obj
+                    });
                 }
 
                 this.tableLoading = false

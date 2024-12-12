@@ -60,8 +60,21 @@
   {
     "title": "Scholars",
     "icon": "ti-announcement",
-    "link": "unitApprovedScholars",
-    "code": 303
+    "code": 303,
+    "children": [
+      {
+        "title": "Qulified",
+        "icon": "mdi-check-decagram",
+        "link": "unitApprovedScholars",
+        "code": 303
+      },
+      {
+        "title": "Not Qualified",
+        "icon": "mdi-file-cancel-outline",
+        "link": "unitUnapprovedScholars",
+        "code": 303
+      }
+    ]
   },
   {
     "title": "Announcements",

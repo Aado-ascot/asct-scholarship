@@ -79,8 +79,14 @@
                                     </q-td>
                                     <q-td class="text-center">
                                         <q-btn-group  rounded>
-                                            <q-btn rounded size="sm" color="secondary" label="Edit" />
-                                            <q-btn rounded size="sm" color="negative" label="Deactivate" />
+                                            <!-- <q-btn rounded size="sm" color="secondary" label="Edit" /> -->
+                                            <q-btn 
+                                                rounded 
+                                                size="sm"
+                                                @click="updateUserStatus(props.row.original)"
+                                                :color="Number(props.row.status) === 1 ? 'negative' : 'green'" 
+                                                :label="Number(props.row.status) ? 'Deactivate' : 'Activate'" 
+                                            />
                                         </q-btn-group>
                                     </q-td>
 
@@ -142,7 +148,7 @@ export default {
                 { name: 'desc', label: 'Type', field: 'desc' },
                 { name: 'email', label: 'Email Address', field: 'email' },
                 { name: 'contact', label: 'Contact #', field: 'contact' },
-                { name: 'status', label: 'Status', field: 'status' },
+                // { name: 'status', label: 'Status', field: 'status' },
                 { name: 'createdAt', label: 'Created Date', field: 'createdAt' }
             ]
         }
@@ -155,6 +161,54 @@ export default {
         moment,
         updateModalStatus(){
             this.modalComponents.modalStatus = false;
+        },
+        updateUserStatus(data){
+            this.$q.dialog({
+                title: 'Update User Status',
+                message: 'Are you sure you want to take this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                let payload = {
+                    id: data.id,
+                    status: Number(data.status) === 1 ? 0 : 1
+                };
+                this.$q.loading.show({
+                    message: 'Changing user status. Please wait...'
+                });
+
+                this.$api.post('users/update/status', payload).then((response) => {
+        
+                    const data = {...response.data};
+                    if(!data.error){
+                        this.$q.notify({
+                            color: 'positive',
+                            position: 'top-right',
+                            title:data.title,
+                            message:'Status updated',
+                            icon: 'report_problem'
+                        })
+                        this.getList()
+                    } else {
+                        this.$q.notify({
+                            color: 'negative',
+                            position: 'top-right',
+                            title:data.title,
+                            message: vm.$t(`errors.${data.error}`),
+                            icon: 'report_problem'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+
+            })
         },
         async getList(){
             this.itemsList = [];
