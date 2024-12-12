@@ -96,6 +96,9 @@ class ScholarShip extends BaseController
                 'message' => 'Your application has been submitted.'
             ];
 
+            // Send Notification
+            $this->sendAdminsNotification(3, $payload['studentId'], "Student send an application for evaluation");
+
             return $this->response
                     ->setStatusCode(200)
                     ->setContentType('application/json')
@@ -113,6 +116,20 @@ class ScholarShip extends BaseController
                     ->setBody(json_encode($response));
         }
 
+    }
+    public function sendAdminsNotification($type, $from, $contents){
+        $query = $this->authModel->where(['userType' => $type])->get()->getResult();
+        foreach ($query as $key => $value) {
+            $notif = [
+                "toUser" => $value->id,
+                "fromUser" => $from, 
+                "message" => $contents, 
+                "notifType" => "green", 
+                "seen" => 0, 
+            ];
+            $this->miscModel->sendNotification($notif);
+        }
+        
     }
 
     public function updateScholarshipStatus(){
@@ -402,6 +419,89 @@ class ScholarShip extends BaseController
                     ->setStatusCode(200)
                     ->setContentType('application/json')
                     ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+    public function getListAdmin(){
+        // Check Auth header bearer
+        // $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        // if(!$authorization){
+        //     $response = [
+        //         'message' => 'Unauthorized Access'
+        //     ];
+
+        //     return $this->response
+        //             ->setStatusCode(401)
+        //             ->setContentType('application/json')
+        //             ->setBody(json_encode($response));
+        //     exit();
+        // }
+
+        $list = [];
+
+        $query = $this->scholarModel->getScholarshipListAdmin();
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $cinfo = $value['creator'];
+            $value['qualification'] = json_decode($value['qualification']);
+            $value['requirements'] = json_decode($value['requirements']);
+
+            $list['list'][$key] = [
+                "key" => $value['id'],
+                "title" => $value['title'],
+                "provider" => $value['provider'],
+                "slotAvailable" => $value['slot'],
+                "dueDate" => $value['dueDate'],
+                "creator" => $cinfo->firstName .' '. $cinfo->middleName .' '. $cinfo->lastName .' '. $cinfo->suffix,
+                "original" =>  $value,
+            ];
+        }
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+    public function updateScholarship(){
+        $payload = $this->request->getJSON();
+
+        $where = [
+            'id' => $payload->scholarId
+        ];
+        $update = $this->scholarModel->updateScholarshipStatus($where, $payload->status);
+        
+        if($update){
+            $response = [
+                'title' => 'Update Status',
+                'message' => 'Scholarship status updated'
+            ];
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
         } else {
             $response = [
                 'error' => 404,

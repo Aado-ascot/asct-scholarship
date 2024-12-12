@@ -46,6 +46,26 @@ class ScholarshipModel extends Model
         return $all;
     }
 
+    public function getScholarshipListAdmin() {
+
+        $query = $this->db->table($this->table)->get();
+        $results = $query->getResult('array');
+
+        $all = array_map(function($el){
+            foreach($el as $key => $val){
+                $userParams = [
+                    "id" => $el["createdBy"]
+                ];
+                $lq = "SELECT id, lastName, firstName, suffix, middleName FROM ". $this->tableUser ." WHERE id = :id:";
+                $userInfo = $this->db->query($lq, $userParams);
+                $el["creator"] = $userInfo->getRow();
+            }
+            return $el;
+        }, $results);
+
+        return $all;
+    }
+
     public function getScholarshipByUser($where) {
 
         $query = $this->db->table($this->tableApplication)->where($where)->get();
@@ -98,6 +118,10 @@ class ScholarshipModel extends Model
     }
     public function updateScholarship($where, $setData){
         $query = $this->db->table($this->table)->set($setData)->where($where)->update();
+        return $query ? true : false;
+    }
+    public function updateScholarshipStatus($where, $status){
+        $query = $this->db->table($this->table)->set('status', $status)->where($where)->update();
         return $query ? true : false;
     }
     public function updateScholarshipSlot($where){

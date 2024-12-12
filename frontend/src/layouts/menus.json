@@ -6,7 +6,7 @@
     "code": 101
   },
   {
-    "title": "Apply Scholarship",
+    "title": "My Applications",
     "icon": "ti-bookmark-alt",
     "link": "applyScholarship",
     "code": 102
@@ -25,12 +25,7 @@
     "link": "adminDashboard",
     "code": 201
   },
-  {
-    "title": "User Management",
-    "icon": "ti-user",
-    "link": "adminUserManagement",
-    "code": 202
-  },
+  
   {
     "title": "Scholarship Management",
     "icon": "ti-bookmark-alt",
@@ -42,6 +37,12 @@
     "icon": "ti-announcement",
     "link": "adminAnnouncementManagement",
     "code": 204
+  },
+  {
+    "title": "User Management",
+    "icon": "ti-user",
+    "link": "adminUserManagement",
+    "code": 202
   },
 
   {

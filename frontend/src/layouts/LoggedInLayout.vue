@@ -91,13 +91,11 @@
 
         
         <q-card v-if="!miniState" class="myMenuBar">
-          <q-card-section class="fit row wrap justify-center items-center content-start">
+          <q-card-section class="fit row wrap justify-center items-center content-start myMenuBarSection">
             <q-btn-group flat dense spread>
-              <q-btn @click="goToProfile" flat rounded color="primary" icon="ti-user"/>
-              <q-btn @click="modalStatus = true" flat rounded color="secondary" icon="ti-lock"/>
-              <!-- <q-btn flat rounded color="positive" icon="ti-headphone-alt"/> -->
-              <!-- <q-btn flat rounded color="warning" icon="ti-settings"/> -->
-              <q-btn flat rounded color="red" icon="ti-power-off" @click="logout" />
+              <q-btn @click="goToProfile" flat size="sm" rounded color="primary" icon="ti-user"/>
+              <q-btn @click="modalStatus = true" flat rounded size="sm" color="secondary" icon="ti-lock"/>
+              <q-btn flat rounded color="red" icon="ti-power-off" size="sm" @click="logout" />
             </q-btn-group>
           </q-card-section>
         </q-card>
@@ -337,8 +335,22 @@ export default {
       this.menuCrumbs = val;
     },
     logout(){
-      localStorage.removeItem('userData');
-      this.$router.push('/')
+      this.$q.dialog({
+          title: 'Logout',
+          message: 'Are you sure you want to logout?',
+          ok: {
+              label: 'Yes'
+          },
+          cancel: {
+              label: 'No',
+              color: 'negative'
+          },
+          persistent: true
+      }).onOk(() => {
+        localStorage.removeItem('userData');
+        this.$router.push('/')
+      })
+      
     },
     async submitChangePass(){
       let vm = this;
@@ -408,6 +420,9 @@ export default {
 .myMenuBar{
   padding: 0% !important;
   border-radius: 20px;
+}
+.myMenuBarSection{
+  padding: 3% !important;
 }
 .drawerBtn{
   position: absolute;

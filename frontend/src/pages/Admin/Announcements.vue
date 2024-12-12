@@ -45,7 +45,7 @@
                                 No Data Can Be Shown.
                             </span>
                         </div>
-                        <!-- <q-table
+                        <q-table
                             v-if="itemsList.length > 0"
                             flat
                             :rows="itemsList"
@@ -79,14 +79,14 @@
                                     </q-td>
                                     <q-td class="text-center">
                                         <q-btn-group  rounded>
-                                            <q-btn rounded size="sm" color="secondary" label="Edit" />
-                                            <q-btn rounded size="sm" color="negative" label="Deactivate" />
+                                            <!-- <q-btn rounded size="sm" color="secondary" label="Edit" /> -->
+                                            <q-btn rounded @click="deleteAnnouncement(props.row)" size="sm" color="negative" label="Delete" />
                                         </q-btn-group>
                                     </q-td>
 
                                 </q-tr>
                             </template>
-                        </q-table> -->
+                        </q-table>
                     </q-card-section>
                 </q-card>
             </div>
@@ -131,20 +131,23 @@ export default {
         tableColumns: function(){
             return [
                 {
-                    name: 'name',
+                    name: 'title',
                     required: true,
-                    label: 'Name',
+                    label: 'Title',
                     align: 'left',
-                    field: row => row.name,
+                    field: row => row.title,
                     format: val => `${val}`,
                     sortable: true
                 },
-                { name: 'username', label: 'Username', field: 'username'},
-                { name: 'desc', label: 'Type', field: 'desc' },
-                { name: 'email', label: 'Email Address', field: 'email' },
-                { name: 'contact', label: 'Contact #', field: 'contact' },
-                { name: 'status', label: 'Status', field: 'status' },
-                { name: 'createdAt', label: 'Created Date', field: 'createdAt' }
+                {
+                    name: 'announcement',
+                    required: true,
+                    label: 'Content',
+                    align: 'left',
+                    field: row => row.announcement,
+                    format: val => `${val}`,
+                    sortable: true
+                },
             ]
         }
         
@@ -180,6 +183,54 @@ export default {
 
             this.tableLoading = false;
         },
+        deleteAnnouncement(data){
+            // Confirm
+            this.$q.dialog({
+                title: 'Delete Announcement',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+
+                let payload = {
+                    aid: data.id
+                }
+                
+                this.$api.post('announcement/delete/content', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+                        this.getList()
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+            })
+
+            
+        }
     }
 }
 </script>

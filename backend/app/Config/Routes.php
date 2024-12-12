@@ -59,6 +59,7 @@ $routes->group('ascots/api/v1', function($routes){
 	// User Scholarship
 	$routes->group('announcement', function($routes){
 		$routes->post('create/new', 'Announcement::createAnnouncement');
+		$routes->post('delete/content', 'Announcement::deleteAnnouncement');
 		$routes->get('list', 'Announcement::getList');
 	});
 
@@ -67,10 +68,12 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
 		$routes->post('submit/application', 'ScholarShip::submitApplication');
 		$routes->get('list', 'ScholarShip::getList');
+		$routes->get('list/admin', 'ScholarShip::getListAdmin');
 		$routes->post('applied/status', 'ScholarShip::getListUserApplied');
 		$routes->post('applied/list', 'ScholarShip::getListUserApplications');
 		$routes->post('approved/list', 'ScholarShip::getListApproveApplications');
 		$routes->post('update/application', 'ScholarShip::updateScholarshipStatus');
+		$routes->post('update/scholarship', 'ScholarShip::updateScholarship');
 	});
 
 	// Miscelenious

@@ -1,76 +1,131 @@
 <template>
     <div class="q-pa-md" style="width: 100%;">
         <div class="row">
-            <!-- Users Count Overview -->
-            <div class="col-12 col-xs-12 col-sm-12 col-md-12">
+            <div class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
                 <q-card
                     flat
-                    class="my-card bg-white"
+                    class="bg-white"
                 >
                     <q-card-section>
-                        <!-- <span class="text-h6 text-bold">ASCT Scholarship Services</span><br/> -->
-                        <div class="row">
-                            <div
-                            v-for="(item, idx) in itemsList"
-                            :key="idx"
-                            class="col-12 col-md-4 "
-                            >
-                            <q-card class="my-card" flat bordered>
-                                <q-img :src="`/imgs/${item.original.provider}-WEBSITE.png`" />
-                
-                                <q-card-section>
-                                    <q-btn
-                                        fab
-                                        color="primary"
-                                        icon="mdi-calendar-multiple"
-                                        class="absolute"
-                                        style="top: 0; right: 12px; transform: translateY(-50%);"
-                                    />
-
-                                    <div class="row no-wrap items-center">
-                                        <div class="col text-h6 ellipsis">
-                                            {{item.title}}
-                                        </div>
-                                    </div>
-                                    <div class="row no-wrap items-center">
-                                        <div class="col text-caption">
-                                            Submission Due Date: {{item.original.dueDate}}
-                                        </div>
-                                    </div>
-                                </q-card-section>
-
-                                <q-card-section class="q-pt-none">
-                                    <q-list>
-                                        <q-item-label class="text-bold" header>Qualifications</q-item-label>
-                                        <q-item 
-                                            v-for="(itm, indx) in item.original.qualification"
-                                            :key="indx"
-                                        >
-                                            <q-item-section avatar>
-                                                <q-avatar>
-                                                    <q-icon name="mdi-asterisk-circle-outline" size="sm" />
-                                                </q-avatar>
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label>
-                                                    {{itm.description}}
-                                                </q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </q-card-section>
-
-                                <q-separator />
-
-                                <q-card-actions>
-                                    <q-btn @click="applyForScholarship(item.original)" flat color="primary">
-                                        Submit Application
-                                    </q-btn>
-                                </q-card-actions>
-                            </q-card>
-                            </div>
+                        My Application List
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-section>
+                        <div v-if="tableLoading && itemsList.length === 0" class="text-center">
+                            <q-spinner-bars
+                                color="primary"
+                                size="3em"
+                            />
                         </div>
+                        <div 
+                            v-if="!tableLoading && itemsList.length === 0" 
+                            class="text-center q-pa-md"
+                        >
+                            <q-icon color="grey-4" name="ti-dropbox-alt" size="6em" /> <br/>
+                            <span class="text-caption text-grey-8">
+                                No Data Can Be Shown.
+                            </span>
+                        </div>
+                        <q-table
+                            v-if="itemsList.length > 0"
+                            flat
+                            bordered
+                            :rows="itemsList"
+                            wrap-cells
+                            :columns="tableColumns"
+                            row-key="name"
+                            :filter="search"
+                        >  
+                            <template v-slot:header="props">
+                                <q-tr :props="props">
+                                    <q-th
+                                        v-for="col in props.cols"
+                                        :key="col.name"
+                                        :props="props"
+                                    >
+                                        {{ col.label }}
+                                    </q-th>
+                                    <q-th class="text-center">
+                                        Actions
+                                    </q-th>
+                                </q-tr>
+                            </template>
+                            <template v-slot:body="props">
+                                <q-tr :props="props">
+                                    <q-td
+                                        v-for="col in props.cols"
+                                        :key="col.name"
+                                        :props="props"
+                                    >
+                                        <div v-if="col.label === 'Application Status'" class="text-center">
+                                            <q-stepper
+                                                :model-value="checkStepProcess(col.value)"
+                                                ref="stepper"
+                                                contracted
+                                                color="orange"
+                                                flat
+                                                :id="`evaluatorProcess-${col.value.id}`"
+                                                active-icon="mdi-cog-clockwise"
+                                                active-color="orange"
+                                                done-icon="mdi-check-all"
+                                                done-color="green"
+                                                error-icon="mdi-close-circle"
+                                                class="customStepper"
+                                            >
+                                                <q-step
+                                                    class="no-content"
+                                                    :name="0"
+                                                    :done="true"
+                                                >
+                                                    
+                                                </q-step>
+
+                                                <q-step
+                                                    class="no-content"
+                                                    :name="1"
+                                                    :error="Number(col.value.appStatus) === 3"
+                                                    :done="Number(col.value.evaluatedBy) > 0 && Number(col.value.appstatus) !== 3"
+                                                >  
+                                                </q-step>
+
+                                                <q-step
+                                                    class="no-content"
+                                                    :name="2"
+                                                    title="Create an ad group"
+                                                    icon="mdi-check-decagram"
+                                                    :error="Number(col.value.appStatus) === 3"
+                                                    :done="Number(col.value.approvedBy) > 0 && Number(col.value.appstatus) !== 3"
+                                                >
+                                                </q-step>
+                                            </q-stepper>
+                                            <q-tooltip
+                                                anchor="center middle" self="top middle"
+                                                :target="`#evaluatorProcess-${col.value.id}`"
+                                                class="bg-white text-black q-pa-md"
+                                            >
+                                                <span class="text-bold">Submit Application:</span> Done <br/>
+                                                <span class="text-bold">Evaluate:</span> -- <br/>
+                                                <span class="text-bold">Approve:</span> -- <br/>
+                                                <span class="text-bold">Remarks:</span> {{props.row.status || 'No Remarks'}} <br/>
+                                            </q-tooltip>
+                                        </div>
+                                        <div v-if="col.label !== 'Application Status'">
+                                            {{ col.value }}
+                                        </div>
+                                    </q-td>
+                                    <q-td class="text-center">
+                                        <q-btn 
+                                            @click="viewApplication(props.row)"
+                                            outline 
+                                            rounded 
+                                            size="sm"
+                                            color="secondary" 
+                                            label="View Details" 
+                                        />
+                                    </q-td>
+                                </q-tr>
+                            </template>
+                        </q-table>
                     </q-card-section>
                 </q-card>
             </div>
@@ -78,355 +133,7 @@
 
 
         <!-- Application Submit -->
-        <q-drawer
-            side="right"
-            v-model="drawerRight"
-            bordered
-            overlay
-            :width="900"
-        >
-            <q-scroll-area class="fit">
-                <q-card
-                    flat
-                    class=" bg-white"
-                >
-                    <q-card-section class="row items-center no-wrap">
-                        <div>
-                            <div class="text-h5 text-weight-bold">{{selectedProgram.title}}</div>
-                        </div>
-                        <q-space />
-                        <q-btn size="sm" rounded color="red" icon="ti-close" label="Cancel" @click="drawerRight = !drawerRight" />
-                    </q-card-section>
-                    <q-separator />
-                    <q-card-section >
-                        <q-stepper
-                            v-model="step"
-                            ref="stepper"
-                            color="primary"
-                            animated
-                            flat
-                            :swipeable="false"
-                        >
-                            <q-step
-                                :name="1"
-                                title="Details"
-                                icon="settings"
-                                :done="step > 1"
-                            >   
-                                <div class="row">
-                                    <div class="col-6 q-mb-sm">
-                                        <span class="text-caption text-grey">Available Slot: </span>
-                                        <span class="text-title text-bold">{{`${Number(selectedProgram.slot) - Number(selectedProgram.applied) || '0'}/${selectedProgram.slot || '0'}`}}</span>
-                                    </div>
-                                    <div class="col-6 q-mb-sm">
-                                        <span class="text-caption text-grey">Read more details for this program: </span>
-                                        <span class="text-title text-bold"><a :href="selectedProgram.otherDetailsLink" target="_blank"> {{`${selectedProgram.otherDetailsLink || '--'}`}}</a></span>
-                                    </div>
-                                    <div class="col-12 q-mb-sm">
-                                        <span class="text-caption text-grey">Courses Covered on Program: </span><br/>
-                                        <q-chip 
-                                        v-for="(itm, indx) in convertCourses(selectedProgram.coveredCourses)"
-                                        :key="indx"
-                                        outline color="primary" text-color="white">
-                                            {{ itm }}
-                                        </q-chip>
-                                    </div>
-                                </div> 
-                                <q-separator />
-                                <div class="row q-mt-md">
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <span class="text-title text-bold">Father Details</span>
-                                    </div>
-                                    <div class="col-12 col-md-8 q-pa-xs">
-                                        <q-input
-                                            v-model="form.father.name"
-                                            label="Father's Name"
-                                            placeholder="Enter Name"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <div class="q-gutter-sm">
-                                            <q-radio v-model="form.father.livingStatus" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="living" label="Living" />
-                                            <q-radio v-model="form.father.livingStatus" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="deceased" label="Deceased" />
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.father.occupation"
-                                            label="Occupation"
-                                            placeholder="Enter occupation"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.father.educAttainment"
-                                            label="Educational Attainment"
-                                            placeholder="Enter educational attainment"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.father.contact"
-                                            label="Contact Number"
-                                            placeholder="Enter Mobile/Phone"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <q-input
-                                            type="textarea"
-                                            v-model="form.father.address"
-                                            label="Address"
-                                            placeholder="Enter Address"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <span class="text-title text-bold">Mother Details</span>
-                                    </div>
-                                    <div class="col-12 col-md-8 q-pa-xs">
-                                        <q-input
-                                            v-model="form.mother.name"
-                                            label="Mothers's Name"
-                                            placeholder="Enter Name"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <div class="q-gutter-sm">
-                                            <q-radio v-model="form.mother.livingStatus" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="living" label="Living" />
-                                            <q-radio v-model="form.mother.livingStatus" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="deceased" label="Deceased" />
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.mother.occupation"
-                                            label="Occupation"
-                                            placeholder="Enter occupation"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.mother.educAttainment"
-                                            label="Educational Attainment"
-                                            placeholder="Enter educational attainment"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.mother.contact"
-                                            label="Contact Number"
-                                            placeholder="Enter Mobile/Phone"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <q-input
-                                            type="textarea"
-                                            v-model="form.mother.address"
-                                            label="Address"
-                                            placeholder="Enter Address"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <span class="text-title text-bold">Other Details</span>
-                                    </div>
-                                    <div class="col-12 col-md-6 q-pa-xs">
-                                        <q-input
-                                            v-model="form.totalIncome"
-                                            label="Total Parent Gross Income"
-                                            placeholder="Enter Amount"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-6 q-pa-xs">
-                                        <q-input
-                                            v-model="form.noOfSiblings"
-                                            label="No. Of Siblings in the family"
-                                            placeholder="Enter Count"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <span class="text-title">Are you living with your parents?: </span>
-                                        <div class="q-gutter-sm">
-                                            <q-radio v-model="form.notWithParents" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Yes" />
-                                            <q-radio v-model="form.notWithParents" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="!form.notWithParents" class="row">
-                                    <div class="col-12 col-md-12 q-pa-xs">
-                                        <span class="text-title text-bold">Guardian Details</span>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.guardian.name"
-                                            label="Guardian Name"
-                                            placeholder="Enter name"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.guardian.occupation"
-                                            label="Occupation"
-                                            placeholder="Enter value"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
-                                            v-model="form.guardian.relation"
-                                            label="Relationship"
-                                            placeholder="Enter relation to the guadian"
-                                            outlined
-                                            dense
-                                            stack-label
-                                        >
-                                        </q-input>
-                                    </div>
-                                    
-                                </div>
-
-
-                            </q-step>
-
-                            <q-step
-                                :name="2"
-                                title="Requirements"
-                                icon="create_new_folder"
-                                :done="step > 2"
-                            >
-                                <div class="row">
-                                    <div class="col-12 col-md-12">
-                                        <q-list>
-                                            <q-item 
-                                                v-for="(item, index) in selectedProgram.requirements" 
-                                                :key="item.name" 
-                                                tag="label" 
-                                                v-ripple
-                                            >
-                                                <q-item-section side>
-                                                    <q-icon :color="item.color" name="task_alt" />
-                                                </q-item-section>
-
-                                                <q-item-section>
-                                                    <q-item-label>{{ item.label }}</q-item-label>
-                                                </q-item-section>
-
-                                                <q-item-section side>
-                                                    <span v-if="item.fileUploaded !== undefined">Already uploaded</span>
-                                                    <q-file
-                                                        v-if="item.fileUploaded === undefined"
-                                                        outlined  
-                                                        v-model="item.file"  
-                                                        label="Upload File Here"
-                                                        @update:model-value="evnt => {return checkFile(evnt, index)}"
-                                                        dense
-                                                    >
-                                                        <template v-slot:prepend>
-                                                        <q-icon name="cloud_upload" @click.stop.prevent />
-                                                        </template>
-                                                        <template v-slot:append>
-                                                        <q-icon name="close" @click.stop.prevent="item.file = null" class="cursor-pointer" />
-                                                        </template>
-                                                    </q-file>
-                                                </q-item-section>
-                                            </q-item>
-                                        </q-list>
-                                    </div>
-                                </div>
-                            </q-step>
-
-                            <q-step
-                                :name="3"
-                                title="Summary"
-                                icon="assignment"
-                            >
-                                <div class="row">
-                                    <div class="col-12 q-mb-sm">
-                                        <span class="text-title text-bold">{{`${myInfo.lastName || '--'} ${myInfo.firstName || '--'} ${myInfo.suffix || ''} ${myInfo.middleName || ''}`}}</span><br/>
-                                        <span class="text-caption text-grey">Name</span>
-                                    </div>
-                                    <div class="col-4 q-mb-sm">
-                                        <span class="text-title text-bold">{{`${myInfo.yrLvl || '--'}`}}</span><br/>
-                                        <span class="text-caption text-grey">Year Level</span>
-                                    </div>
-                                    <div class="col-4 q-mb-sm">
-                                        <span class="text-title text-bold">{{`${moment(myInfo.dateOfBirth).format("MMMM DD, YYYY") || '--'}`}}</span><br/>
-                                        <span class="text-caption text-grey">Date of Birth</span>
-                                    </div>
-                                </div>
-                            </q-step>
-                        </q-stepper>
-
-                        
-                    </q-card-section>
-                    <q-separator />
-                    <q-card-actions>
-                        <q-stepper-navigation >
-                            <q-btn v-if="step < 3" @click="$refs.stepper.next()" color="primary" label="Continue" />
-                            <q-btn v-if="step === 3" @click="openPrint" class="q-mr-sm" color="positive" label="Preview Form" />
-                            <q-btn v-if="step === 3" @click="submitApplicationFormData" color="positive" label="Finish" />
-                            <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
-                        </q-stepper-navigation>
-                    </q-card-actions>
-                </q-card>
-            </q-scroll-area>
-        </q-drawer>
+        
         <!-- End of Application Submit Drawer -->
         <printFormModal 
             :modalStatus="printModal"
@@ -488,7 +195,7 @@ export default {
                     occupation:"",
                     relation:"",
                 },
-            }
+            },
         }
     },
     watch:{
@@ -502,15 +209,79 @@ export default {
         user: function(){
             let profile = LocalStorage.getItem('userData');
             return jwtDecode(profile);
+        },
+        tableColumns: function(){
+            return [
+                {
+                    name: 'title',
+                    required: true,
+                    label: 'Scholarship Applied',
+                    align: 'left',
+                    field: row => row.title,
+                    format: val => `${val}`,
+                    sortable: true
+                },
+                { name: 'provider', label: 'Type', field: 'provider', align: 'left' },
+                { name: 'processFlow', label: 'Application Status', field: 'data', align: 'center',},
+                // { name: 'remarks', label: 'Remarks', field: 'remarks', align: 'left' },
+            ]
         }
     },
     created(){
         this.getCourses()
-        this.getList()
+        this.getApplied()
         this.getMyDetails()
     },
     methods: {
         moment,
+        async getApplied(){
+            this.tableLoading = true
+            this.itemsList = []
+
+            this.$api.post('scholarship/applied/status', {sId: this.user.userId}).then((response) => {
+                const data = {...response.data};
+                if(!data.error){
+                    this.itemsList = data.list
+
+                    let checkApproved = data.list.filter(el => {return Number(el.data.appStatus) === 2})
+                    this.approvedApplication = checkApproved.length > 0 ? checkApproved[0] : null
+                } else {
+                    this.$q.notify({
+                        position: 'top-left',
+                        type: 'negative',
+                        message: data.title,
+                        caption: data.message,
+                        icon: 'report_problem'
+                    })
+                }
+
+                this.tableLoading = false
+            })
+        },
+        checkStepProcess(data){
+            let res = 1;
+
+            if(Number(data.evaluatedBy) !== 0 && Number(data.approvedBy) === 0){
+                res = 2
+            } else if(Number(data.evaluatedBy) > 0 && Number(data.approvedBy) > 0){
+                res = 3
+            } else if(Number(data.rejectedBy) > 0){
+                res = 4
+            }
+            return res
+        },
+        displayStatus(data){
+            let res = "";
+
+            if(Number(data.evaluatedBy) !== 0 && Number(data.approvedBy) === 0){
+                res = ""
+            } else if(Number(data.evaluatedBy) > 0 && Number(data.approvedBy) > 0){
+                res = ""
+            } else if(Number(data.rejectedBy) > 0){
+                res = "Rejected Application"
+            }
+            return res
+        },
         async submitApplicationFormData(){
             this.$q.loading.show();
             this.loginLoad = true;
@@ -746,6 +517,19 @@ export default {
 }
 </script>
 <style scoped>
+.customStepper{
+    
+    padding: 0px !important;
+}
+.itemBorder{
+    border-left: 3px solid rgb(0,177,250);
+}
+.q-stepper__header--contracted {
+    min-height: 32px!important;
+}
+.no-content{
+    display: none;
+}
 .my-card{
     border-radius: 15px;
     box-shadow: 0px 0px 3px -2px !important;

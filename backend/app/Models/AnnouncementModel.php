@@ -27,7 +27,7 @@ class AnnouncementModel extends Model
         $query = $this->db->table($this->table)->set($setData)->where($where)->update();
         return $query ? true : false;
     }
-    public function deleteFileInfo($where){
+    public function deleteAnnounceInfo($where){
         $query = $this->db->table($this->table)->where($where)->delete();
         return $query ? true : false;
     }

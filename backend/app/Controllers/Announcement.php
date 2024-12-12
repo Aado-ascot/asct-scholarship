@@ -75,4 +75,41 @@ class Announcement extends BaseController
         }
     } 
 
+    public function deleteAnnouncement(){
+        //Get API Request Data from NuxtJs
+        $data = $this->request->getJSON();
+
+        $where = [
+            'id' => $data->aid
+        ];
+        
+        //Select Query for finding User Information
+        $query = $this->announceModel->deleteAnnounceInfo($where);
+
+        if($query){
+
+            $response = [
+                'title' => 'Delete successful',
+                'message' => 'Your attachment is deleted'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            
+        } else {
+            $response = [
+                'title' => 'Update Failed!',
+                'message' => 'Please check your data and connect to your Admin'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    }
+
 }

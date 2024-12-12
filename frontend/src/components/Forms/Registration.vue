@@ -8,7 +8,7 @@
                 label="Student Number"
                 v-bind="formRules.username"
                 placeholder="Student Number"
-                mask="##-##-####"
+                mask="##-##-####NNNN"
                 outlined 
                 stack-label
             >
@@ -21,14 +21,21 @@
             <q-input 
                 v-model="form.password"
                 v-bind="formRules.password"
-                type="password"
+                :type="isPwd ? 'password' : 'text'"
                 label="Password"
                 placeholder="***********"
                 outlined  
                 stack-label
             >
                 <template v-slot:prepend>
-                <q-icon name="ti-lock" />
+                  <q-icon name="ti-lock" />
+                </template>
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
                 </template>
             </q-input>
         </div>
@@ -216,6 +223,7 @@ export default {
   data() {
     return {
       tab: "login",
+      isPwd: true,
       keepLogin: false,
       loginLoad: false,
       sexOpt: [

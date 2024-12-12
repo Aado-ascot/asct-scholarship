@@ -71,6 +71,13 @@
                                     >
                                         <q-step
                                             class="no-content"
+                                            :name="0"
+                                            :done="true"
+                                        >
+                                            
+                                        </q-step>
+                                        <q-step
+                                            class="no-content"
                                             header-nav
                                             :name="1"
                                             :done="Number(col.value.evaluatedBy) > 0"
@@ -313,13 +320,6 @@
                                                     class="q-mr-xs" 
                                                     rounded color="green" 
                                                     label="Verify" 
-                                                />
-                                                <q-btn 
-                                                    v-if="item.verified === undefined"
-                                                    outline size="sm" 
-                                                    rounded 
-                                                    color="red" 
-                                                    label="Request For Update" 
                                                 />
                                             </div>
                                         </q-item-section>
@@ -583,45 +583,59 @@ export default {
             
         },
         async verifyDocument(item){
-            this.$q.loading.show();
-            let payload = {
-                fileId: item.fileId,
-                updateDetails: {
-                    status: 1,
-                    remarks: "Evaluator verify and checked the Document is Valid",
+            this.$q.dialog({
+                title: 'Verify Document',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                let payload = {
+                    fileId: item.fileId,
+                    updateDetails: {
+                        status: 1,
+                        remarks: "Evaluator verify and checked the Document is Valid",
+                    }
                 }
-            }
 
-            let index = this.selectedProgram.data.scholarship.requirements.indexOf(item)
-            let requirements = this.selectedProgram.data.scholarship.requirements[index];
+                let index = this.selectedProgram.data.scholarship.requirements.indexOf(item)
+                let requirements = this.selectedProgram.data.scholarship.requirements[index];
 
-            
-            this.$api.post('document/update/attachment', payload).then(async (response) => {
-                const data = {...response.data};
+                
+                this.$api.post('document/update/attachment', payload).then(async (response) => {
+                    const data = {...response.data};
 
-                if(!data.error){
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'success',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-check-all'
-                    })
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
 
-                    requirements.verified = true
-                    requirements.color = 'blue-9'
-                } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-alert-circle-outline'
-                    })
-                }
+                        requirements.verified = true
+                        requirements.color = 'blue-9'
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
             })
-
-            this.$q.loading.hide();
+            
         },
         previewDocs(file, reqType){
             this.previewModalStatus = true

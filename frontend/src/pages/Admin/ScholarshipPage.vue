@@ -75,7 +75,16 @@
                                         :key="col.name"
                                         :props="props"
                                     >
-                                        {{ col.value }}
+                                        <div v-if="col.name === 'slotAvailable'">
+                                            {{ Number(props.row.slotAvailable) - Number(props.row.original.applied) }}
+                                        </div>
+                                        <div v-else-if="col.name === 'status'">
+                                            {{ Number(props.row.original.status) === 1 ? 'Available' : 'Closed' }}
+                                        </div>
+                                        <div v-else>
+                                            {{ col.value }}
+                                        </div>
+                                        
                                     </q-td>
                                     <q-td class="text-center">
                                         <q-btn
@@ -83,8 +92,19 @@
                                             rounded
                                             color="primary" 
                                             size="sm" 
+                                            no-caps
                                             label="View Details"
                                             icon="mdi-file-find" 
+                                            class="q-mr-sm"
+                                        />
+                                        <q-btn
+                                            @click="updateScholarStatus(props.row)"
+                                            rounded
+                                            :color="props.row.original.status === '1' ? 'red' : 'green'" 
+                                            size="sm"
+                                            no-caps
+                                            :label="props.row.original.status === '1' ? 'Close Submission' : 'Open Submission'"
+                                            :icon="props.row.original.status === '1' ? 'mdi-close' : 'mdi-lock-open-variant-outline'" 
                                         />
                                     </q-td>
 
@@ -497,8 +517,9 @@ export default {
                     sortable: true
                 },
                 { name: 'provider', align: 'left', label: 'Provider', field: 'provider' },
-                { name: 'slotAvailable', align: 'left', label: 'Slots', field: 'slotAvailable', sortable: true },
+                { name: 'slotAvailable', align: 'left', label: 'Available Slot', field: 'slotAvailable', sortable: true },
                 { name: 'dueDate', align: 'left', label: 'Validity', field: 'dueDate', sortable: true },
+                { name: 'status', align: 'left', label: 'Status', field: 'status', sortable: true },
                 { name: 'creator', align: 'left', label: 'Created By', field: 'creator', sortable: true },
                 
             ]
@@ -516,6 +537,51 @@ export default {
     },
     methods: {
         moment,
+        async updateScholarStatus(data){
+            this.$q.dialog({
+                title: 'Update Application Status',
+                message: 'Would you like to proceed with this transaction?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                let payload = {
+                    scholarId: Number(data.original.id),
+                    status: Number(data.original.status) === 0 ? 1 : 0
+                }
+
+                this.$api.post('scholarship/update/scholarship', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+                        this.getList()
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+            })
+        },
         async submitRegister(){
             this.$q.loading.show();
             this.loginLoad = true;
@@ -593,7 +659,7 @@ export default {
         },
         async getList(){
             this.itemsList = []
-            this.$api.get('scholarship/list').then((response) => {
+            this.$api.get('scholarship/list/admin').then((response) => {
                 const data = {...response.data};
                 if(!data.error){
                     this.itemsList = data.list
