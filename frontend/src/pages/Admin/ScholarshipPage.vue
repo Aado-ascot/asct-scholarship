@@ -105,6 +105,16 @@
                                             no-caps
                                             :label="props.row.original.status === '1' ? 'Close Submission' : 'Open Submission'"
                                             :icon="props.row.original.status === '1' ? 'mdi-close' : 'mdi-lock-open-variant-outline'" 
+                                            class="q-mr-sm"
+                                        />
+                                        <q-btn
+                                            @click="deleteScholarship(props.row)"
+                                            rounded
+                                            color="red" 
+                                            size="sm"
+                                            no-caps
+                                            label="Delete"
+                                            icon="mdi-delete-empty" 
                                         />
                                     </q-td>
 
@@ -196,6 +206,17 @@
                                             emit-value
                                             map-options
                                         >
+                                            <template v-slot:before-options>
+                                                <q-item>
+                                                    <q-item-section>
+                                                        <q-item-label>Select All</q-item-label>
+                                                    </q-item-section>
+                                                    <q-item-section side>
+                                                        <q-checkbox v-model="selectAllCourse" checked-icon="task_alt" unchecked-icon="radio_button_unchecked" />
+                                                    </q-item-section>
+                                                </q-item>
+                                                <q-separator />
+                                            </template>
                                             <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                                                 <q-item v-bind="itemProps">
                                                     <q-item-section>
@@ -502,7 +523,18 @@
                                     multiple
                                     emit-value
                                     map-options
-                                >
+                                >  
+                                    <template v-slot:before-options>
+                                        <q-item>
+                                            <q-item-section>
+                                                <q-item-label>Select All</q-item-label>
+                                            </q-item-section>
+                                            <q-item-section side>
+                                                <q-checkbox v-model="selectAllCourse" checked-icon="task_alt" unchecked-icon="radio_button_unchecked" />
+                                            </q-item-section>
+                                        </q-item>
+                                        <q-separator />
+                                    </template>
                                     <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                                         <q-item v-bind="itemProps">
                                             <q-item-section>
@@ -672,6 +704,7 @@ export default {
             drawerRight: false,
             drawerRightDetails: false,
             step: 1,
+            selectAllCourse: false,
             courseOpt: [],
             sId: null,
             form: {
@@ -756,6 +789,20 @@ export default {
             return jwtDecode(profile);
         }
     },
+    watch:{
+        selectAllCourse(newVal){
+            if(newVal){
+                this.form.coveredCourses = this.courseOpt.map(el => el.value)
+            } else {
+                this.form.coveredCourses = []
+            }
+        }, 
+        "form.coveredCourses": function(newVal) {
+            // if(newVal.length !== this.courseOpt && newVal.length !== 0){
+            //     this.selectAllCourse = false
+            // }
+        }   
+    },
     created(){
         this.getCourses().then(() => {
             this.getProviders()
@@ -833,6 +880,50 @@ export default {
                 this.$q.loading.hide();
             })
         },
+        async deleteScholarship(data){
+            this.$q.dialog({
+                title: 'Delete Program',
+                message: 'Would you like to proceed with this transaction?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                let payload = {
+                    scholarId: Number(data.original.id)
+                }
+
+                this.$api.post('scholarship/delete', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+                        this.getList()
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+            })
+        },
         async submitRegister(){
             this.$q.loading.show();
             this.loginLoad = true;
@@ -867,6 +958,7 @@ export default {
                     })
                 }
             })
+            this.$q.loading.hide();
         },
         async updateScholarShip(){
             this.$q.dialog({

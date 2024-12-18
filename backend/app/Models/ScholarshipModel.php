@@ -46,6 +46,11 @@ class ScholarshipModel extends Model
         return $all;
     }
 
+    public function deleteScholarshipProgram($where){
+        $query = $this->db->table($this->table)->where($where)->delete();
+        return $query ? true : false;
+    }
+
     public function getScholarshipListAdmin() {
 
         $query = $this->db->table($this->table)->get();
@@ -144,6 +149,46 @@ class ScholarshipModel extends Model
         $query = $this->db->table($this->tableApplication)->set($setData)->where($where)->update();
         return $query ? true : false;
     }
+    public function getUserApplications($where) {
+        $sql = "SELECT a.id, a.scholarId FROM ".$this->tableApplication." a WHERE a.appStatus IN (0,1) AND a.studentId=". $where['uid'];
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+
+        return $results;
+    }
+
+
+    // Dashboard
+    
+    public function getUsers() {
+        $sql = "SELECT a.id FROM ".$this->tableUser." a WHERE a.userType = '2'";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+
+        return $results;
+    }
+    public function getQualified() {
+        $sql = "SELECT a.id FROM ".$this->tableApplication." a WHERE a.appStatus = '2'";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+
+        return $results;
+    }
+    public function getUnQualified() {
+        $sql = "SELECT a.id FROM ".$this->tableApplication." a WHERE a.appStatus = '3'";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+
+        return $results;
+    }
+    public function getPendings() {
+        $sql = "SELECT a.id FROM ".$this->tableApplication." a WHERE a.appStatus IN (0,1)";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+
+        return $results;
+    }
+    
 
 }
 

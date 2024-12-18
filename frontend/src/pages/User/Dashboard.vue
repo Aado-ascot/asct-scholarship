@@ -9,31 +9,9 @@
             <div class="col-12 col-xs-12 col-sm-12 col-md-4 q-pa-sm">
                 <q-card
                     flat
-                    class="my-card active-scholar"
+                    class="q-mb-xl"
                 >
-                    <q-card-section>
-                        <div class="row">
-                            <div class="col-6">
-                                <span class="text-h6">Active Scholarship</span><br/>
-                                <span class="text-caption text-bold">{{ approvedApplication !== null ? approvedApplication.title : 'No Approved Program' }}</span><br/>
-                                <span class="text-caption">{{ approvedApplication !== null ? moment(approvedApplication.data.dateApproved).format("LL") : '--' }}</span><br/>
-                                <span v-if="approvedApplication !== null" class="text-caption">
-                                    <a :href="approvedApplication.data.scholarship.otherDetailsLink" target="_blank" >
-                                        {{ approvedApplication !== null ? approvedApplication.data.scholarship.otherDetailsLink : '--' }}
-                                    </a>
-                                </span><br/>
-                            </div>
-                            <div class="col-6 text-right">
-                                <q-img :src="`/imgs/ASCT_logo2.png`" />
-                            </div>
-                            <div class="col-12">
-                                <div class="text-right">
-                                    <!-- <q-btn flat color="white" size="sm" label="View Scholarship Details" /> -->
-                                </div>
-                            </div>
-                        </div>
-                    </q-card-section>
-                    <q-card-section class="q-mt-xl">
+                    <q-card-section >
                         <span class="text-h6">Announcement</span><br/>
                         <q-separator></q-separator>
                         <div v-if="!announceLoading && announcements.length > 0">
@@ -69,6 +47,33 @@
                         </div>
                     </q-card-section>
                 </q-card>
+                <q-card
+                    flat
+                    class="my-card active-scholar"
+                >
+                    <q-card-section>
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="text-h6">Active Scholarship</span><br/>
+                                <span class="text-caption text-bold">{{ approvedApplication !== null ? approvedApplication.title : 'No Approved Program' }}</span><br/>
+                                <span class="text-caption">{{ approvedApplication !== null ? moment(approvedApplication.data.dateApproved).format("LL") : '--' }}</span><br/>
+                                <span v-if="approvedApplication !== null" class="text-caption">
+                                    <a :href="approvedApplication.data.scholarship.otherDetailsLink" target="_blank" >
+                                        {{ approvedApplication !== null ? approvedApplication.data.scholarship.otherDetailsLink : '--' }}
+                                    </a>
+                                </span><br/>
+                            </div>
+                            <div class="col-6 text-right">
+                                <q-img :src="`/imgs/ASCT_logo2.png`" />
+                            </div>
+                            <div class="col-12">
+                                <div class="text-right">
+                                    <!-- <q-btn flat color="white" size="sm" label="View Scholarship Details" /> -->
+                                </div>
+                            </div>
+                        </div>
+                    </q-card-section>
+                </q-card>
             </div>
             <div class="col-12 col-xs-12 col-sm-12 col-md-8 q-pa-sm">
                 <q-card
@@ -89,7 +94,7 @@
                                 v-for="(item, idx) in itemsScholarList"
                                 :key="idx"
                                 bordered 
-                                class="rounded-borders itemBorder "
+                                class="rounded-borders itemBorder q-mb-sm"
                             >
                                 <q-item-label class="text-bold text-primary" header>
                                     
@@ -99,13 +104,8 @@
 
                                 <q-item>
                                     <q-item-section avatar top>
-                                        <!-- <q-img :src="`/imgs/CHED.png`" width="20%"  /> -->
                                         <q-img :src="`/imgs/${item.original.provider}.png`"  />
                                     </q-item-section>
-
-                                    <!-- <q-item-section top class="col-2 gt-sm">
-                                        <q-item-label class="q-mt-sm">{{`${item.original.provider}`}}</q-item-label>
-                                    </q-item-section> -->
 
                                     <q-item-section >
                                         <q-item-label lines="1">
@@ -116,12 +116,6 @@
                                                 </a>
                                             </span>
                                         </q-item-label>
-                                        <!-- <q-item-label caption lines="1">
-                                            @rstoenescu in #3: > Generic type parameter for props
-                                        </q-item-label>
-                                        <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase">
-                                            <span class="cursor-pointer">Open in GitHub</span>
-                                        </q-item-label> -->
                                     </q-item-section>
 
                                     <q-item-section side>
@@ -134,69 +128,6 @@
                                 </q-item>
                             </q-list>
                         </div>
-                        
-                        <!-- <div class="row q-mt-md">
-                            <div
-                                v-for="(item, idx) in itemsList"
-                                :key="idx"
-                                class="col-12 col-md-4 q-pa-sm"
-                            >
-                            <q-card class="my-card" flat bordered>
-                                <q-img :src="`/imgs/${item.original.provider}-WEBSITE.png`" />
-                
-                                <q-card-section>
-                                    <q-btn
-                                        fab
-                                        color="primary"
-                                        icon="mdi-calendar-multiple"
-                                        class="absolute"
-                                        style="top: 0; right: 12px; transform: translateY(-50%);"
-                                    />
-
-                                    <div class="row no-wrap items-center">
-                                        <div class="col ellipsis">
-                                            {{item.title}}
-                                        </div>
-                                    </div>
-                                    <div class="row no-wrap items-center">
-                                        <div class="col text-caption">
-                                            Submission Due Date: {{item.original.dueDate}}
-                                        </div>
-                                    </div>
-                                </q-card-section>
-
-                                <q-card-section class="q-pt-none">
-                                    <q-list>
-                                        <q-item-label class="text-bold" header>Qualifications</q-item-label>
-                                        <q-item 
-                                            v-for="(itm, indx) in item.original.qualification"
-                                            :key="indx"
-                                        >
-                                            <q-item-section avatar>
-                                                <q-avatar>
-                                                    <q-icon name="mdi-asterisk-circle-outline" size="sm" />
-                                                </q-avatar>
-                                            </q-item-section>
-
-                                            <q-item-section>
-                                                <q-item-label class="text-caption">
-                                                    {{itm.description}}
-                                                </q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </q-card-section>
-
-                                <q-separator />
-
-                                <q-card-actions>
-                                    <q-btn @click="applyForScholarship(item.original)" flat no-caps color="primary">
-                                        Submit Application
-                                    </q-btn>
-                                </q-card-actions>
-                            </q-card>
-                            </div>
-                        </div> -->
                     </q-card-section>
                 </q-card>
             </div>
@@ -242,10 +173,6 @@
                                 :done="step > 1"
                             >   
                                 <div class="row">
-                                    <!-- <div class="col-6 q-mb-sm">
-                                        <span class="text-caption text-grey">Available Slot: </span>
-                                        <span class="text-title text-bold">{{`${Number(selectedProgram.slot) - Number(selectedProgram.applied) || '0'}/${selectedProgram.slot || '0'}`}}</span>
-                                    </div> -->
                                     <div class="col-6 q-mb-sm">
                                         <span class="text-caption text-grey">Read more details for this program: </span>
                                         <span class="text-title text-bold"><a :href="selectedProgram.otherDetailsLink" target="_blank"> {{`${selectedProgram.otherDetailsLink || '--'}`}}</a></span>
@@ -262,6 +189,55 @@
                                 </div> 
                                 <q-separator />
                                 <div class="row q-mt-md">
+                                    <div class="col-12">
+                                        <q-list>
+                                            <q-item 
+                                                v-for="(item, index) in selectedProgram.requirements" 
+                                                :key="item.name" 
+                                                tag="label" 
+                                                v-ripple
+                                            >
+                                                <q-item-section side>
+                                                    <q-icon :color="item.color" name="task_alt" />
+                                                </q-item-section>
+
+                                                <q-item-section>
+                                                    <q-item-label>{{ item.label }}</q-item-label>
+                                                </q-item-section>
+
+                                                <q-item-section side>
+                                                    <span v-if="item.fileUploaded !== undefined">Already uploaded</span>
+                                                    <q-file
+                                                        v-if="item.fileUploaded === undefined"
+                                                        outlined  
+                                                        v-model="item.file"  
+                                                        label="Upload File Here"
+                                                        @update:model-value="evnt => {return checkFile(evnt, index)}"
+                                                        dense
+                                                    >
+                                                        <template v-slot:prepend>
+                                                        <q-icon name="cloud_upload" @click.stop.prevent />
+                                                        </template>
+                                                        <template v-slot:append>
+                                                        <q-icon name="close" @click.stop.prevent="item.file = null" class="cursor-pointer" />
+                                                        </template>
+                                                    </q-file>
+                                                </q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </div>
+                                </div>
+
+
+                            </q-step>
+
+                            <q-step
+                                :name="2"
+                                title="Requirements"
+                                icon="create_new_folder"
+                                :done="step > 2"
+                            >
+                                <div class="row">
                                     <div class="col-12 col-md-12 q-pa-xs">
                                         <span class="text-title text-bold">Father Details</span>
                                     </div>
@@ -294,7 +270,7 @@
                                         </q-input>
                                     </div>
                                     <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
+                                        <!-- <q-input
                                             v-model="form.father.educAttainment"
                                             label="Educational Attainment"
                                             placeholder="Enter educational attainment"
@@ -302,7 +278,28 @@
                                             dense
                                             stack-label
                                         >
-                                        </q-input>
+                                        </q-input> -->
+                                        <q-select
+                                            outlined
+                                            dense
+                                            stack-label 
+                                            v-model="form.father.educAttainment"
+                                            :options="educAttOpt"
+                                            label="Educational Attainment"
+                                            emit-value
+                                            map-options
+                                        >
+                                            <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                                <q-item v-bind="itemProps">
+                                                    <q-item-section>
+                                                        <q-item-label v-html="opt" />
+                                                    </q-item-section>
+                                                    <q-item-section side>
+                                                        <q-checkbox :model-value="selected" checked-icon="task_alt" unchecked-icon="radio_button_unchecked" @update:model-value="toggleOption(opt)" />
+                                                    </q-item-section>
+                                                </q-item>
+                                            </template>
+                                        </q-select>
                                     </div>
                                     <div class="col-12 col-md-4 q-pa-xs">
                                         <q-input
@@ -361,7 +358,7 @@
                                         </q-input>
                                     </div>
                                     <div class="col-12 col-md-4 q-pa-xs">
-                                        <q-input
+                                        <!-- <q-input
                                             v-model="form.mother.educAttainment"
                                             label="Educational Attainment"
                                             placeholder="Enter educational attainment"
@@ -369,7 +366,28 @@
                                             dense
                                             stack-label
                                         >
-                                        </q-input>
+                                        </q-input> -->
+                                        <q-select
+                                            outlined
+                                            dense
+                                            stack-label 
+                                            v-model="form.mother.educAttainment"
+                                            :options="educAttOpt"
+                                            label="Educational Attainment"
+                                            emit-value
+                                            map-options
+                                        >
+                                            <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                                <q-item v-bind="itemProps">
+                                                    <q-item-section>
+                                                        <q-item-label v-html="opt" />
+                                                    </q-item-section>
+                                                    <q-item-section side>
+                                                        <q-checkbox :model-value="selected" checked-icon="task_alt" unchecked-icon="radio_button_unchecked" @update:model-value="toggleOption(opt)" />
+                                                    </q-item-section>
+                                                </q-item>
+                                            </template>
+                                        </q-select>
                                     </div>
                                     <div class="col-12 col-md-4 q-pa-xs">
                                         <q-input
@@ -465,56 +483,6 @@
                                             stack-label
                                         >
                                         </q-input>
-                                    </div>
-                                    
-                                </div>
-
-
-                            </q-step>
-
-                            <q-step
-                                :name="2"
-                                title="Requirements"
-                                icon="create_new_folder"
-                                :done="step > 2"
-                            >
-                                <div class="row">
-                                    <div class="col-12 col-md-12">
-                                        <q-list>
-                                            <q-item 
-                                                v-for="(item, index) in selectedProgram.requirements" 
-                                                :key="item.name" 
-                                                tag="label" 
-                                                v-ripple
-                                            >
-                                                <q-item-section side>
-                                                    <q-icon :color="item.color" name="task_alt" />
-                                                </q-item-section>
-
-                                                <q-item-section>
-                                                    <q-item-label>{{ item.label }}</q-item-label>
-                                                </q-item-section>
-
-                                                <q-item-section side>
-                                                    <span v-if="item.fileUploaded !== undefined">Already uploaded</span>
-                                                    <q-file
-                                                        v-if="item.fileUploaded === undefined"
-                                                        outlined  
-                                                        v-model="item.file"  
-                                                        label="Upload File Here"
-                                                        @update:model-value="evnt => {return checkFile(evnt, index)}"
-                                                        dense
-                                                    >
-                                                        <template v-slot:prepend>
-                                                        <q-icon name="cloud_upload" @click.stop.prevent />
-                                                        </template>
-                                                        <template v-slot:append>
-                                                        <q-icon name="close" @click.stop.prevent="item.file = null" class="cursor-pointer" />
-                                                        </template>
-                                                    </q-file>
-                                                </q-item-section>
-                                            </q-item>
-                                        </q-list>
                                     </div>
                                 </div>
                             </q-step>
@@ -730,7 +698,12 @@
                     <q-separator />
                     <q-card-actions>
                         <q-stepper-navigation >
-                            <q-btn v-if="step < 3" @click="$refs.stepper.next()" color="primary" label="Continue" />
+                            <q-btn  
+                                v-if="step < 3" @click="$refs.stepper.next()" 
+                                color="primary"
+                                label="Continue"
+                                :disable="checkFormData"
+                            />
                             <q-btn v-if="step === 3" @click="openPrint" class="q-mr-sm" color="positive" label="Preview Form" />
                             <q-btn v-if="step === 3" @click="submitApplicationFormData" color="positive" label="Finish" />
                             <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
@@ -787,7 +760,13 @@ export default {
             myInfo: {},
             courseOpt: [],
             requirementTab: "",
-
+            educAttOpt: [
+                'graduate', 
+                'undergraduate', 
+                'senior highschool graduate', 
+                'junior highschool graduate', 
+                'elementary graduate'
+            ],
             form: {
                 father:{
                     name: "",
@@ -830,6 +809,53 @@ export default {
         user: function(){
             let profile = LocalStorage.getItem('userData');
             return jwtDecode(profile);
+        },
+        checkFormData(){
+            let res = false
+            if(this.step === 1){
+                let filterFiles = this.selectedProgram?.requirements?.filter(el => el.fileUploaded === undefined)
+                res = filterFiles?.length > 0
+            } else if(this.step === 2){
+                if(this.itemsList.length > 0){
+                    for(const i in this.form){
+                        this.form[i] = this.itemsList[0].data.familyBackground[i]
+                    }
+                }
+
+
+                let checkItemVal = 0;
+                let unvalidate = "occupation,educAttainment"
+                for(const father in this.form.father){
+                    if(
+                    this.form.father[father] === "" &&
+                    !unvalidate.includes(father)
+                    ){
+                        checkItemVal += 1
+                    }
+                }
+                for(const mother in this.form.mother){
+                    if(
+                    this.form.mother[mother] === "" &&
+                    !unvalidate.includes(mother)
+                    ){
+                        checkItemVal += 1
+                    }
+                }
+
+                if(!this.form.notWithParents){
+                    for(const guardian in this.form.guardian){
+                        if(
+                            this.form.guardian[guardian] === ""
+                        ){
+                            checkItemVal += 1
+                        }
+                    }
+                }
+                
+                res = checkItemVal > 1
+            }
+
+            return res
         }
     },
     created(){
@@ -872,15 +898,7 @@ export default {
 
                     let checkApproved = data.list.filter(el => {return Number(el.data.appStatus) === 2})
                     this.approvedApplication = checkApproved.length > 0 ? checkApproved[0] : null
-                } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'report_problem'
-                    })
-                }
+                } 
 
                 this.tableLoading = false
             })
@@ -894,14 +912,6 @@ export default {
 
                 if(!data.error){
                     this.announcements = response.status < 300 ? data.list : [];
-                } else {
-                    this.$q.notify({
-                        color: 'negative',
-                        position: 'top-right',
-                        title:data.title,
-                        message: this.$t(`errors.${data.error}`),
-                        icon: 'report_problem'
-                    })
                 }
 
             })
@@ -1061,8 +1071,34 @@ export default {
             this.$q.loading.hide();
         },
         applyForScholarship(val){
-            this.drawerRight = true
-            this.selectedProgram = val
+            // apply/validate
+            console.log(val)
+            this.$q.loading.show({
+                message: 'Application Check. Please wait...'
+            });
+            let payload = {
+                sId: this.user.userId,
+                scholarId: val.id
+            }
+            this.$api.post('scholarship/apply/validate', payload).then((response) => {
+        
+                const data = {...response.data};
+                if(!data.error){
+                    this.$q.notify({
+                        color: 'negative',
+                        position: 'top-right',
+                        title: 'Unable to Apply',
+                        message: 'You already submitted the application wait for the scholarship units to evaluate and approve your application',
+                        icon: 'report_problem'
+                    })
+                } else {
+                    this.drawerRight = true
+                    this.selectedProgram = val
+                }
+            })
+
+            this.$q.loading.hide();
+            
         },
         openPrint(){
             let data = {

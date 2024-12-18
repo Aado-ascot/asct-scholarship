@@ -79,6 +79,28 @@ class Users extends BaseController
         //Get API Request Data from NuxtJs
         $data = $this->request->getJSON(); 
         $data->password = sha1($data->password);
+
+        $where = [
+            "username" => $data->username,
+            "firstName" => $data->username,
+            "lastName" => $data->username,
+            "middleName" => $data->username,
+        ];
+
+        $check = $this->userModel->validateUser($where);
+
+        if(sizeof($check) > 0){
+            $response = [
+                'error' => 400,
+                'title' => 'Registration Failed!',
+                'message' => 'This user is already exist'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
         
         $query = $this->userModel->insert($data);
 

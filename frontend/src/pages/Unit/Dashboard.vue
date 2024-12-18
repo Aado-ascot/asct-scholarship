@@ -7,7 +7,11 @@
                 <span class="text-caption">Welcome to ASCOT Scholarship Management System</span><br/>
             </div>
             <div  v-if="selectedProvider === ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
-                <span class="text-h6 text-bold">Program List</span><br/><br/>
+                <div class="fit row wrap justify-start items-center content-center">
+                    <span class="text-h6 text-bold">Program List</span>
+                    <q-space />
+                    <q-btn @click="selectedProvider = 'All'" flat rounded color="primary" label="View All Application" />
+                </div>
                 <div 
                     v-if="!tableLoading && itemsList.length === 0" 
                     class="text-center q-pa-md"
@@ -73,9 +77,22 @@
                     :rows="filteredList"
                     wrap-cells
                     :columns="tableColumns"
-                    row-key="name"
+                    row-key="sname"
                     :filter="search"
                 >  
+                <template v-slot:top-right>
+                    <q-input 
+                        dense 
+                        debounce="300" 
+                        v-model="search" 
+                        placeholder="Search Student Number"
+                        mask="##-##-####NNNN"
+                    >
+                        <template v-slot:append>
+                            <q-icon name="search" />
+                        </template>
+                    </q-input>
+                </template>
                     <template v-slot:header="props">
                         <q-tr :props="props">
                             <q-th
@@ -204,6 +221,55 @@
                     <q-separator />
                     <q-card-section >
                         <div v-if="selectedProgram.data !== undefined" class="row">
+                            <div class="col-12 col-md-12 q-pa-xs q-mt-md">
+                                <span class="text-title text-bold">Requirement Checklist</span>
+                            </div>
+                            <div class="col-12 col-md-12">
+                                <q-list>
+                                    <q-item 
+                                        v-for="(item, index) in selectedProgram.data.scholarship.requirements" 
+                                        :key="item.name" 
+                                        tag="label" 
+                                        v-ripple
+                                    >
+                                        <q-item-section side>
+                                            <q-icon :color="item.color" name="task_alt" />
+                                        </q-item-section>
+
+                                        <q-item-section>
+                                            <q-item-label>{{ item.label }}</q-item-label>
+                                        </q-item-section>
+
+                                        <q-item-section side>
+                                            <div v-if="item.fileUploaded === undefined">
+                                                <q-btn outline size="sm" rounded color="red" label="Request For Upload" />
+                                            </div>
+                                            <div v-if="item.fileUploaded !== undefined">
+                                                <q-btn
+                                                    @click="previewDocs(item.uploadFile, item.name)"
+                                                    outline 
+                                                    size="sm" 
+                                                    class="q-mr-xs" 
+                                                    rounded 
+                                                    color="primary" 
+                                                    label="View"
+                                                />
+                                                <q-btn
+                                                    v-if="item.verified === undefined"
+                                                    @click="verifyDocument(item)"
+                                                    outline size="sm" 
+                                                    class="q-mr-xs" 
+                                                    rounded color="green" 
+                                                    label="Verify" 
+                                                />
+                                            </div>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </div>
+                            <div class="col-12 col-md-12">
+                                <q-separator />
+                            </div>
                             <div class="col-12 col-md-12 q-pa-xs">
                                 <span class="text-title text-bold">Personal Information</span>
                             </div>
@@ -323,53 +389,6 @@
                             </div>
                             
                             <div class="col-12 col-md-12 q-pa-xs q-mt-md">
-                                <span class="text-title text-bold">Requirement Checklist</span>
-                            </div>
-                            <div class="col-12 col-md-12">
-                                <q-list>
-                                    <q-item 
-                                        v-for="(item, index) in selectedProgram.data.scholarship.requirements" 
-                                        :key="item.name" 
-                                        tag="label" 
-                                        v-ripple
-                                    >
-                                        <q-item-section side>
-                                            <q-icon :color="item.color" name="task_alt" />
-                                        </q-item-section>
-
-                                        <q-item-section>
-                                            <q-item-label>{{ item.label }}</q-item-label>
-                                        </q-item-section>
-
-                                        <q-item-section side>
-                                            <div v-if="item.fileUploaded === undefined">
-                                                <q-btn outline size="sm" rounded color="red" label="Request For Upload" />
-                                            </div>
-                                            <div v-if="item.fileUploaded !== undefined">
-                                                <q-btn
-                                                    @click="previewDocs(item.uploadFile, item.name)"
-                                                    outline 
-                                                    size="sm" 
-                                                    class="q-mr-xs" 
-                                                    rounded 
-                                                    color="primary" 
-                                                    label="View"
-                                                />
-                                                <q-btn
-                                                    v-if="item.verified === undefined"
-                                                    @click="verifyDocument(item)"
-                                                    outline size="sm" 
-                                                    class="q-mr-xs" 
-                                                    rounded color="green" 
-                                                    label="Verify" 
-                                                />
-                                            </div>
-                                        </q-item-section>
-                                    </q-item>
-                                </q-list>
-                            </div>
-
-                            <div class="col-12 col-md-12 q-pa-xs q-mt-md">
                                 <span class="text-title text-bold">Qualifications</span>
                             </div>
                             <div class="col-12 col-md-12">
@@ -399,6 +418,7 @@
                         <q-btn 
                             v-if="Number(user.userType) === 3 && Number(selectedProgram.data.evaluatedBy) === 0"
                             @click="updateApplicationData('evaluate')"
+                            :disable="checkFormData"
                             outline 
                             rounded
                             no-caps
@@ -457,6 +477,7 @@ export default {
         return {
             providerList: [],
             selectedProvider: "",
+            search: "",
             drawerRight: false,
             selectedProgram: {},
             tableLoading: false,
@@ -474,13 +495,25 @@ export default {
         }
     },
     computed: {
+        checkFormData(){
+            let res = false
+            
+            if(Number(this.user.userType) === 3){
+                console.log('eval')
+                let filterFiles = this.selectedProgram?.data?.scholarship?.requirements?.filter(el => el.verified === undefined)
+                res = filterFiles?.length > 0
+            }
+            
+
+            return res
+        },
         filteredList(){
-			// return this.users.filter(el => 
-			// 	this.selectedCourseFilter.includes(el.course) && 
-			// 	this.selectedSchoolYearFilter.includes(el.yearFrom) && 
-			// 	this.selectedReportTypeFilter.includes(el.reportType)
-			// )
-			return this.itemsList.filter(el => this.selectedProvider === el.title)
+            if(this.selectedProvider === "All"){
+                return this.itemsList
+            } else {
+                return this.itemsList.filter(el => this.selectedProvider === el.title)
+            }
+			
 		},
         user: function(){
             const user = LocalStorage.getItem('userData')
@@ -554,6 +587,8 @@ export default {
                     payload = {
                         appId: Number(this.selectedProgram.data.id),
                         actionType: type,
+                        uid: this.user.userId,
+                        scholarId: Number(this.selectedProgram.data.scholarId),
                         updateDetails: {
                             appStatus: 1,
                             evaluatedBy: this.user.userId,
@@ -572,6 +607,7 @@ export default {
                     payload = {
                         appId: Number(this.selectedProgram.data.id),
                         actionType: type,
+                        uid: this.user.userId,
                         scholarId: Number(this.selectedProgram.data.scholarId),
                         updateDetails: {
                             appStatus: 3,
@@ -593,7 +629,10 @@ export default {
                 } else {
                     payload = {
                         appId: Number(this.selectedProgram.data.id),
+                        studentId: Number(this.selectedProgram.data.studentId),
                         actionType: type,
+                        uid: this.user.userId,
+                        scholarId: Number(this.selectedProgram.data.scholarId),
                         updateDetails: {
                             appStatus: 2,
                             approvedBy: this.user.userId,
@@ -754,24 +793,27 @@ export default {
                     // fill the already uploaded document
                     data.list.forEach(el => {
                         let filterMatch = this.selectedProgram.data.scholarship.requirements.filter((elr) => {return elr.name === el.reqType})
-                        let val = filterMatch[0]
-                        let index = this.selectedProgram.data.scholarship.requirements.indexOf(val)
-                        let requirements = this.selectedProgram.data.scholarship.requirements[index];
-
-                        if(Number(el.status) !== 1){
-                            requirements.fileId = Number(el.id)
-                            requirements.file = el.fileName
-                            requirements.fileUploaded = true
-                            requirements.uploadFile = el.uploadFile
-                            requirements.color = 'green'
-                        } else {
-                            requirements.fileId = Number(el.id)
-                            requirements.file = el.fileName
-                            requirements.fileUploaded = true
-                            requirements.uploadFile = el.uploadFile
-                            requirements.verified = true
-                            requirements.color = 'blue-9'
+                        
+                        if(filterMatch.length > 0){
+                            let val = filterMatch[0]
+                            let index = this.selectedProgram.data.scholarship.requirements.indexOf(val)
+                            let requirements = this.selectedProgram.data.scholarship.requirements[index];
+                            if(Number(el.status) !== 1){
+                                requirements.fileId = Number(el.id)
+                                requirements.file = el.fileName
+                                requirements.fileUploaded = true
+                                requirements.uploadFile = el.uploadFile
+                                requirements.color = 'green'
+                            } else {
+                                requirements.fileId = Number(el.id)
+                                requirements.file = el.fileName
+                                requirements.fileUploaded = true
+                                requirements.uploadFile = el.uploadFile
+                                requirements.verified = true
+                                requirements.color = 'blue-9'
+                            }
                         }
+                        
                         
                     });
                 } else {

@@ -59,6 +59,11 @@ class UsersModel extends Model
         $results = $query->getRow();
         return $results;
     }
+    public function validateUser($where){
+        $query = $this->db->table($this->table)->where($where)->get();
+        $results = $query->getResult();
+        return $results;
+    }
 
     public function getAllUserInfo(){
 

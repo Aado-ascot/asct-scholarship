@@ -119,6 +119,7 @@
             placeholder="Enter Contact Number"
             outlined 
             stack-label
+            mask="###########"
           >
           </q-input>
         </div>

@@ -128,6 +128,27 @@ class ScholarShip extends BaseController
                 "seen" => 0, 
             ];
             $this->miscModel->sendNotification($notif);
+            
+        }
+        
+    }
+    public function rejectRestOfApplication($userId){
+        $query = $this->scholarModel->getUserApplications(["uid" => $userId]);
+        foreach ($query as $key => $value) {
+            $details = [
+                "appStatus" => 3,
+                "evaluatedBy" => 0,
+                "approvedBy" => 0,
+                "rejectedBy" => 1,
+                "status" => "Rejected by the system",
+                "remarks" => "Application automatically cancelled by the system"
+            ];
+            $this->scholarModel->updateApplication(["id"=>$value->id], $details);
+            $where = [
+                'id' => $value->scholarId
+            ];
+            $update = $this->scholarModel->updateMinusScholarshipSlot($where);
+
         }
         
     }
@@ -158,17 +179,20 @@ class ScholarShip extends BaseController
         if($query){
             if($data->actionType === "approve"){
                 // execute the Rejection of other submitted application
+                $this->rejectRestOfApplication($data->studentId);
             } else if($data->actionType === "reject"){
                 // Update scholarship
                 $where = [
                     'id' => $data->scholarId
                 ];
                 $update = $this->scholarModel->updateMinusScholarshipSlot($where);
-
+            } else if($data->actionType === "evaluate"){
                 // Send Notification
-                $notif = json_decode(json_encode($data->notification), true);
-                $this->miscModel->sendNotification($notif);
+                $this->sendAdminsNotification(4, $data->uid, "Evaluator send an application for approval");
             }
+            // Send Notification
+            $notif = json_decode(json_encode($data->notification), true);
+            $this->miscModel->sendNotification($notif);
 
             $response = [
                 'title' => 'Evaluation Complete',
@@ -192,6 +216,89 @@ class ScholarShip extends BaseController
                     ->setBody(json_encode($response));
         }
 
+    }
+
+    public function deleteScholarshipProgram(){
+        //Get API Request Data from NuxtJs
+        $data = $this->request->getJSON();
+
+        $where = [
+            'id' => $data->scholarId
+        ];
+        // before delete validate if there is anyone applied
+        
+        
+        //Select Query for finding User Information
+        $query = $this->scholarModel->deleteScholarshipProgram($where);
+
+        if($query){
+
+            $response = [
+                'title' => 'Delete successful',
+                'message' => 'Scholarship Program is deleted'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            
+        } else {
+            $response = [
+                'title' => 'Update Failed!',
+                'message' => 'Please check your data and connect to your Admin'
+            ];
+ 
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    }
+
+    public function validateAppliedScholarship(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+        
+        $payload = $this->request->getJSON();
+        
+        $where = [
+            'studentId'=> $payload->sId,
+            'scholarId'=> $payload->scholarId,
+        ];
+        $list = [];
+
+        $list = $this->scholarModel->getScholarshipByUser($where);
+        
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
     }
 
     public function getListUserApplied(){

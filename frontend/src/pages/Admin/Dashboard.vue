@@ -7,6 +7,34 @@
                 <span class="text-caption">Welcome to ASCOT Scholarship Application</span><br/>
             </div>
         </div>
+        <div class="row">
+            <div 
+                v-for="(item, index) in dashboardCards" 
+                :key="index"
+                class="col-12 col-xs-12 col-sm-6 col-md-3 q-pa-sm"
+            >
+                <q-card class="my-card" flat bordered>
+                    <q-card-section class="text-h6">
+                        {{ item.title }}
+                    </q-card-section>
+                    <q-item>
+                        <q-item-section avatar>
+                            <q-avatar :color="item.iconColor"  rounded>
+                                <q-icon :name="item.icon" color="white" size="34px" />
+                            </q-avatar>
+                        </q-item-section>
+
+                        <q-item-section>
+                            <q-item-label class="text-h4">{{ item.count }}</q-item-label>
+                            <q-item-label caption>
+                                {{ item.description }}
+                            </q-item-label>
+                        </q-item-section>
+                    </q-item>
+                    
+                </q-card>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -21,27 +49,34 @@ export default {
     name: 'UserDashboard',
     data(){
         return {
-            services: [
+            dashboardCards: [
                 {
-                    title: "Available Scholarship",
-                    description: "List of scholarship available and check for the requirements.",
-                    icon: "ti-layout-list-thumb",
-                    buttonAction: "View List",
-                    action: () => { return false },
+                    title: "Users",
+                    count: 0,
+                    description: "Students registered in the portal",
+                    icon: "mdi-account-school-outline",
+                    iconColor: "primary",
                 },
                 {
-                    title: "Apply Scholarship",
-                    description: "Check your eligibility for the scholarship program you want to apply",
-                    icon: "mdi-book-edit-outline",
-                    buttonAction: "View List",
-                    action: () => { return false },
+                    title: "Qualified Students",
+                    count: 0,
+                    description: "Students get approved on the programs",
+                    icon: "mdi-thumb-up",
+                    iconColor: "green",
                 },
                 {
-                    title: "Verification",
-                    description: "Verification of the application and current status of your scholarship program",
-                    icon: "mdi-check-decagram",
-                    buttonAction: "View List",
-                    action: () => { return false },
+                    title: "Qualified Students",
+                    count: 0,
+                    description: "Students are declined on the programs",
+                    icon: "mdi-thumb-down",
+                    iconColor: "red",
+                },
+                {
+                    title: "Pendings",
+                    count: 0,
+                    description: "Applications subject for evaluation and approval ",
+                    icon: "mdi-clipboard-text-clock",
+                    iconColor: "secondary",
                 },
             ]
         }
@@ -53,16 +88,24 @@ export default {
         },
     },
     mounted(){
-        // this.getSchedules().then((res) => {
-        //     this.checkLoanStatuses()
-        //     this.$nextTick(() => {
-        //         this.getDashboard()
-        //         this.getDailyDashboard()
-        //     })
-        // })
+        this.getDasboard()
     },
     methods: {
         moment,
+        async getDasboard(){
+            this.$api.get('misc/dashboard').then((response) => {
+                const data = {...response.data};
+                if(!data.error){
+                    this.dashboardCards[0].count = data.users
+                    this.dashboardCards[1].count = data.qualified
+                    this.dashboardCards[2].count = data.unqualified
+                    this.dashboardCards[3].count = data.pendings
+                    console.log(data)
+                } else {
+                   console.log('error something went wrong')
+                }
+            })
+        },
     }
 }
 </script>

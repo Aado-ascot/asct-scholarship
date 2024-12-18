@@ -303,42 +303,56 @@ export default {
                 })
                 return false
             }
-            this.$q.loading.show();
-
-            let payload = {
-                userId: this.user.userId,
-                reqType: this.requirementTab,
-                fileName: this.fileName,
-                fileSize: this.fileSize,
-                uploadFile: this.uploadFile,
-                remarks: 'Waiting for validation of Scholarship Evaluator',
-                status: 0
-            }
-
-            this.$api.post('document/upload', payload).then(async (response) => {
-                const data = {...response.data};
-
-                if(!data.error){
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'success',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-check-all'
-                    })
-                } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-alert-circle-outline'
-                    })
+            
+            this.$q.dialog({
+                title: 'Upload Attachment',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                let payload = {
+                    userId: this.user.userId,
+                    reqType: this.requirementTab,
+                    fileName: this.fileName,
+                    fileSize: this.fileSize,
+                    uploadFile: this.uploadFile,
+                    remarks: 'Waiting for validation of Scholarship Evaluator',
+                    status: 0
                 }
-            })
 
-            this.loginLoad = false;
-            this.$q.loading.hide();
+                this.$api.post('document/upload', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.loginLoad = false;
+                this.$q.loading.hide();
+            })
+            
         },
 
         updateAttachment(){
@@ -352,43 +366,58 @@ export default {
                 })
                 return false
             }
-
-            this.$q.loading.show();
-            let payload = {
-                fileId: this.fileDetails.id,
-                updateDetails: {
-                    status: 0,
-                    fileName: this.fileName,
-                    fileSize: this.fileSize,
-                    uploadFile: this.uploadFile,
-                    remarks: "",
+             // Confirm
+             this.$q.dialog({
+                title: 'Update Attachment',
+                message: 'Would you like to proceed with this action?',
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.$q.loading.show();
+                let payload = {
+                    fileId: this.fileDetails.id,
+                    updateDetails: {
+                        status: 0,
+                        fileName: this.fileName,
+                        fileSize: this.fileSize,
+                        uploadFile: this.uploadFile,
+                        remarks: "",
+                    }
                 }
-            }
-            
-            this.$api.post('document/update/attachment', payload).then(async (response) => {
-                const data = {...response.data};
+                
+                this.$api.post('document/update/attachment', payload).then(async (response) => {
+                    const data = {...response.data};
 
-                if(!data.error){
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'success',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-check-all'
-                    })
-                    this.updateDocumentOpen = false
-                } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'mdi-alert-circle-outline'
-                    })
-                }
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+                        this.updateDocumentOpen = false
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
             })
 
-            this.$q.loading.hide();
+            
         },
         deleteAttachment(){
             

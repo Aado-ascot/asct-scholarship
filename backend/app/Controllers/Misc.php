@@ -2,14 +2,57 @@
 
 use CodeIgniter\HTTP\IncomingRequest;
 use App\Models\MiscModel;
+use App\Models\ScholarshipModel;
 
 class Misc extends BaseController
 {
 
     public function __construct(){
         $this->miscModel = new MiscModel();
+        $this->scholarModel = new ScholarshipModel();
     }
 
+    public function getDashboard(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        $list = [
+            "users" =>  sizeof($this->scholarModel->getUsers()),
+            "qualified" =>  sizeof($this->scholarModel->getQualified()),
+            "unqualified" =>  sizeof($this->scholarModel->getUnQualified()),
+            "pendings" =>  sizeof($this->scholarModel->getPendings()),
+        ];
+        // Student count, scholarship count, approved scholars
+
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+        
+    }   
     public function getUserTypes(){
         // Check Auth header bearer
         $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
