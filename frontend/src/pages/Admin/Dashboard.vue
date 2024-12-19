@@ -35,10 +35,35 @@
                 </q-card>
             </div>
         </div>
+        <div class="row">
+            <!-- Users Count Overview -->
+            <div class="col-12 col-xs-12 col-sm-12 col-md-6 q-pa-sm">
+                <q-card class="my-card" flat bordered>
+                    <q-card-section class="text-h6">
+                        Analytical Representation of Scholarship
+                    </q-card-section>
+                    <q-card-section>
+                        <canvas ref="linechart"></canvas>
+                    </q-card-section>
+                </q-card>
+            </div>
+            <div class="col-12 col-xs-12 col-sm-12 col-md-6 q-pa-sm">
+                <q-card class="my-card" flat bordered>
+                    <q-card-section class="text-h6">
+                        Analytical Representation of Scholarship
+                    </q-card-section>
+                    <q-card-section>
+                        <canvas ref="piechart"></canvas>
+                    </q-card-section>
+                </q-card>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 import moment from 'moment'
 import { LocalStorage } from 'quasar'
 import { jwtDecode } from 'jwt-decode';
@@ -65,7 +90,7 @@ export default {
                     iconColor: "green",
                 },
                 {
-                    title: "Qualified Students",
+                    title: "Unqualified Students",
                     count: 0,
                     description: "Students are declined on the programs",
                     icon: "mdi-thumb-down",
@@ -78,7 +103,41 @@ export default {
                     icon: "mdi-clipboard-text-clock",
                     iconColor: "secondary",
                 },
-            ]
+            ],
+            chart: {},
+            chartLine: {},
+            chartLineDatas: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Qualified',
+                        data: [],
+                        borderColor: '#72e37c',
+                        backgroundColor: 'red',
+                        pointStyle: 'circle',
+                        pointRadius: 10,
+                        pointHoverRadius: 15
+                    },
+                    {
+                        label: 'Unqualified',
+                        data: [],
+                        borderColor: '#ff0000',
+                        backgroundColor: '#ff000040',
+                        pointStyle: 'circle',
+                        pointRadius: 10,
+                        pointHoverRadius: 15
+                    },
+                    {
+                        label: 'Pendings',
+                        data: [],
+                        borderColor: '#72e37c',
+                        backgroundColor: 'red',
+                        pointStyle: 'circle',
+                        pointRadius: 10,
+                        pointHoverRadius: 15
+                    },
+                ]
+            },
         }
     },
     computed: {
@@ -92,6 +151,57 @@ export default {
     },
     methods: {
         moment,
+        async renderPie(){
+            let ctx = this.$refs.piechart.getContext("2d");
+            this.chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Qualified', 'Unqualified', 'Pending Applications'],
+                    datasets: [{
+                        label: '',
+                        data: [this.dashboardCards[1].count, this.dashboardCards[2].count, this.dashboardCards[3].count],
+                        borderWidth: 1,
+                        backgroundColor: ['#72e37c', '#d65e5e', '#3890e3'],
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            onHover: this.handleHover,
+                            onLeave: this.handleLeave
+                        }
+                    }
+                }
+            });
+        },
+        async renderLine(){
+            let ctx = this.$refs.linechart.getContext("2d");
+            this.chartLine = new Chart(ctx, {
+                type: 'bar',
+                data: this.chartLineDatas,
+                options: {
+                    responsive: true,
+                    plugins: {
+                    title: {
+                        display: true,
+                        text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                    }
+                    }
+                }
+            });
+        },
+        handleHover(evt, item, legend) {
+            legend.chart.data.datasets[0].backgroundColor.forEach((color, index, colors) => {
+                colors[index] = index === item.index || color.length === 9 ? color : color + '4D';
+            });
+            legend.chart.update();
+        },
+        handleLeave(evt, item, legend) {
+            legend.chart.data.datasets[0].backgroundColor.forEach((color, index, colors) => {
+                colors[index] = color.length === 9 ? color.slice(0, -2) : color;
+            });
+            legend.chart.update();
+        },
         async getDasboard(){
             this.$api.get('misc/dashboard').then((response) => {
                 const data = {...response.data};
@@ -100,7 +210,33 @@ export default {
                     this.dashboardCards[1].count = data.qualified
                     this.dashboardCards[2].count = data.unqualified
                     this.dashboardCards[3].count = data.pendings
-                    console.log(data)
+                    this.renderPie()
+
+                    for(const i in data.applications){
+                        this.chartLineDatas.labels.push(i)
+
+                        let chartData = {
+                            p: 0,
+                            q: 0,
+                            u: 0,
+                        }
+
+                        for (const p in data.applications[i]) {
+                            if(Number(data.applications[i][p]) === 1 || Number(data.applications[i][p]) === 0){
+                                chartData.p += 1
+                            } else if(Number(data.applications[i][p]) === 2) {
+                                chartData.q += 1
+                            } else {
+                                chartData.u += 1
+                            } 
+                        }
+
+                        this.chartLineDatas.datasets[0].data.push(chartData.q)
+                        this.chartLineDatas.datasets[1].data.push(chartData.u)
+                        this.chartLineDatas.datasets[2].data.push(chartData.p)
+                    }
+
+                    this.renderLine()
                 } else {
                    console.log('error something went wrong')
                 }

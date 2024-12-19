@@ -32,6 +32,7 @@ class Misc extends BaseController
             "qualified" =>  sizeof($this->scholarModel->getQualified()),
             "unqualified" =>  sizeof($this->scholarModel->getUnQualified()),
             "pendings" =>  sizeof($this->scholarModel->getPendings()),
+            "applications" =>  $this->scholarModel->getApplications(),
         ];
         // Student count, scholarship count, approved scholars
 

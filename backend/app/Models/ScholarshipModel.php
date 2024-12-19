@@ -167,6 +167,18 @@ class ScholarshipModel extends Model
 
         return $results;
     }
+    public function getApplications() {
+        $sql = "SELECT a.id, a.dateApplied, a.appStatus FROM ".$this->tableApplication." a ORDER BY a.dateApplied DESC";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+        $list = [];
+        foreach ($results as $key => $value) {
+            $formattedDate = date('m/d/Y', strtotime($value->dateApplied));
+            $list[$formattedDate][$key] = $value->appStatus;
+        }
+
+        return $list;
+    }
     public function getQualified() {
         $sql = "SELECT a.id FROM ".$this->tableApplication." a WHERE a.appStatus = '2'";
         $query = $this->db->query($sql);
