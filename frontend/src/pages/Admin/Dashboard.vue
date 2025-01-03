@@ -138,6 +138,15 @@ export default {
                     },
                 ]
             },
+            chartPieDatas: {
+                labels: [],
+                datasets: [{
+                    label: '',
+                    data: [],
+                    borderWidth: 1,
+                    backgroundColor: [],
+                }]
+            },
         }
     },
     computed: {
@@ -155,15 +164,7 @@ export default {
             let ctx = this.$refs.piechart.getContext("2d");
             this.chart = new Chart(ctx, {
                 type: 'pie',
-                data: {
-                    labels: ['Qualified', 'Unqualified', 'Pending Applications'],
-                    datasets: [{
-                        label: '',
-                        data: [this.dashboardCards[1].count, this.dashboardCards[2].count, this.dashboardCards[3].count],
-                        borderWidth: 1,
-                        backgroundColor: ['#72e37c', '#d65e5e', '#3890e3'],
-                    }]
-                },
+                data: this.chartPieDatas,
                 options: {
                     plugins: {
                         legend: {
@@ -182,10 +183,10 @@ export default {
                 options: {
                     responsive: true,
                     plugins: {
-                    title: {
-                        display: true,
-                        text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
-                    }
+                        title: {
+                            display: true,
+                            text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                        }
                     }
                 }
             });
@@ -210,7 +211,7 @@ export default {
                     this.dashboardCards[1].count = data.qualified
                     this.dashboardCards[2].count = data.unqualified
                     this.dashboardCards[3].count = data.pendings
-                    this.renderPie()
+                    // this.renderPie()
 
                     for(const i in data.applications){
                         this.chartLineDatas.labels.push(i)
@@ -232,11 +233,28 @@ export default {
                         }
 
                         this.chartLineDatas.datasets[0].data.push(chartData.q)
+                        this.chartLineDatas.datasets[0].backgroundColor = '#72e37c'
                         this.chartLineDatas.datasets[1].data.push(chartData.u)
+                        this.chartLineDatas.datasets[1].backgroundColor = '#f44336'
                         this.chartLineDatas.datasets[2].data.push(chartData.p)
+                        this.chartLineDatas.datasets[2].backgroundColor = '#366ff4'
                     }
-
                     this.renderLine()
+
+                    for(const i in data.pieApps){
+                        this.chartPieDatas.labels.push(i)
+                        let dataCount = 0
+
+                        if(typeof data.pieApps[i] === 'object'){
+                            dataCount = Object.keys(data.pieApps[i]).length
+                        } else {
+                            dataCount = data.pieApps[i].length
+                        }
+
+                        this.chartPieDatas.datasets[0].data.push(dataCount)
+                        this.chartPieDatas.datasets[0].backgroundColor.push('#'+Math.floor(Math.random()*16777215).toString(16))
+                    }
+                    this.renderPie()
                 } else {
                    console.log('error something went wrong')
                 }

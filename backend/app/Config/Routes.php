@@ -69,6 +69,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('create/new', 'ScholarShip::createNewScholarship');
 		$routes->post('update/details', 'ScholarShip::updateScholarshipDetails');
 		$routes->post('submit/application', 'ScholarShip::submitApplication');
+		$routes->post('get/details', 'ScholarShip::getScholarshipDetails');
 		$routes->get('list', 'ScholarShip::getList');
 		$routes->get('list/admin', 'ScholarShip::getListAdmin');
 		$routes->post('apply/validate', 'ScholarShip::validateAppliedScholarship');
@@ -91,6 +92,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('get/notifications/unseen', 'Misc::getUserNotificationUnseen');
 		$routes->post('update/notification', 'Misc::updateNotificationStatus');
 		$routes->get('dashboard', 'Misc::getDashboard');
+		$routes->post('database/backup', 'BackupController::backupDatabase');
 	});
 
 });

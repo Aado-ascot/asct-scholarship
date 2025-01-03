@@ -9,12 +9,6 @@
             <q-card class="">
                 <q-bar>
                     <q-space />
-                    <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-                        <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimize</q-tooltip>
-                    </q-btn>
-                    <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-                        <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximize</q-tooltip>
-                    </q-btn>
                     <q-btn dense flat icon="close" @click="closeModal">
                         <q-tooltip class="bg-white text-primary">Close</q-tooltip>
                     </q-btn>
@@ -84,6 +78,7 @@ export default {
             const { width, height } = fpage.getSize()
             const fontSize = 9
             let curdateYear = moment().format("YY");
+            pdfDoc.setTitle("ASCOTS Application Form")
             // console.log(data)
 
             // get the 2x2 picture
@@ -453,7 +448,7 @@ export default {
                 color: rgb(0, 0, 0),
             })
 
-
+            console.log('on here')
             const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
             document.getElementById('pdf').src = pdfDataUri;
         },

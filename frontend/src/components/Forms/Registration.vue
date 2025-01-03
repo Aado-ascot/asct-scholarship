@@ -338,6 +338,8 @@ export default {
         if(!data.error){
           this.submitLogin();
         } else {
+          this.$q.loading.hide();
+          this.loginLoad = false;
           this.$q.notify({
             position: 'top-left',
             type: 'negative',

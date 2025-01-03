@@ -690,6 +690,7 @@ export default {
                 scholar: {...this.selectedProgram.data.scholarship},
                 others: {...this.form}
             }
+            console.log(data)
             this.appData = data
             this.printModal = true
         },

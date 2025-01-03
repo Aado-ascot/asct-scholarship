@@ -82,16 +82,16 @@ class Users extends BaseController
 
         $where = [
             "username" => $data->username,
-            "firstName" => $data->username,
-            "lastName" => $data->username,
-            "middleName" => $data->username,
+            // "firstName" => $data->username,
+            // "lastName" => $data->username,
+            // "middleName" => $data->username,
         ];
 
         $check = $this->userModel->validateUser($where);
 
         if(sizeof($check) > 0){
             $response = [
-                'error' => 400,
+                'error' => 200,
                 'title' => 'Registration Failed!',
                 'message' => 'This user is already exist'
             ];

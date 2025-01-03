@@ -9,6 +9,7 @@ class ScholarshipModel extends Model
     protected $table      = 'tblscholarships';
     protected $tableApplication      = 'tblscholar_application';
     protected $tableUser      = 'tblusers';
+    protected $tableCourse      = 'tblcourses';
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
@@ -168,13 +169,25 @@ class ScholarshipModel extends Model
         return $results;
     }
     public function getApplications() {
-        $sql = "SELECT a.id, a.dateApplied, a.appStatus FROM ".$this->tableApplication." a ORDER BY a.dateApplied DESC";
+        $sql = "SELECT a.id, a.scholarId, a.dateApplied, a.appStatus, b.title FROM ".$this->tableApplication." a LEFT JOIN ". $this->table ." b ON b.id = a.scholarId ORDER BY a.dateApplied DESC";
         $query = $this->db->query($sql);
         $results = $query->getResult();
         $list = [];
         foreach ($results as $key => $value) {
-            $formattedDate = date('m/d/Y', strtotime($value->dateApplied));
-            $list[$formattedDate][$key] = $value->appStatus;
+            $list[$value->title][$key] = $value->appStatus;
+            // $list[$key] = $value;
+        }
+
+        return $list;
+    }
+    public function getEachCourse() {
+        $sql = "SELECT a.id, a.scholarId, a.dateApplied, a.appStatus, c.title FROM ".$this->tableApplication." a LEFT JOIN ". $this->tableUser ." b ON b.id = a.studentId LEFT JOIN ". $this->tableCourse ." c ON c.id = b.courseId ORDER BY a.dateApplied DESC";
+        $query = $this->db->query($sql);
+        $results = $query->getResult();
+        $list = [];
+        foreach ($results as $key => $value) {
+            $list[$value->title][$key] = $value->appStatus;
+            // $list[$key] = $value;
         }
 
         return $list;

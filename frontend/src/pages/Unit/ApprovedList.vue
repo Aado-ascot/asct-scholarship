@@ -155,7 +155,7 @@
                     </q-card-section>
                     <q-separator />
                     <q-card-section>
-                        <iframe id="pdf" style="width: 100%; height: 80dvh; border: none;"></iframe>
+                        <iframe id="pdfPrint" style="width: 100%; height: 80dvh; border: none;"></iframe>
                     </q-card-section>
                 </q-card>
             </q-scroll-area>
@@ -625,7 +625,6 @@ export default {
                 scholar: {...this.selectedProgram.data.scholarship},
                 others: {...this.selectedProgram.data.familyBackground}
             }
-            console.log(data)
             this.appData = data
             this.printModal = true
         },
@@ -671,7 +670,7 @@ export default {
                         let val = filterMatch[0]
                         let index = this.selectedProgram.data.scholarship.requirements.indexOf(val)
                         let requirements = this.selectedProgram.data.scholarship.requirements[index];
-
+                        
                         if(Number(el.status) !== 1){
                             requirements.fileId = Number(el.id)
                             requirements.file = el.fileName
@@ -862,7 +861,7 @@ export default {
             })
 
             const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-            document.getElementById('pdf').src = pdfDataUri;
+            document.getElementById('pdfPrint').src = pdfDataUri;
         },
         getPaginatedData(array, page, limit) {
             const offset = limit * (page - 1);

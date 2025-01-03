@@ -9,19 +9,13 @@
             <q-card class="">
                 <q-bar>
                     <q-space />
-                    <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-                        <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimize</q-tooltip>
-                    </q-btn>
-                    <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-                        <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximize</q-tooltip>
-                    </q-btn>
                     <q-btn dense flat icon="close" @click="closeModal">
                         <q-tooltip class="bg-white text-primary">Close</q-tooltip>
                     </q-btn>
                 </q-bar>
 
                 <q-card-section v-if="appData.type !== 'picture'" class="q-pt-none" style="height: 90vh;">
-                    <iframe id="pdf" style="width: 100%; height: 100%; border: none;"></iframe>
+                    <iframe id="pdfPreview" style="width: 100%; height: 100%; border: none;"></iframe>
                 </q-card-section>
                 <q-card-section v-if="appData.type === 'picture'" class="q-pt-none" style="height: 90vh;">
                     <q-img :src="imgeSrc" />
@@ -89,9 +83,9 @@ export default {
             // Create a new PDFDocument
             const pdfDoc = await PDFDocument.load(existingPdfBytes)
             // Add a blank page to the document
-
+            pdfDoc.setTitle(data.fileName)
             const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-            document.getElementById('pdf').src = pdfDataUri;
+            document.getElementById('pdfPreview').src = pdfDataUri;
         },
 
         // ending method

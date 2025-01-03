@@ -27,7 +27,7 @@
                 </q-item-section>
 
                 <q-item-section side top>
-                  {{ moment(itm.postedDate).fromNow() }}
+                  {{ moment(itm.postedDate).format("LL LT") }}
                 </q-item-section>
               </q-item>
             </q-list>
@@ -169,7 +169,7 @@ export default {
           const data = {...response.data};
 
           if(!data.error){
-              this.announcements = response.status < 300 ? data.list : [];
+              this.announcements = response.status < 300 ? data.list.sort((a, b) => +(a.createdDate < b.createdDate) || -(a.createdDate > b.createdDate)) : [];
           } else {
               this.$q.notify({
                   color: 'negative',

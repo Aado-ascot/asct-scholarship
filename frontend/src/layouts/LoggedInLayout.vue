@@ -202,6 +202,8 @@
                 <q-item 
                   v-for="(notif, index) in notifList"
                   :key="index"
+                  clickable
+                  @click="getScholarshipDetails(notif.applicationId)"
                 >
                 <q-item-section avatar>
                   <q-icon v-if="notif.notifType === 'red'" name="mdi-bell-alert" :color="notif.notifType" />
@@ -213,7 +215,7 @@
                   </q-item-section>
 
                   <q-item-section side top>
-                    <q-item-label caption>{{ moment(notif.createdDate).fromNow() }}</q-item-label>
+                    <q-item-label caption>{{ moment(notif.createdDate).format("LL LT") }}</q-item-label>
                   </q-item-section>
                   <!-- <q-separator inset /> -->
                 </q-item>
@@ -274,6 +276,12 @@ export default {
     drawerRight(newVal){
       this.seenNotif()
       this.getNotification()
+    },
+    "$router.currentRoute.value": {
+      handler: function(){
+        this.checkModule();
+      },
+      deep: true
     }
   },
   components:{
@@ -291,9 +299,22 @@ export default {
   },
   created(){
     this.getNotificationCount()
+    this.checkModule();
   },
   methods: {
     moment,
+    checkModule() {
+
+      let filterMenuRoutes = MenuJson.filter((el) => {
+        return el.link === this.$router.currentRoute.value.name && this.userDetails.modules.includes(el.code)
+      })
+
+      if(filterMenuRoutes.length === 0){
+        this.$router.push('/401')
+      }
+
+      // return this.userDetails.modules.includes(id) ? true : false;
+    },
     goToProfile(){
       this.$router.push('/user/profile')
     },
@@ -302,7 +323,8 @@ export default {
       this.$api.post('misc/get/notifications', {uId: this.userDetails.userId}).then((response) => {
         const data = {...response.data};
         if(!data.error){
-          this.notifList = data.list
+          let dataList = data.list.sort((a, b) => +(a.createdDate < b.createdDate) || -(a.createdDate > b.createdDate))
+          this.notifList = dataList
         }
       })
     },
@@ -312,6 +334,11 @@ export default {
         if(!data.error){
           this.notifCount = data.list.length
         }
+      })
+    },
+    async getScholarshipDetails($appId){
+      this.$api.post('scholarship/get/details', {appId: $appId}).then((response) => {
+        console.log(response.data)
       })
     },
     async seenNotif(){

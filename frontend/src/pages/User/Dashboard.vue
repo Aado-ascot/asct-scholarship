@@ -34,7 +34,7 @@
                                 </q-item-section>
 
                                 <q-item-section side top>
-                                {{ moment(itm.postedDate).fromNow() }}
+                                {{ moment(itm.postedDate).format("LL LT") }}
                                 </q-item-section>
                             </q-item>
                             </q-list>
@@ -911,7 +911,7 @@ export default {
                 const data = {...response.data};
 
                 if(!data.error){
-                    this.announcements = response.status < 300 ? data.list : [];
+                    this.announcements = response.status < 300 ? data.list.sort((a, b) => +(a.createdDate < b.createdDate) || -(a.createdDate > b.createdDate)) : [];
                 }
 
             })
@@ -1119,13 +1119,13 @@ export default {
                 if(!data.error){
                     this.itemsScholarList = data.list
                 } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'report_problem'
-                    })
+                    // this.$q.notify({
+                    //     position: 'top-left',
+                    //     type: 'negative',
+                    //     message: data.title,
+                    //     caption: data.message,
+                    //     icon: 'report_problem'
+                    // })
                 }
             })
         },
@@ -1135,13 +1135,13 @@ export default {
                 if(!data.error){
                     this.myInfo = data
                 } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'report_problem'
-                    })
+                    // this.$q.notify({
+                    //     position: 'top-left',
+                    //     type: 'negative',
+                    //     message: data.title,
+                    //     caption: data.message,
+                    //     icon: 'report_problem'
+                    // })
                 }
             })
         },
@@ -1178,13 +1178,13 @@ export default {
                     
                     this.courseOpt = opt
                 } else {
-                    this.$q.notify({
-                        position: 'top-left',
-                        type: 'negative',
-                        message: data.title,
-                        caption: data.message,
-                        icon: 'report_problem'
-                    })
+                    // this.$q.notify({
+                    //     position: 'top-left',
+                    //     type: 'negative',
+                    //     message: data.title,
+                    //     caption: data.message,
+                    //     icon: 'report_problem'
+                    // })
                 }
             })
         },

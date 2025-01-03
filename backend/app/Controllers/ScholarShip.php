@@ -63,6 +63,52 @@ class ScholarShip extends BaseController
 
     }
 
+    public function getScholarshipDetails(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+
+        //Get API Request Data
+        $payload = $this->request->getJSON();
+        
+        //INSERT QUERY TO APPLICATION
+        $query = $this->scholarModel->where("id", $payload->appId)->get()->getRow();
+
+        if($query){
+            $response = [
+                'title' => 'Scholarship Program',
+                'data' => $query,
+                'message' => 'Your program has been fetched.'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        } else {
+            $response = [
+                'title' => 'Data Submit Failed',
+                'message' => 'Please contact the admin for concern'
+            ];
+
+            return $this->response
+                    ->setStatusCode(400)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+
+    }
+
     public function submitApplication(){
         // Check Auth header bearer
         $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
@@ -87,6 +133,7 @@ class ScholarShip extends BaseController
         $query = $this->scholarModel->submitApplication($payload);
 
         if($query){
+            $lastInserted = $this->scholarModel->insertID();
             $where = [
                 'id' => $payload['scholarId']
             ];
@@ -97,7 +144,7 @@ class ScholarShip extends BaseController
             ];
 
             // Send Notification
-            $this->sendAdminsNotification(3, $payload['studentId'], "Student send an application for evaluation");
+            $this->sendAdminsNotification(3, $payload['studentId'], "Student send an application for evaluation", $lastInserted);
 
             return $this->response
                     ->setStatusCode(200)
@@ -117,10 +164,11 @@ class ScholarShip extends BaseController
         }
 
     }
-    public function sendAdminsNotification($type, $from, $contents){
+    public function sendAdminsNotification($type, $from, $contents, $appId = 0){
         $query = $this->authModel->where(['userType' => $type])->get()->getResult();
         foreach ($query as $key => $value) {
             $notif = [
+                "applicationId" => $appId,
                 "toUser" => $value->id,
                 "fromUser" => $from, 
                 "message" => $contents, 
@@ -188,7 +236,7 @@ class ScholarShip extends BaseController
                 $update = $this->scholarModel->updateMinusScholarshipSlot($where);
             } else if($data->actionType === "evaluate"){
                 // Send Notification
-                $this->sendAdminsNotification(4, $data->uid, "Evaluator send an application for approval");
+                $this->sendAdminsNotification(4, $data->uid, "Evaluator send an application for approval", $data->appId);
             }
             // Send Notification
             $notif = json_decode(json_encode($data->notification), true);

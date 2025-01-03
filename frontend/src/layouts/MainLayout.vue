@@ -18,6 +18,7 @@
 
 <script>
 import { LocalStorage } from 'quasar'
+import { jwtDecode } from 'jwt-decode';
 import login from '../firebase/firebase-login'
 import getDetailsDocument from '../firebase/firebase-get';
 
@@ -43,6 +44,21 @@ export default {
           ]
         },
       },
+    }
+  },
+  created(){
+    let profile = LocalStorage.getItem('userData');
+    if(profile){
+      profile = jwtDecode(profile);
+      if(Number(profile.userType) === 2){
+        this.$router.push('user/dashboard')
+      } else if (Number(profile.userType) === 3 || Number(profile.userType) === 4) {
+        this.$router.push('scholar-unit/dashboard')
+      } else {
+        this.$router.push('admin/dashboard')
+      }
+    } else {
+      this.$router.push('/')
     }
   },
   methods: {
