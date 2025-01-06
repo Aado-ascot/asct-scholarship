@@ -87,8 +87,8 @@ class Users extends BaseController
             // "middleName" => $data->username,
         ];
 
-        $this->sendEmail($data->email);
-        exit();
+        // $this->sendEmail($data->email);
+        // exit();
         $check = $this->userModel->validateUser($where);
 
         if(sizeof($check) > 0){
@@ -111,7 +111,7 @@ class Users extends BaseController
 
             $response = [
                 'title' => 'Registration Complete',
-                'message' => 'User data has been successfully submitted.'
+                'message' => 'User data has been successfully submitted. you can now login.'
             ];
  
             return $this->response

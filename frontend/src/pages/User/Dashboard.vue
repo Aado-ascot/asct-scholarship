@@ -20,21 +20,20 @@
                                 v-for="(itm, indx) in announcements"
                                 :key="indx"
                             >
-                                <q-item-section avatar>
+                                <!-- <q-item-section avatar>
                                 <q-avatar>
                                     <q-icon name="newspaper" size="md" />
                                 </q-avatar>
-                                </q-item-section>
+                                </q-item-section> -->
 
                                 <q-item-section>
-                                <q-item-label class="text-bold text-h6" lines="1">{{itm.title}}</q-item-label>
-                                <q-item-label caption>
-                                    <div v-html="itm.announcement"></div>
-                                </q-item-label>
-                                </q-item-section>
-
-                                <q-item-section side top>
-                                {{ moment(itm.postedDate).format("LL LT") }}
+                                        <q-item-label class="text-bold text-h6" lines="1">{{itm.title}}</q-item-label>
+                                        <q-item-label caption>
+                                            <div v-html="itm.announcement"></div>
+                                        </q-item-label>
+                                        <q-item-label caption>
+                                            {{ moment(itm.postedDate).format("LL LT") }}
+                                        </q-item-label>
                                 </q-item-section>
                             </q-item>
                             </q-list>
