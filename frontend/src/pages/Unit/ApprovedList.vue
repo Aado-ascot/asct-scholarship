@@ -18,7 +18,51 @@
                     </q-card-section>
                 </q-card>
             </div>
-            <div class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
+            <div  v-if="selectedProvider === ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
+                <div class=" row wrap justify-start items-center content-center">
+                    <span class="text-h6 text-bold">Program List</span>
+                    <q-space />
+                    <q-btn @click="selectedProvider = 'All'" flat rounded color="primary" label="View All Application" />
+                </div>
+                <div 
+                    v-if="!tableLoading && itemsList.length === 0" 
+                    class="text-center q-pa-md"
+                >
+                    <q-icon color="grey-4" name="ti-dropbox-alt" size="6em" /> <br/>
+                    <span class="text-caption text-grey-8">
+                        No Data Can Be Shown.
+                    </span>
+                </div>
+                <q-list
+                    v-for="(item, idx) in providerList"
+                    :key="idx"
+                    bordered 
+                    class="rounded-borders itemBorder "
+                >
+
+                    <q-item>
+
+                        <q-item-section >
+                            <q-item-label lines="1">
+                                <span class="text-bold text-primary">{{`${item.provider}`}}</span><br/>
+                                <span class="text-grey-8">
+                                    {{item.description}}
+                                </span>
+                            </q-item-label>
+                        </q-item-section>
+
+                        <q-item-section side>
+                        <div class="text-grey-8 q-gutter-xs">
+                            <!-- <q-btn class="gt-xs" size="12px" flat dense round icon="delete" /> -->
+                            <q-btn @click="viewApplicationList(item)" class="gt-xs" flat color="primary" no-caps  dense label="View Applications" />
+                            <!-- <q-btn size="12px" flat dense round icon="more_vert" /> -->
+                        </div>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+            </div>
+            <div v-if="selectedProvider !== ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
+                <q-btn @click="backToProviderList" class="gt-xs q-mr-sm" flat color="red" rounded no-caps  dense icon="mdi-arrow-left" />
                 <div v-if="tableLoading && itemsList.length === 0" class="text-center">
                     <q-spinner-bars
                         color="primary"
@@ -39,7 +83,7 @@
                     v-if="itemsList.length > 0"
                     flat
                     bordered
-                    :rows="itemsList"
+                    :rows="filteredList"
                     wrap-cells
                     :columns="tableColumns"
                     row-key="name"
@@ -424,6 +468,7 @@ export default {
     },
     data(){
         return {
+            selectedProvider: '', 
             printModal: false,
             drawerPrint: false,
             drawerRight: false,
@@ -432,6 +477,7 @@ export default {
             appData: {},
             itemsList: [],
             courseOpt: [],
+            providerList: [],
             previewModalStatus: false,
             selectedFile: "",
         }
@@ -439,7 +485,7 @@ export default {
     watch:{
         drawerPrint(newVal){
             if(newVal){
-                this.generatePdf(this.itemsList)
+                this.generatePdf(this.filteredList)
             }
         },
         drawerRight(newVal){
@@ -453,6 +499,14 @@ export default {
             const user = LocalStorage.getItem('userData')
             return jwtDecode(user);
         },
+        filteredList(){
+            if(this.selectedProvider === "All"){
+                return this.itemsList
+            } else {
+                return this.itemsList.filter(el => this.selectedProvider === el.title)
+            }
+			
+		},
         tableColumns: function(){
             return [
                 {
@@ -494,6 +548,12 @@ export default {
     },
     methods: {
         moment,
+        backToProviderList(){
+            this.selectedProvider = ""
+        },
+        viewApplicationList(item){
+            this.selectedProvider = item.description
+        },
         async updateApplicationData(type){
             // Confirm
             this.$q.dialog({
@@ -650,6 +710,16 @@ export default {
                 const data = {...response.data};
                 if(!data.error){
                     this.itemsList = data.list
+                    let providers = data.list.filter((e, i, self) => i === self.findIndex((t) => t.title === e.title))
+                    this.providerList = providers.map(el => {
+                        let obj = {
+                            provider: el.provider,
+                            description: el.title,
+                            scholarId: el.data.scholarId
+                        }
+
+                        return obj
+                    });
                 }
 
                 this.tableLoading = false

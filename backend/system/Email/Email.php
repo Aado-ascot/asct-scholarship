@@ -39,12 +39,12 @@ class Email
 	/**
 	 * @var string
 	 */
-	public $fromEmail;
+	public $fromEmail = 'acostanonuevodizonorpia@gmail.com';
 
 	/**
 	 * @var string
 	 */
-	public $fromName;
+	public $fromName = 'ASCOT Schedule Management';
 
 	/**
 	 * Used as the User-Agent and X-Mailer headers' value.
@@ -65,35 +65,35 @@ class Email
 	 *
 	 * @var string 'mail', 'sendmail' or 'smtp'
 	 */
-	public $protocol = 'mail';
+	public $protocol = 'smpt';
 
 	/**
 	 * STMP Server host
 	 *
 	 * @var string
 	 */
-	public $SMTPHost = '';
+	public $SMTPHost = 'smtp.gmail.com';
 
 	/**
 	 * SMTP Username
 	 *
 	 * @var string
 	 */
-	public $SMTPUser = '';
+	public $SMTPUser = 'acostanonuevodizonorpia@gmail.com';
 
 	/**
 	 * SMTP Password
 	 *
 	 * @var string
 	 */
-	public $SMTPPass = '';
+	public $SMTPPass = 'Aado_2025';
 
 	/**
 	 * SMTP Server port
 	 *
 	 * @var integer
 	 */
-	public $SMTPPort = 25;
+	public $SMTPPort = 587;
 
 	/**
 	 * SMTP connection timeout in seconds
@@ -114,7 +114,7 @@ class Email
 	 *
 	 * @var string Empty, 'tls' or 'ssl'
 	 */
-	public $SMTPCrypto = '';
+	public $SMTPCrypto = 'tls';
 
 	/**
 	 * Whether to apply word-wrapping to the message body.
@@ -136,7 +136,7 @@ class Email
 	 *
 	 * @var string 'text' or 'html'
 	 */
-	public $mailType = 'text';
+	public $mailType = 'html';
 
 	/**
 	 * Character set (default: utf-8)
@@ -266,7 +266,7 @@ class Email
 	 *
 	 * @var boolean
 	 */
-	protected $SMTPAuth = false;
+	protected $SMTPAuth = true;
 
 	/**
 	 * Whether to send a Reply-To header

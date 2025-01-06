@@ -87,6 +87,8 @@ class Users extends BaseController
             // "middleName" => $data->username,
         ];
 
+        $this->sendEmail($data->email);
+        exit();
         $check = $this->userModel->validateUser($where);
 
         if(sizeof($check) > 0){
@@ -105,6 +107,7 @@ class Users extends BaseController
         $query = $this->userModel->insert($data);
 
         if($query){
+            
 
             $response = [
                 'title' => 'Registration Complete',
@@ -130,6 +133,26 @@ class Users extends BaseController
         // print_r($data);
         // exit();
         
+    }
+
+    public function sendEmail($emailAdd){
+        $email = \Config\Services::email();
+        $emailConfig = new \Config\Email();
+
+        // print_r($emailConfig);
+        $email->initialize($emailConfig);
+        $email->setFrom($emailConfig->fromEmail, $emailConfig->fromName);
+        $email->setTo($emailAdd);
+        $email->setSubject('ASCOT Scholarship Verification');
+        $email->setMessage('Click to verify your account <a href="http://localhost:3000/ascots/api/v1/auth/verified">Verify</a>');
+        $result = $email->send();
+
+        if ($result) {
+            echo 'Email successfully sent';
+        } else {
+            echo 'Failed to send email ';
+            print_r($email->printDebugger(['headers']));
+        }
     }
 
     public function ChangePassword(){

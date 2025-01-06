@@ -336,7 +336,17 @@ export default {
       this.$api.post('users/register', payload).then(async (response) => {
         const data = {...response.data};
         if(!data.error){
-          this.submitLogin();
+
+          this.$q.notify({
+            position: 'top-left',
+            type: 'positive',
+            message: data.title,
+            caption: data.message,
+            icon: 'mdi_information'
+          })
+          // this.clearForm();
+          this.$q.loading.hide();
+          this.loginLoad = false;
         } else {
           this.$q.loading.hide();
           this.loginLoad = false;
@@ -349,33 +359,6 @@ export default {
           })
         }
       })
-    },
-    async submitLogin(){
-      let vm = this;
-      let payload = {
-        username: vm.form.username,
-        password: vm.form.password
-      };
-
-      this.$api.post('auth/login', payload).then(async (response) => {
-        const data = {...response.data};
-        if(!data.error){
-          this.clearForm();
-          await LocalStorage.set('userData', data.jwt);
-          this.$router.push('user/dashboard')
-        } else {
-          this.$q.notify({
-            position: 'top-left',
-            type: 'negative',
-            message: data.title,
-            caption: data.message,
-            icon: 'report_problem'
-          })
-        }
-      })
-
-      this.loginLoad = false;
-      this.$q.loading.hide();
     },
 
     clearForm(){

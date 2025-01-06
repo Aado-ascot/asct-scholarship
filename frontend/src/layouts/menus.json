@@ -44,6 +44,12 @@
     "link": "adminUserManagement",
     "code": 202
   },
+  {
+    "title": "Settings",
+    "icon": "ti-settings",
+    "link": "adminUserSettings",
+    "code": 203
+  },
 
   {
     "title": "Dashboard",

@@ -96,9 +96,13 @@
                                 bordered 
                                 class="rounded-borders itemBorder q-mb-sm"
                             >
-                                <q-item-label class="text-bold text-primary" header>
-                                    
-                                    {{`${item.original.provider}`}} <br/>
+                                <q-item-label 
+                                    class="text-bold"
+                                    :class="Number(item.original.slot) === Number(item.original.applied) ? 'text-grey-8' : 'text-primary' " 
+                                    header
+                                >
+                                    {{`${item.original.provider}`}} 
+                                    <span v-if="Number(item.original.slot) === Number(item.original.applied)">(No Slots Available)</span><br/>
                                     {{item.title}}
                                 </q-item-label>
 
@@ -121,7 +125,16 @@
                                     <q-item-section side>
                                     <div class="text-grey-8 q-gutter-xs">
                                         <!-- <q-btn class="gt-xs" size="12px" flat dense round icon="delete" /> -->
-                                        <q-btn @click="applyForScholarship(item.original)" class="gt-xs" outline color="primary" no-caps  dense label="Apply Scholarship" />
+                                        <q-btn 
+                                            @click="applyForScholarship(item.original)"
+                                            :disabled="Number(item.original.slot) === Number(item.original.applied)"
+                                            class="gt-xs" 
+                                            outline 
+                                            color="primary" 
+                                            no-caps  
+                                            dense 
+                                            label="Apply Scholarship" 
+                                        />
                                         <!-- <q-btn size="12px" flat dense round icon="more_vert" /> -->
                                     </div>
                                     </q-item-section>

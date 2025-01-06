@@ -306,7 +306,15 @@ export default {
     checkModule() {
 
       let filterMenuRoutes = MenuJson.filter((el) => {
-        return el.link === this.$router.currentRoute.value.name && this.userDetails.modules.includes(el.code)
+        if(el.children){
+          let childFilter = el.children.filter((child) => {
+            return child.link === this.$router.currentRoute.value.name && this.userDetails.modules.includes(child.code)
+          })
+          return childFilter
+        } else {
+          return el.link === this.$router.currentRoute.value.name && this.userDetails.modules.includes(el.code)
+        }
+        
       })
 
       if(filterMenuRoutes.length === 0){

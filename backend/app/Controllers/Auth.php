@@ -52,7 +52,7 @@ class Auth extends BaseController
             //Set Api Response return to the FE
             if($user){
 
-                if($user->status == 1){
+                if($user->status == 1 && $user->isVerified == 1){
                     $user->userType = $this->miscModel->getUserType($user->userType);
 
                     // //Set JWT Authorization
@@ -89,10 +89,22 @@ class Auth extends BaseController
                             ->setStatusCode(200)
                             ->setContentType('application/json')
                             ->setBody(json_encode($result));
+                } else if($user->status == 1 && $user->isVerified == 0){
+                    $response = [
+                        'error' => 401,
+                        'title' => 'Account Not Verified ',
+                        'message' => 'Please check your email inbox or spam to verify your account'
+                    ];
+        
+                    return $this->response
+                            ->setStatusCode(200)
+                            ->setContentType('application/json')
+                            ->setBody(json_encode($response));
                 } else {
                     $response = [
                         'error' => 401,
                         'title' => 'Account Deactivated',
+                        'user' => $user,
                         'message' => 'Please contact your adminitrator for more information'
                     ];
         

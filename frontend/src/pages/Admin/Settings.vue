@@ -9,18 +9,13 @@
                 >
                     <q-card-section class="fit row wrap justify-start items-center content-center">
                         <span class="text-h6 text-bold">
-                            User Management
+                            Site Settings
                             <br/>
-                            <span class="text-caption text-grey">Manage user details and access</span>
+                            <span class="text-caption text-grey">
+                                Manage site settings and database
+                            </span>
                         </span>
                         
-                        <q-space />
-                        <div class="text-right">
-                            <q-btn-group>
-                                <!-- <q-btn color="amber" rounded glossy icon="visibility" /> -->
-                                <q-btn color="primary" rounded  icon="ti-plus" label="Add New User" no-caps @click="modalComponents.modalStatus = !modalComponents.modalStatus" />
-                            </q-btn-group>
-                        </div>
                     </q-card-section>
                 </q-card>
             </div>
@@ -30,109 +25,89 @@
                     class="my-card bg-white"
                 >
                     <q-card-section>
-                       <div v-if="tableLoading && itemsList.length === 0" class="text-center">
-                            <q-spinner-bars
-                                color="primary"
-                                size="3em"
-                            />
-                        </div>
-                        <div 
-                            v-if="!tableLoading && itemsList.length === 0" 
-                            class="text-center q-pa-md"
-                        >
-                            <q-icon color="grey-4" name="ti-dropbox-alt" size="6em" /> <br/>
-                            <span class="text-caption text-grey-8">
-                                No Data Can Be Shown.
-                            </span>
-                        </div>
-                        <q-table
-                            v-if="itemsList.length > 0"
-                            flat
-                            :rows="itemsList"
-                            wrap-cells
-                            :columns="tableColumns"
-                            row-key="name"
-                            :filter="search"
-                        >  
-                            <template v-slot:header="props">
-                                <q-tr :props="props">
-                                    <q-th
-                                        v-for="col in props.cols"
-                                        :key="col.name"
-                                        :props="props"
-                                    >
-                                        {{ col.label }}
-                                    </q-th>
-                                    <q-th>
-                                        Action
-                                    </q-th>
-                                </q-tr>
-                            </template>
-                            <template v-slot:body="props">
-                                <q-tr :props="props">
-                                    <q-td
-                                        v-for="col in props.cols"
-                                        :key="col.name"
-                                        :props="props"
-                                    >
-                                        {{ col.value }}
-                                    </q-td>
-                                    <q-td class="text-center">
-                                        <q-btn-group  rounded>
-                                            <!-- <q-btn rounded size="sm" color="secondary" label="Edit" /> -->
-                                            <q-btn 
-                                                rounded 
-                                                size="sm"
-                                                @click="updateUserStatus(props.row.original)"
-                                                :color="Number(props.row.status) === 1 ? 'negative' : 'green'" 
-                                                :label="Number(props.row.status) ? 'Deactivate' : 'Activate'" 
-                                            />
-                                        </q-btn-group>
-                                    </q-td>
+                        <q-banner inline-actions rounded class="bg-primary text-white">
+                            Database Backup
 
-                                </q-tr>
+                            <template v-slot:action>
+                                <q-btn @click="modalStatus = true" flat no-caps label="Download" icon="mdi-database-export" />
                             </template>
-                        </q-table>
+                        </q-banner>
                     </q-card-section>
                 </q-card>
             </div>
 
         </div>
 
-        <!-- Modals -->
-        <addUserModal 
-            v-bind="modalComponents" 
-            @updateStatus="updateModalStatus" 
-            @updateTable="getList"
-        />
+
+        <q-dialog persistent v-model="modalStatus">
+            <q-card style="width: 500px; max-width: 80vw;">
+                <q-card-section>
+                    <div class="text-h6">Export Database</div>
+                </q-card-section>
+
+                <q-separator />
+
+                <q-card-section style="max-height: 60vh" class="scroll">
+                    <q-form ref="passForm" class="q-gutter-md">
+                        <q-input 
+                            class="q-pt-md" 
+                            bottom-slots 
+                            v-model="password"
+                            outlined
+                            :type="isPwd ? 'password' : 'text'"
+                            label="Enter User Password" 
+                            :dense="true"
+                        >
+                            <template v-slot:prepend>
+                                <q-icon name="password" />
+                            </template>
+                            <template v-slot:append>
+                                <q-icon
+                                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                                    class="cursor-pointer"
+                                    @click="isPwd = !isPwd"
+                                />
+                            </template>
+                        </q-input>
+                    </q-form>
+                </q-card-section>
+
+                <q-separator />
+
+                <q-card-actions align="right">
+                    <q-btn flat label="Cancel" :loading="btnLoading" color="negative" @click="cancelChange" />
+                    <q-btn flat label="Download" :loading="btnLoading" color="positive" @click="downloadSQL" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
 <script>
 import moment from 'moment'
 import { LocalStorage } from 'quasar'
-import addUserModal from "../../components/Modals/AddUserModal.vue"
+import { jwtDecode } from 'jwt-decode';
+
 
 const dateNow = moment().format('YYYY-MM-DD');
 
 export default {
     name: 'PayrollPage',
-    components:{
-        addUserModal
-    },
+    components:{},
     data(){
         return {
-            modalComponents: {
-                modalStatus: false,
-                appId: 0,
-                userDetails: {},
-                modalTitle: 'Add New User'
-            },
+            password: '',
+            isPwd: true,
+            modalStatus: false,
             itemsList: [],
             tableLoading: false,
         }
     },
     computed: {
+        user(){
+            const user = LocalStorage.getItem('userData')
+            return jwtDecode(user);
+        },
         tableColumns: function(){
             return [
                 {
@@ -159,6 +134,30 @@ export default {
     },
     methods: {
         moment,
+        downloadSQL(){
+            let payload = {
+				userId: this.user.userId,
+				password: this.password 
+			}
+						this.$api.post("misc/database/backup", payload).then((res) => {
+							let response = {...res.data}
+							if(!response.error){
+								// console.log(res.data)
+								const anchor = document.createElement('a');
+								anchor.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(res.data);
+								anchor.target = '_blank';
+								anchor.download = `database-backup-${new Date().toISOString()}.sql`;
+								anchor.click();
+								this.modalStatus = false;
+							} else {
+								// show Error
+								console.log('there is some error')
+							}
+						})
+        },
+        cancelChange(){
+            this.modalStatus = false;
+        },
         updateModalStatus(){
             this.modalComponents.modalStatus = false;
         },

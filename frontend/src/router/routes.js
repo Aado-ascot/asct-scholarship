@@ -56,6 +56,11 @@ const routes = [
         name: 'adminAnnouncementManagement',
         component: () => import('pages/Admin/Announcements.vue') 
       },
+      { 
+        path: 'settings',
+        name: 'adminUserSettings',
+        component: () => import('pages/Admin/Settings.vue') 
+      },
     ]
   },
   {
