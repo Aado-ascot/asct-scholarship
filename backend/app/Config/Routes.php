@@ -94,6 +94,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('update/notification', 'Misc::updateNotificationStatus');
 		$routes->get('dashboard', 'Misc::getDashboard');
 		$routes->post('database/backup', 'BackupController::backupDatabase');
+		$routes->post('database/restore', 'BackupController::restoreDatabase');
 	});
 
 });

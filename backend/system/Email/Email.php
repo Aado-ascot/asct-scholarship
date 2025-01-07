@@ -173,7 +173,7 @@ class Email
 	 * @link http://www.ietf.org/rfc/rfc822.txt
 	 * @var  string "\r\n" or "\n"
 	 */
-	public $newline = "\n";
+	public $newline = "\r\n";
 
 	/**
 	 * CRLF character sequence

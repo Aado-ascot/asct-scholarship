@@ -25,11 +25,23 @@
                     class="my-card bg-white"
                 >
                     <q-card-section>
-                        <q-banner inline-actions rounded class="bg-primary text-white">
+                        <q-banner inline-actions rounded class="bg-primary text-white q-mb-md">
                             Database Backup
 
                             <template v-slot:action>
-                                <q-btn @click="modalStatus = true" flat no-caps label="Download" icon="mdi-database-export" />
+                                <q-btn @click="showModal('backup')" flat no-caps label="Download" icon="mdi-database-export" />
+                            </template>
+                        </q-banner>
+                        <q-banner inline-actions rounded class="bg-primary text-white">
+                            Database Restore
+
+                            <template v-slot:action>
+                                <q-file outlined dense v-model="fileracker">
+                                    <template v-slot:prepend>
+                                    <q-icon name="attach_file" />
+                                    </template>
+                                </q-file>
+                                <q-btn @click="showModal('restore')" flat no-caps label="Upload" icon="mdi-database-import" />
                             </template>
                         </q-banner>
                     </q-card-section>
@@ -76,7 +88,22 @@
 
                 <q-card-actions align="right">
                     <q-btn flat label="Cancel" :loading="btnLoading" color="negative" @click="cancelChange" />
-                    <q-btn flat label="Download" :loading="btnLoading" color="positive" @click="downloadSQL" />
+                    <q-btn 
+                        v-if="actionType === 'backup'"
+                        flat 
+                        label="Download" 
+                        :loading="btnLoading" 
+                        color="positive" 
+                        @click="downloadSQL" 
+                    />
+                    <q-btn 
+                        v-if="actionType === 'restore'"
+                        flat 
+                        label="Restore" 
+                        :loading="btnLoading" 
+                        color="positive" 
+                        @click="restoreDb" 
+                    />
                 </q-card-actions>
             </q-card>
         </q-dialog>
@@ -96,6 +123,8 @@ export default {
     components:{},
     data(){
         return {
+            actionType: "backup",
+            fileracker: null,
             password: '',
             isPwd: true,
             modalStatus: false,
@@ -134,6 +163,11 @@ export default {
     },
     methods: {
         moment,
+        showModal(action){
+            this.actionType = action
+            this.modalStatus = true;
+            
+        },
         downloadSQL(){
             let payload = {
 				userId: this.user.userId,
@@ -154,6 +188,31 @@ export default {
 								console.log('there is some error')
 							}
 						})
+        },
+        restoreDb(){
+            if (!this.fileracker) {
+                console.log('No file selected');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('backup_file', this.fileracker);
+            formData.append('userId', this.user.userId);
+            formData.append('password', this.password);
+
+            this.$api.post('misc/database/restore', formData, {
+                headers: {
+                'Content-Type': 'multipart/form-data'
+                }
+            }).then((res) => {
+                let response = { ...res.data };
+                if (!response.error) {
+                    console.log('Database restored successfully');
+                    this.modalStatus = false;
+                } else {
+                    console.log('There is some error');
+                }
+            })
         },
         cancelChange(){
             this.modalStatus = false;

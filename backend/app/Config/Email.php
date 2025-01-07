@@ -145,7 +145,7 @@ class Email extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $newline = "\r\n";
+	public $newline = '\r\n';
 
 	/**
 	 * Enable BCC Batch Mode.
