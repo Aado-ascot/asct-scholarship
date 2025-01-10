@@ -165,7 +165,7 @@ class Users extends BaseController
             $mail->Body    = '';
             $mail->Body .= '<h1>Hi '. $details->firstName .' </h1><br/>';
             $mail->Body .= 'To proceed further and login to your account, please click the link below to verify your account.<br/><br/>';
-            $mail->Body .= '<a href="'.base_url('ascots/api/v1/auth/verified/'.$userID).'">Verify</a>';
+            $mail->Body .= '<a href="https://thesis-ascots-endpoints.site/scholarship/backend/public/ascots/api/v1auth/verified/'.$userID.'">Verify</a>';
         
             $mail->send();
         } catch (Exception $e) {
