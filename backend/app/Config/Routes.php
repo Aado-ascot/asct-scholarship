@@ -37,7 +37,7 @@ $routes->get('/', 'Home::index');
 $routes->group('ascots/api/v1', function($routes){
 	$routes->group('auth', function($routes){
 		$routes->post('login', 'Auth::login');
-		$routes->get('verified', 'Auth::verifyAccount');
+		$routes->get('verified/(:any)', 'Auth::verifyAccount/$1');
 	}); 
 
 	// User Management

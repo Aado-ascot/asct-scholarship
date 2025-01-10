@@ -260,7 +260,7 @@ export default {
                     this.uploadFile = data.uploadFile
                     this.remarks = data.remarks
                     this.currDate = data.createdDate
-                    this.reqStatus = Number(data.status) === 0 ? "Subject for approval" : "Approved"
+                    this.reqStatus = Number(data.status) === 1 ? "Approved" : "Subject for approval"
                     this.hasData = true
                     this.fileDetails = data
                 } else {
@@ -338,6 +338,7 @@ export default {
                             caption: data.message,
                             icon: 'mdi-check-all'
                         })
+                        this.getFileStatus()
                     } else {
                         this.$q.notify({
                             position: 'top-left',
@@ -390,6 +391,15 @@ export default {
                         remarks: "",
                     }
                 }
+
+                if(Number(this.fileDetails.status) === 2){
+                    payload.notify = true
+                    payload.isStudent = true
+                    payload.notification = {
+                        fromUser: this.user.userId,
+                        message: "Updated the Document for " + this.selectedMenu.label,
+                    }
+                }
                 
                 this.$api.post('document/update/attachment', payload).then(async (response) => {
                     const data = {...response.data};
@@ -402,6 +412,7 @@ export default {
                             caption: data.message,
                             icon: 'mdi-check-all'
                         })
+                        this.getFileStatus()
                         this.updateDocumentOpen = false
                     } else {
                         this.$q.notify({
@@ -452,7 +463,7 @@ export default {
                             caption: data.message,
                             icon: 'mdi-check-all'
                         })
-
+                        this.getFileStatus()
                         this.fileName = ''
                         this.fileSize = ''
                         this.uploadFile = ''

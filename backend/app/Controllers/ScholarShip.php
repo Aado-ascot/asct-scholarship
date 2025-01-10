@@ -1,10 +1,10 @@
 <?php namespace App\Controllers;
 
-use CodeIgniter\HTTP\IncomingRequest;
 use App\Models\AuthModel;
 use App\Models\ScholarshipModel;
 use App\Models\MiscModel;
-use \Firebase\JWT\JWT;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class ScholarShip extends BaseController
 {
@@ -228,6 +228,8 @@ class ScholarShip extends BaseController
             if($data->actionType === "approve"){
                 // execute the Rejection of other submitted application
                 $this->rejectRestOfApplication($data->studentId);
+                // Send Email
+                $this->sendEmail($data->email);
             } else if($data->actionType === "reject"){
                 // Update scholarship
                 $where = [
@@ -264,6 +266,54 @@ class ScholarShip extends BaseController
                     ->setBody(json_encode($response));
         }
 
+    }
+
+    public function sendEmail($emailAdd){
+        $mail = new PHPMailer(true);
+
+        $filePath = WRITEPATH . 'certificate/certificate.png';
+        if (!file_exists($filePath)) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setContentType('application/json')
+                ->setBody(json_encode(['error' => 'File not found']));
+        }
+        
+
+        try {
+            // Server settings
+            $mail->SMTPDebug = 0;                                       // Enable verbose debug output
+            $mail->isSMTP();                                            // Set mailer to use SMTP
+            $mail->Host       = 'smtp.gmail.com';                       // Specify main and backup SMTP servers
+            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+            $mail->Username   = 'acostanonuevodizonorpia@gmail.com';    // SMTP username
+            $mail->Password   = 'wviv drce qlka zuge';                  // SMTP password
+            $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
+            $mail->Port       = 587;                                    // TCP port to connect to
+        
+            // Recipients
+            $mail->setFrom('acostanonuevodizonorpia@gmail.com', 'ASCOT Schedule Management');
+            $mail->addAddress($emailAdd);     // Add a recipient
+        
+            // Attachments
+            // $mail->addAttachment('/var/tmp/file.tar.gz');                 // Add attachments
+            // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');            // Optional name
+            if (file_exists($filePath)) {
+                $mail->addAttachment($filePath); // Add attachment
+            }
+
+            // Content
+            $mail->isHTML(true);                                          // Set email format to HTML
+            $mail->Subject = 'ASCOT Scholarship Certificate';
+            $mail->Body    = '';
+            $mail->Body = 'This is to certify that you have been approved for the scholarship program. Please download the certificate attached to this email.';
+            
+            
+
+            $mail->send();
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
     }
 
     public function deleteScholarshipProgram(){

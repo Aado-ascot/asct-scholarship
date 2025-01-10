@@ -337,13 +337,13 @@ export default {
         const data = {...response.data};
         if(!data.error){
 
-          // this.$q.notify({
-          //   position: 'top-left',
-          //   type: 'positive',
-          //   message: data.title,
-          //   caption: data.message,
-          //   icon: 'mdi_information'
-          // })
+          this.$q.notify({
+            position: 'top-left',
+            type: 'positive',
+            message: data.title,
+            caption: data.message,
+            icon: 'mdi_information'
+          })
           this.clearForm();
           this.$q.loading.hide();
           this.loginLoad = false;

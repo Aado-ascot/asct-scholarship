@@ -79,14 +79,14 @@ class Email
 	 *
 	 * @var string
 	 */
-	public $SMTPUser = 'acostanonuevodizonorpia@gmail.com';
+	public $SMTPUser = '';
 
 	/**
 	 * SMTP Password
 	 *
 	 * @var string
 	 */
-	public $SMTPPass = 'Aado_2025';
+	public $SMTPPass = '';
 
 	/**
 	 * SMTP Server port

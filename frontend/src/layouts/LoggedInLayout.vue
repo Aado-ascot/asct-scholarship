@@ -212,9 +212,6 @@
                   <q-item-section>
                     <q-item-label>{{ `${notif.sender.firstName} ${notif.sender.lastName} `}}</q-item-label>
                     <q-item-label caption lines="2">{{ notif.message }}</q-item-label>
-                  </q-item-section>
-
-                  <q-item-section side top>
                     <q-item-label caption>{{ moment(notif.createdDate).format("LL LT") }}</q-item-label>
                   </q-item-section>
                   <!-- <q-separator inset /> -->

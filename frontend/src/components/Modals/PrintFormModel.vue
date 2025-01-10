@@ -64,6 +64,14 @@ export default {
         async closeModal(){
             this.$emit('updatePrintStatus', false);
         },
+        async getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        },
         async createPDF(data){
             const url = 'docs/ascots_form.pdf'
             // const url = 'files/draftInvoice.pdf'
@@ -87,6 +95,13 @@ export default {
             if(picture.length > 0){
                 // validate if png or jpg
                 console.log(picture)
+                // if the file is a File from Apply
+                // if(picture[0].file){
+                //     let convertedFile = await this.getBase64(picture[0].file)
+                //     picture[0].uploadFile = convertedFile
+                // }
+
+
                 let validate = picture[0].uploadFile.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
                 if(validate === 'image/png'){
                     // print the picture

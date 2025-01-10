@@ -819,7 +819,7 @@ export default {
                     font:fontBold,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`DATA REPORT`, {
+                elpage.drawText(`${this.selectedProvider === 'All' ? this.selectedProvider + ' SCHOLARSHIP'  : this.selectedProvider} REPORT`, {
                     x: 20,
                     y: height - 40,
                     size: 12,
@@ -835,99 +835,108 @@ export default {
                     color: rgb(0, 0, 0),
                 })
                 elpage.drawText(`Student Name`, {
-                    x: 210,
+                    x: 110,
                     y: height - 80,
                     size: 9,
                     font:fontBold,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`Report`, {
-                    x: 270,
+                elpage.drawText(`Year Lvl`, {
+                    x: 190,
                     y: height - 80,
-                    size: 9,
+                    lineHeight: 10,
+                    maxWidth: 230,
                     font:fontBold,
+                    size: 9,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`Year`, {
-                    x: 320,
+                elpage.drawText(`Address`, {
+                    x: 230,
                     y: height - 80,
-                    size: 9,
+                    lineHeight: 10,
                     font:fontBold,
+                    maxWidth: 230,
+                    size: 9,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`Term`, {
+                
+                elpage.drawText(`Course`, {
                     x: 370,
                     y: height - 80,
-                    size: 9,
+                    lineHeight: 10,
                     font:fontBold,
+                    maxWidth: 230,
+                    size: 9,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`Male`, {
-                    x: 470,
+                elpage.drawText(`Scholarship Granted`, {
+                    x: 490,
                     y: height - 80,
-                    size: 9,
+                    lineHeight: 10,
+                    maxWidth: 230,
                     font:fontBold,
+                    size: 9,
                     color: rgb(0, 0, 0),
                 })
-                elpage.drawText(`Female`, {
-                    x: 520,
-                    y: height - 80,
-                    size: 9,
-                    font:fontBold,
-                    color: rgb(0, 0, 0),
-                })
+                
 
-                // let paginated = this.getPaginatedData(data, index+1, itemPerPage)
-                // let stdContentHeight = height - 230;
-                // for (let idx = 1; idx <= paginated.length; idx++) {
-                //     let edata = paginated[idx-1]
-                //     elpage.drawText(`${edata.course || '--'}`, {
-                //         x: 15,
-                //         y: stdContentHeight + 135,
-                //         lineHeight: 10,
-                //         maxWidth: 230,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.schoolYear || '--'}`, {
-                //         x: 210,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.reportType || '--'}`, {
-                //         x: 270,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.classYear || '--'}`, {
-                //         x: 320,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.term || '--'}`, {
-                //         x: 370,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.male || '--'}`, {
-                //         x: 470,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
-                //     elpage.drawText(`${edata.female || '--'}`, {
-                //         x: 520,
-                //         y: stdContentHeight + 135,
-                //         size: 9,
-                //         color: rgb(0, 0, 0),
-                //     })
+                let paginated = this.getPaginatedData(data, index+1, itemPerPage)
+                let stdContentHeight = height - 230;
+                for (let idx = 1; idx <= paginated.length; idx++) {
+                    let edata = paginated[idx-1]
+                    elpage.drawText(`${edata.studentNumber || '--'}`, {
+                        x: 15,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
+                    elpage.drawText(`${edata.data.student.firstName} ${edata.data.student.lastName}`, {
+                        x: 110,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
+                    elpage.drawText(`${edata.data.student.yrLvl}`, {
+                        x: 190,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
+                    elpage.drawText(`${edata.data.student.address}`, {
+                        x: 230,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
+                    
+                    let sCourse = this.courseOpt.filter(el => el.value === edata.data.student.courseId)
+                    elpage.drawText(`${sCourse[0].label}`, {
+                        x: 370,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
+                    elpage.drawText(`${edata.data.dateApproved}`, {
+                        x: 490,
+                        y: stdContentHeight + 135,
+                        lineHeight: 10,
+                        maxWidth: 230,
+                        size: 9,
+                        color: rgb(0, 0, 0),
+                    })
 
-                //     stdContentHeight -= 20
-                // }
+                    stdContentHeight -= 20
+                }
             })
 
             const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });

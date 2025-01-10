@@ -4,6 +4,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use App\Models\UsersModel;
 use App\Models\AuthModel;
 use App\Models\AttachmentModel;
+use App\Models\MiscModel;
 use \Firebase\JWT\JWT;
 
 class UploadDocument extends BaseController
@@ -13,6 +14,7 @@ class UploadDocument extends BaseController
         $this->userModel = new UsersModel();
         $this->authModel = new AuthModel();
         $this->attachModel = new AttachmentModel();
+        $this->miscModel = new MiscModel();
     }
 
     public function insertAttachment(){
@@ -62,6 +64,16 @@ class UploadDocument extends BaseController
         $query = $this->attachModel->updateFileInfo($where, $payload);
 
         if($query){
+            if($data->notify && !$data->isStudent){
+                $notif = json_decode(json_encode($data->notification), true);
+                $this->miscModel->sendNotification($notif);
+            } else if($data->notify && $data->isStudent){
+                $this->sendAdminsNotification(
+                    3, 
+                    $data->notification->fromUser, 
+                    $data->notification->message
+                );
+            }
 
             $response = [
                 'title' => 'Update successful',
@@ -85,6 +97,21 @@ class UploadDocument extends BaseController
                     ->setBody(json_encode($response));
         }
         
+    }
+
+    public function sendAdminsNotification($type, $from, $contents, $appId = 0){
+        $query = $this->authModel->where(['userType' => $type])->get()->getResult();
+        foreach ($query as $key => $value) {
+            $notif = [
+                "applicationId" => $appId,
+                "toUser" => $value->id,
+                "fromUser" => $from, 
+                "message" => $contents, 
+                "notifType" => "green", 
+                "seen" => 0, 
+            ];
+            $this->miscModel->sendNotification($notif);
+        }
     }
 
     public function deleteAttachmentStatus(){

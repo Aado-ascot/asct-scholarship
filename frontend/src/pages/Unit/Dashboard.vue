@@ -55,7 +55,7 @@
                     v-for="(item, idx) in providerList"
                     :key="idx"
                     bordered 
-                    class="rounded-borders itemBorder "
+                    class="rounded-borders itemBorder q-mb-sm"
                 >
 
                     <q-item>
@@ -306,6 +306,16 @@
                                                     rounded 
                                                     color="primary" 
                                                     label="View"
+                                                />
+                                                <q-btn 
+                                                    @click="requestUpdate(item)"
+                                                    outline 
+                                                    rounded 
+                                                    size="sm"
+                                                    class="q-mr-xs" 
+                                                    no-caps
+                                                    color="red" 
+                                                    label="Request Update" 
                                                 />
                                                 <q-btn
                                                     v-if="item.verified === undefined"
@@ -863,6 +873,7 @@ export default {
                         actionType: type,
                         uid: this.user.userId,
                         scholarId: Number(this.selectedProgram.data.scholarId),
+                        email: this.selectedProgram.data.student.email,
                         updateDetails: {
                             appStatus: 2,
                             approvedBy: this.user.userId,
@@ -878,7 +889,6 @@ export default {
                         }
                     }
                 }
-
 
                 this.$api.post('scholarship/update/application', payload).then(async (response) => {
                     const data = {...response.data};
@@ -909,6 +919,73 @@ export default {
             })
             
         },
+        async requestUpdate(item){
+            this.$q.dialog({
+                title: 'Request Update on Document',
+                message: 'Remarks: ',
+                prompt: {
+                    model: '',
+                    type: 'text' // optional
+                },
+                ok: {
+                    label: 'Yes'
+                },
+                cancel: {
+                    label: 'No',
+                    color: 'negative'
+                },
+                persistent: true
+            }).onOk(data => {
+                this.$q.loading.show();
+                let payload = {
+                    fileId: item.fileId,
+                    notify: true,
+                    isStudent: false,
+                    notification: {
+                        applicationId: Number(this.selectedProgram.data.id),
+                        toUser: Number(this.selectedProgram.data.studentId),
+                        fromUser: this.user.userId,
+                        message: data,
+                        notifType: 'red',
+                        seen: 0,
+                    },
+                    updateDetails: {
+                        status: 2,
+                        remarks: data,
+                    }
+                }
+                let index = this.selectedProgram.data.scholarship.requirements.indexOf(item)
+                let requirements = this.selectedProgram.data.scholarship.requirements[index];
+
+                
+                this.$api.post('document/update/attachment', payload).then(async (response) => {
+                    const data = {...response.data};
+
+                    if(!data.error){
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'success',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-check-all'
+                        })
+
+                        requirements.verified = true
+                        requirements.color = 'red-9'
+                    } else {
+                        this.$q.notify({
+                            position: 'top-left',
+                            type: 'negative',
+                            message: data.title,
+                            caption: data.message,
+                            icon: 'mdi-alert-circle-outline'
+                        })
+                    }
+                })
+
+                this.$q.loading.hide();
+            })
+        },
         async verifyDocument(item){
             this.$q.dialog({
                 title: 'Verify Document',
@@ -925,6 +1002,8 @@ export default {
                 this.$q.loading.show();
                 let payload = {
                     fileId: item.fileId,
+                    notify: false,
+                    isStudent: false,
                     updateDetails: {
                         status: 1,
                         remarks: "Evaluator verify and checked the Document is Valid",

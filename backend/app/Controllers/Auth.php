@@ -132,35 +132,35 @@ class Auth extends BaseController
         }
     } 
 
-    public function validateAppVersion(){
-        $payload = $this->request->getJSON();
-        $currentVersion = "2.10";
+    public function verifyAccount($id){
+        $userId = base64_decode($id);
 
-        if($payload->appVersion !== $currentVersion){
+        $where = ['id' => $userId];
+        $updateData = ['isVerified' => 1];
+
+        $updateStatus =  $this->userModel->updatePassword($where, $updateData);
+
+        if($updateStatus){
             $response = [
-                'error' => 401,
-                'currVersion' => $currentVersion,
-                'title' => 'Invalid Credentials',
-                'message' => 'Please check your username or password'
+                'title' => 'User Status Update',
+                'message' => 'You can now login your account'
             ];
-
+ 
             return $this->response
                     ->setStatusCode(200)
                     ->setContentType('application/json')
                     ->setBody(json_encode($response));
         } else {
             $response = [
-                'currVersion' => $currentVersion,
-                'title' => 'Valid Credentials',
-                'message' => 'Version matched'
+                'title' => 'Verification Failed!',
+                'message' => 'Please contact your adminitrator for more information.'
             ];
-
+ 
             return $this->response
-                    ->setStatusCode(200)
+                    ->setStatusCode(400)
                     ->setContentType('application/json')
                     ->setBody(json_encode($response));
         }
-
     }
 
     public function firstLoginChangePassword(){

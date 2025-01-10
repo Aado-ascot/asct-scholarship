@@ -169,31 +169,42 @@ export default {
             
         },
         downloadSQL(){
+            this.$q.loading.show({
+                message: 'Downloading database. Please wait...'
+            });
             let payload = {
 				userId: this.user.userId,
 				password: this.password 
 			}
-						this.$api.post("misc/database/backup", payload).then((res) => {
-							let response = {...res.data}
-							if(!response.error){
-								// console.log(res.data)
-								const anchor = document.createElement('a');
-								anchor.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(res.data);
-								anchor.target = '_blank';
-								anchor.download = `database-backup-${new Date().toISOString()}.sql`;
-								anchor.click();
-								this.modalStatus = false;
-							} else {
-								// show Error
-								console.log('there is some error')
-							}
-						})
+
+			this.$api.post("misc/database/backup", payload).then((res) => {
+				let response = {...res.data}
+				if(!response.error){
+					// console.log(res.data)
+					const anchor = document.createElement('a');
+					anchor.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(res.data);
+					anchor.target = '_blank';
+					anchor.download = `database-backup-${new Date().toISOString()}.sql`;
+					anchor.click();
+					this.modalStatus = false;
+				} else {
+					// show Error
+					console.log('there is some error')
+				}
+
+                this.$q.loading.hide();
+			})
         },
         restoreDb(){
+            
             if (!this.fileracker) {
                 console.log('No file selected');
                 return;
             }
+
+            this.$q.loading.show({
+                message: 'Restoring database. Please wait... '
+            });
 
             const formData = new FormData();
             formData.append('backup_file', this.fileracker);
@@ -212,6 +223,8 @@ export default {
                 } else {
                     console.log('There is some error');
                 }
+
+                this.$q.loading.hide();
             })
         },
         cancelChange(){
