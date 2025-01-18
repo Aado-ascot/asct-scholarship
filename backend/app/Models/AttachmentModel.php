@@ -11,7 +11,7 @@ class AttachmentModel extends Model
 
     protected $useAutoIncrement = true;
 
-    protected $allowedFields = ['userId', 'reqType', 'fileName', 'fileSize', 'status', 'uploadFile', 'remarks', 'createdDate'];
+    protected $allowedFields = ['userId', 'reqType', 'reqTitle', 'fileName', 'fileSize', 'status', 'uploadFile', 'remarks', 'createdDate'];
 
     protected $useTimestamps = false;
     protected $returnType     = 'array';

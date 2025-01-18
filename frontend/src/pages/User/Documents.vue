@@ -23,6 +23,7 @@
                         :name="tab.name" 
                         :icon="tab.icon" 
                         :label="tab.label"
+                        @click="getFileStatus"
                         class="alignTextContent"
                         :class="`text-${tab.color}`"
                     />
@@ -223,7 +224,7 @@ export default {
         },
         selectedMenu(){
             let menus = [...this.requirementTabs]
-            this.getFileStatus();
+            // this.getFileStatus();
             let selected = menus.filter(el => { return el.name === this.requirementTab })
             return selected[0]
         }
@@ -236,6 +237,10 @@ export default {
             this.uploadFile = convertedFile
         }
     },
+    created(){
+        this.getFileList();
+        this.getFileStatus();
+    },
     methods: {
         moment,
         openUpdateDocument(){
@@ -243,6 +248,32 @@ export default {
         },
         closeUpdateDocument(){
             this.updateDocumentOpen = false
+        },
+        getFileList(){
+            this.$q.loading.show();
+            let payload = {
+                uid: this.user.userId
+            }
+
+            this.$api.post('document/get/attachments', payload).then(async (response) => {
+                const data = {...response.data};
+                data.list.forEach(req => {
+                    
+                    let menuRequirement = this.requirementTabs.filter(el => el.name === req.reqType)
+                    if(menuRequirement.length === 0){
+                        this.requirementTabs.push({
+                            name: req.reqType,
+                            icon: 'mdi-tab-plus',
+                            label: req.reqTitle,
+                            color: '',
+                        },)
+                    }
+
+                });
+            })
+
+            this.loginLoad = false;
+            this.$q.loading.hide();
         },
         getFileStatus(){
             this.$q.loading.show();

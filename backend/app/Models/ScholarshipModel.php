@@ -28,9 +28,11 @@ class ScholarshipModel extends Model
     protected $skipValidation     = false;
 
     public function getScholarshipList($where) {
-
-        $query = $this->db->table($this->table)->where($where)->get();
+        $sql = "SELECT * FROM ".$this->table." WHERE dueDate > CURDATE()";
+        $query = $this->db->query($sql);
         $results = $query->getResult('array');
+        // $query = $this->db->table($this->table)->where($where)->get();
+        // $results = $query->getResult('array');
 
         $all = array_map(function($el){
             foreach($el as $key => $val){
@@ -85,6 +87,33 @@ class ScholarshipModel extends Model
                 $lq = "SELECT * FROM ". $this->table ." as a WHERE id = :id:";
                 $sInfo = $this->db->query($lq, $userParams);
                 $el["scholarship"] = $sInfo->getRow();
+            }
+            return $el;
+        }, $results);
+
+        return $all;
+    }
+    
+    public function getScholarshipByUserDetails($where) {
+
+        $query = $this->db->table($this->tableApplication)->where($where)->get();
+        $results = $query->getResult('array');
+
+        $all = array_map(function($el){
+            foreach($el as $key => $val){
+                $userParams = [
+                    "id" => $el["scholarId"]
+                ];
+                $lq = "SELECT * FROM ". $this->table ." as a WHERE id = :id:";
+                $sInfo = $this->db->query($lq, $userParams);
+                $el["scholarship"] = $sInfo->getRow();
+
+                $studentParams = [
+                    "id" => $el["studentId"]
+                ];
+                $lsq = "SELECT * FROM ". $this->tableUser ." as a WHERE id = :id:";
+                $stdInfo = $this->db->query($lsq, $studentParams);
+                $el["student"] = $stdInfo->getRow();
             }
             return $el;
         }, $results);

@@ -5,6 +5,7 @@
             :maximized="maximizedToggle"
             transition-show="slide-up"
             transition-hide="slide-down"
+            persistent
         >
             <q-card class="">
                 <q-bar>

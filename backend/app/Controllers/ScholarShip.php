@@ -375,6 +375,7 @@ class ScholarShip extends BaseController
         $where = [
             'studentId'=> $payload->sId,
             'scholarId'=> $payload->scholarId,
+            'appStatus !='=> 3,
         ];
         $list = [];
 
@@ -444,6 +445,65 @@ class ScholarShip extends BaseController
                     ->setStatusCode(200)
                     ->setContentType('application/json')
                     ->setBody(json_encode($list));
+        } else {
+            $response = [
+                'error' => 404,
+                'title' => 'Error',
+                'message' => 'No Data Found'
+            ];
+
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+        }
+    }
+    public function getListUserAppliedDetails(){
+        // Check Auth header bearer
+        $authorization = $this->request->getServer('HTTP_AUTHORIZATION');
+        if(!$authorization){
+            $response = [
+                'message' => 'Unauthorized Access'
+            ];
+
+            return $this->response
+                    ->setStatusCode(401)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($response));
+            exit();
+        }
+        
+        $payload = $this->request->getJSON();
+        
+        $where = [
+            'id'=> $payload->applicationId,
+        ];
+        $list = [];
+
+        $query = $this->scholarModel->getScholarshipByUserDetails($where);
+        // print_r($query);
+        // exit();
+        foreach ($query as $key => $value) {
+            $sinfo = $value['scholarship'];
+            $sinfo->qualification = json_decode($sinfo->qualification);
+            $sinfo->requirements = json_decode($sinfo->requirements);
+            $value['familyBackground'] = json_decode($value['familyBackground']);
+
+            $list[$key] = [
+                "key" => $value['id'],
+                "title" => $sinfo->title,
+                "provider" => $sinfo->provider,
+                "status" => $value['status'],
+                "remarks" => $value['remarks'],
+                "data" => $value,
+            ];
+        }
+
+        if($list){
+            return $this->response
+                    ->setStatusCode(200)
+                    ->setContentType('application/json')
+                    ->setBody(json_encode($list[0]));
         } else {
             $response = [
                 'error' => 404,

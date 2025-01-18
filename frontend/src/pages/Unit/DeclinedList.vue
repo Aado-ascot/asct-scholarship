@@ -88,6 +88,22 @@
                     row-key="name"
                     :filter="search"
                 >  
+                    <template v-slot:top>
+                        <q-btn @click="backToProviderList" class="gt-xs q-mr-sm" flat color="red" rounded no-caps  dense icon="mdi-arrow-left" />
+                        <q-btn @click="filterByCourse = !filterByCourse" class="gt-xs q-mr-sm" flat color="primary" rounded no-caps  dense icon="mdi-filter-cog" />
+                        <q-select
+                            v-if="filterByCourse"
+                            class="col-3 text-grey-8 q-pa-xs" 
+                            outlined 
+                            dense
+                            v-model="selectedCourse" 
+                            :options="courseOpt" 
+                            label="Course" 
+                            stack-label 
+                            options-dense
+                        >
+                        </q-select>
+                    </template>
                     <template v-slot:header="props">
                         <q-tr :props="props">
                             <q-th
@@ -473,7 +489,9 @@ export default {
     data(){
         return {
             drawerPrint: false,
-            selectedProvider: '', 
+            selectedProvider: '',
+            selectedCourse: null,
+            filterByCourse: false,
             providerList: [],
             printModal: false,
             drawerRight: false,
@@ -489,7 +507,11 @@ export default {
     watch:{
         drawerPrint(newVal){
             if(newVal){
-                this.generatePdf(this.filteredList)
+                let data = this.filteredList
+                if(this.selectedProvider === ''){
+                    data = this.itemsList
+                }
+                this.generatePdf(data)
             }
         },
         drawerRight(newVal){
@@ -507,7 +529,13 @@ export default {
             if(this.selectedProvider === "All"){
                 return this.itemsList
             } else {
-                return this.itemsList.filter(el => this.selectedProvider === el.title)
+                if(this.filterByCourse){
+                    return this.itemsList.filter(
+                        el => this.selectedProvider === el.title && this.selectedCourse.value === el.data.student.courseId
+                    )
+                } else {
+                    return this.itemsList.filter(el => this.selectedProvider === el.title)
+                }
             }
 			
 		},
@@ -789,6 +817,7 @@ export default {
                     })
                     
                     this.courseOpt = opt
+                    this.selectedCourse = opt[0]
                 } else {
                     this.$q.notify({
                         position: 'top-left',

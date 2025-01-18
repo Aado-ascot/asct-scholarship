@@ -1013,6 +1013,7 @@ export default {
             let payload = {
                 userId: this.user.userId,
                 reqType: this.selectedProgram.requirements[index].name,
+                reqTitle: this.selectedProgram.requirements[index].label,
                 fileName: fileVal.name,
                 fileSize: fileVal.size,
                 uploadFile: convertedFile,
@@ -1068,7 +1069,7 @@ export default {
                         let filterMatch = this.selectedProgram.requirements.filter((elr) => {return elr.name === el.reqType})
                         let val = filterMatch[0]
                         let index = this.selectedProgram.requirements.indexOf(val)
-                        
+
                         this.selectedProgram.requirements[index].file = el.fileName
                         this.selectedProgram.requirements[index].uploadFile = el.uploadFile
                         this.selectedProgram.requirements[index].fileUploaded = true
@@ -1084,7 +1085,6 @@ export default {
         },
         applyForScholarship(val){
             // apply/validate
-            console.log(val)
             this.$q.loading.show({
                 message: 'Application Check. Please wait...'
             });

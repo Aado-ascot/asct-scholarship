@@ -311,20 +311,7 @@
                                         </q-item-section>
 
                                         <q-item-section side>
-                                            <div v-if="item.fileUploaded === undefined">
-                                                <q-btn outline size="sm" rounded color="red" label="Request For Upload" />
-                                            </div>
-                                            <div v-if="item.fileUploaded !== undefined">
-                                                <q-btn
-                                                    @click="previewDocs(item.uploadFile, item.name)"
-                                                    outline 
-                                                    size="sm" 
-                                                    class="q-mr-xs" 
-                                                    rounded 
-                                                    color="primary" 
-                                                    label="View"
-                                                />
-                                            </div>
+                                            
                                         </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -688,7 +675,7 @@ export default {
             let data = {
                 student: {...this.myInfo},
                 scholar: {...this.selectedProgram.data.scholarship},
-                others: {...this.form}
+                others: {...this.selectedProgram.data.familyBackground}
             }
             console.log(data)
             this.appData = data

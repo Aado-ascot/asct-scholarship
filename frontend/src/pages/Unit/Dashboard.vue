@@ -295,7 +295,7 @@
 
                                         <q-item-section side>
                                             <div v-if="item.fileUploaded === undefined">
-                                                <q-btn outline size="sm" rounded color="red" label="Request For Upload" />
+                                                <q-btn  @click="requestUpdate(item)" outline size="sm" rounded color="red" label="Request For Upload" />
                                             </div>
                                             <div v-if="item.fileUploaded !== undefined">
                                                 <q-btn
@@ -836,6 +836,7 @@ export default {
                             dateEvaluated: moment().format("l LT"),
                         },
                         notification: {
+                            applicationId: Number(this.selectedProgram.data.id),
                             toUser: this.selectedProgram.data.studentId,
                             fromUser: this.user.userId,
                             message: 'Your application has been evaluated and move to the next step.',
@@ -859,6 +860,7 @@ export default {
                             dateRejected: moment().format("l LT"),
                         },
                         notification: {
+                            applicationId: Number(this.selectedProgram.data.id),
                             toUser: this.selectedProgram.data.studentId,
                             fromUser: this.user.userId,
                             message: 'Your application has been rejected.',
@@ -881,6 +883,7 @@ export default {
                             dateApproved: moment().format("l LT"),
                         },
                         notification: {
+                            applicationId: Number(this.selectedProgram.data.id),
                             toUser: this.selectedProgram.data.studentId,
                             fromUser: this.user.userId,
                             message: 'Your application has been approved, you can now use the scholarship benefit',
@@ -1045,7 +1048,6 @@ export default {
         },
         previewDocs(file, reqType, item){
             this.previewModalStatus = true
-            console.log(item)
             this.selectedFile = {
                 url: file,
                 fileName: item.file,

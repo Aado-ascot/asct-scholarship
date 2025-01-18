@@ -37,12 +37,12 @@
                     v-for="(item, idx) in providerList"
                     :key="idx"
                     bordered 
-                    class="rounded-borders itemBorder "
+                    class="rounded-borders itemBorder q-mt-sm"
                 >
 
                     <q-item>
 
-                        <q-item-section >
+                        <q-item-section>
                             <q-item-label lines="1">
                                 <span class="text-bold text-primary">{{`${item.provider}`}}</span><br/>
                                 <span class="text-grey-8">
@@ -62,7 +62,7 @@
                 </q-list>
             </div>
             <div v-if="selectedProvider !== ''" class="col-12 col-xs-12 col-sm-12 col-md-12 q-pa-sm">
-                <q-btn @click="backToProviderList" class="gt-xs q-mr-sm" flat color="red" rounded no-caps  dense icon="mdi-arrow-left" />
+                
                 <div v-if="tableLoading && itemsList.length === 0" class="text-center">
                     <q-spinner-bars
                         color="primary"
@@ -89,6 +89,22 @@
                     row-key="name"
                     :filter="search"
                 >  
+                    <template v-slot:top>
+                        <q-btn @click="backToProviderList" class="gt-xs q-mr-sm" flat color="red" rounded no-caps  dense icon="mdi-arrow-left" />
+                        <q-btn @click="filterByCourse = !filterByCourse" class="gt-xs q-mr-sm" flat color="primary" rounded no-caps  dense icon="mdi-filter-cog" />
+                        <q-select
+                            v-if="filterByCourse"
+                            class="col-3 text-grey-8 q-pa-xs" 
+                            outlined 
+                            dense
+                            v-model="selectedCourse" 
+                            :options="courseOpt" 
+                            label="Course" 
+                            stack-label 
+                            options-dense
+                        >
+                        </q-select>
+                    </template>
                     <template v-slot:header="props">
                         <q-tr :props="props">
                             <q-th
@@ -468,7 +484,9 @@ export default {
     },
     data(){
         return {
-            selectedProvider: '', 
+            selectedProvider: '',
+            selectedCourse: null,
+            filterByCourse: false,
             printModal: false,
             drawerPrint: false,
             drawerRight: false,
@@ -485,7 +503,11 @@ export default {
     watch:{
         drawerPrint(newVal){
             if(newVal){
-                this.generatePdf(this.filteredList)
+                let data = this.filteredList
+                if(this.selectedProvider === ''){
+                    data = this.itemsList
+                }
+                this.generatePdf(data)
             }
         },
         drawerRight(newVal){
@@ -503,7 +525,13 @@ export default {
             if(this.selectedProvider === "All"){
                 return this.itemsList
             } else {
-                return this.itemsList.filter(el => this.selectedProvider === el.title)
+                if(this.filterByCourse){
+                    return this.itemsList.filter(
+                        el => this.selectedProvider === el.title && this.selectedCourse.value === el.data.student.courseId
+                    )
+                } else {
+                    return this.itemsList.filter(el => this.selectedProvider === el.title)
+                }
             }
 			
 		},
@@ -782,6 +810,7 @@ export default {
                     })
                     
                     this.courseOpt = opt
+                    this.selectedCourse = opt[0]
                 } else {
                     this.$q.notify({
                         position: 'top-left',

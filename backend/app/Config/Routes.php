@@ -76,6 +76,7 @@ $routes->group('ascots/api/v1', function($routes){
 		$routes->post('apply/validate', 'ScholarShip::validateAppliedScholarship');
 		$routes->post('apply/getFilled', 'ScholarShip::getFielForm');
 		$routes->post('applied/status', 'ScholarShip::getListUserApplied');
+		$routes->post('applied/status/details', 'ScholarShip::getListUserAppliedDetails');
 		$routes->post('applied/list', 'ScholarShip::getListUserApplications');
 		$routes->post('approved/list', 'ScholarShip::getListApproveApplications');
 		$routes->post('declined/list', 'ScholarShip::getListDeclinedApplications');
